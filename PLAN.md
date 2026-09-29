@@ -10,6 +10,28 @@
 
 ---
 
+## 0. Build status (v0.1.0, 2026-09-29)
+
+**Built and tested** (278 tests, including an end-to-end suite that runs the CLI against `examples/pro-universe`):
+
+| Area | Status |
+|---|---|
+| Core: three-layer graph, cross-layer impact with "why" paths, classification, rollout ordering, lockfile drift | ✅ |
+| YAML authoring → graph → JSON-LD; code-authority facts; design tokens (DTCG) | ✅ |
+| Code layer: TS/JS (TypeScript AST), Swift, Kotlin, Go; Next.js routes; SwiftUI/Compose screens; npm/SwiftPM/Gradle/Go packages; env, flags, events, i18n, tests; `@starchart` annotations; git diff → nodes | ✅ tree-sitter-free; name-based resolution for Swift/Kotlin/Go (SCIP not yet) |
+| Bridges: literal scanner, edge discovery, `init --discover` | ✅ heuristic, no LLM |
+| Adapters: fs (read/write/revert), url (audit), Stripe (audit/apply/revert/list), App Store Connect (metadata audit/apply) | ✅ external writes opt-in via `write: true` |
+| Engine: audit + break detection, apply with journal, revert, ack, Future Universe preview | ✅ |
+| Rules engine + packs: core, appstore, privacy (SDK catalog vs PrivacyInfo.xcprivacy and labels), seo | ✅ |
+| Orphans, Reality Score + badge, change-cost advisor | ✅ |
+| Codegen (TS / Swift / Kotlin), schema.org JSON-LD, time machine (`history`) | ✅ |
+| Viewer (canvas star chart), `serve`, Reality X-Ray extension (MV3) | ✅ extension not yet store-published |
+| MCP server, Claude Code hook, GitHub Action | ✅ |
+
+**Not built yet:** SCIP precise indexing, Play Store / RevenueCat / PostHog / YouTube / Figma adapters, screenshot pixel-drift against published store images, LLM semantic claim checking and LLM-assisted discovery, Release choreography with approval-webhook gates, a hosted registry for rule packs, and VS Code / Xcode extensions.
+
+---
+
 ## 1. The problem
 
 Code has dependency graphs. The world around your code doesn't, and **nothing connects the two.**
