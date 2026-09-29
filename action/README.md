@@ -25,7 +25,7 @@ jobs:
         with:
           fetch-depth: 0 # the diff needs the base branch history
 
-      - uses: spacepiratezero/starchart/action@main
+      - uses: space-pirate-zero/starchart/action@main
         with:
           fail-on-stale: true
 ```

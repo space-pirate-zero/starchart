@@ -101,7 +101,7 @@ export async function runInit(root: string, opts: InitOptions = {}): Promise<str
     };
     writeFileSync(
       configPath,
-      `# STARCHART config — https://github.com/spacepiratezero/starchart\n# Adapters that write to external systems (stripe, appstore) are read-only until you set write: true.\n${stringify(config)}`,
+      `# STARCHART config — https://github.com/space-pirate-zero/starchart\n# Adapters that write to external systems (stripe, appstore) are read-only until you set write: true.\n${stringify(config)}`,
     );
     lines.push(`${c.green("✓")} wrote ${relative(root, configPath)}`);
     for (const [name, path] of Object.entries(scopes)) lines.push(`  scope ${c.bold(name)} → ${path}`);

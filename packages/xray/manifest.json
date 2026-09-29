@@ -4,7 +4,7 @@
   "short_name": "X-Ray",
   "version": "0.1.0",
   "description": "See your STARCHART facts on any page: green = in sync, red = stale, grey = unbound.",
-  "homepage_url": "https://github.com/spacepiratezero/starchart",
+  "homepage_url": "https://github.com/space-pirate-zero/starchart",
   "permissions": ["storage", "activeTab", "scripting"],
   "host_permissions": ["http://127.0.0.1/*", "http://localhost/*"],
   "optional_host_permissions": ["https://*/*", "http://*/*"],

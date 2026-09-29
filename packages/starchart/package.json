@@ -3,6 +3,28 @@
   "version": "0.1.0",
   "description": "Every dependency. Code to cosmos. A graph that bridges your code to everything it touches in the real world.",
   "license": "Apache-2.0",
+  "author": "Space Pirate Zero",
+  "homepage": "https://github.com/space-pirate-zero/starchart/wiki",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/space-pirate-zero/starchart.git",
+    "directory": "packages/starchart"
+  },
+  "bugs": {
+    "url": "https://github.com/space-pirate-zero/starchart/issues"
+  },
+  "keywords": [
+    "dependency-graph",
+    "impact-analysis",
+    "json-ld",
+    "schema.org",
+    "app-store",
+    "stripe",
+    "mcp",
+    "claude-code",
+    "codegen",
+    "privacy-manifest"
+  ],
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
