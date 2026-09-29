@@ -1,3 +1,15 @@
+```text
+  ·      ✦          ·        ★            ·          ✦         ·       ·
+███████╗████████╗ █████╗ ██████╗  ██████╗██╗  ██╗ █████╗ ██████╗ ████████╗
+██╔════╝╚══██╔══╝██╔══██╗██╔══██╗██╔════╝██║  ██║██╔══██╗██╔══██╗╚══██╔══╝
+███████╗   ██║   ███████║██████╔╝██║     ███████║███████║██████╔╝   ██║
+╚════██║   ██║   ██╔══██║██╔══██╗██║     ██╔══██║██╔══██║██╔══██╗   ██║
+███████║   ██║   ██║  ██║██║  ██║╚██████╗██║  ██║██║  ██║██║  ██║   ██║
+╚══════╝   ╚═╝   ╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝   ╚═╝
+☠ EVERY DEPENDENCY. CODE TO COSMOS. ────────── A SPACE PIRATE ZERO JOINT ☠
+     ·         ·         ✦           ·          ★          ·         ·
+```
+
 **Every dependency. Code to cosmos.** This is the STARCHART wiki: what the tool is, why it exists, what it looks like on a real change, and a map of every page. Start here, then jump to [Getting Started](Getting-Started) or the [Pro Universe tutorial](Tutorial-Pro-Universe).
 
 ## What STARCHART is
@@ -150,3 +162,21 @@ STARCHART is a Space Pirate Zero project, licensed Apache-2.0. Source: [space-pi
 - [Tutorial: Pro Universe](Tutorial-Pro-Universe)
 - [Three-Layer Model](Three-Layer-Model)
 - [CLI Reference](CLI-Reference)
+
+```text
+        ·              ✦                ·
+    ★               _________               ·
+                .-'           '-.
+     ·         /                 \         ✦
+              |   .---.   .---.   |
+              |   ( ✦ )   ( ✦ )   |
+      ✦        \  '---'   '---'  /        ·
+                '.     /_\     .'
+                  |'|'|'|'|'|'|
+                  '-._______.-'
+                        ·
+      \\\\\\                         //////
+           >=======   S P Z   =======<
+      //////                         \\\\\\
+            ·           ★           ·
+```

@@ -2,6 +2,18 @@
 
 [![CI](https://github.com/space-pirate-zero/starchart/actions/workflows/ci.yml/badge.svg)](https://github.com/space-pirate-zero/starchart/actions/workflows/ci.yml) [![License](https://img.shields.io/badge/license-Apache--2.0-ff1493)](LICENSE) [![Wiki](https://img.shields.io/badge/docs-wiki-00ff41)](https://github.com/space-pirate-zero/starchart/wiki)
 
+```text
+  ·      ✦          ·        ★            ·          ✦         ·       ·
+███████╗████████╗ █████╗ ██████╗  ██████╗██╗  ██╗ █████╗ ██████╗ ████████╗
+██╔════╝╚══██╔══╝██╔══██╗██╔══██╗██╔════╝██║  ██║██╔══██╗██╔══██╗╚══██╔══╝
+███████╗   ██║   ███████║██████╔╝██║     ███████║███████║██████╔╝   ██║
+╚════██║   ██║   ██╔══██║██╔══██╗██║     ██╔══██║██╔══██║██╔══██╗   ██║
+███████║   ██║   ██║  ██║██║  ██║╚██████╗██║  ██║██║  ██║██║  ██║   ██║
+╚══════╝   ╚═╝   ╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝   ╚═╝
+☠ EVERY DEPENDENCY. CODE TO COSMOS. ────────── A SPACE PIRATE ZERO JOINT ☠
+     ·         ·         ✦           ·          ★          ·         ·
+```
+
 **Every dependency. Code to cosmos.**
 
 STARCHART is a dependency graph for everything your product touches, not just the code. It charts three layers:
@@ -193,6 +205,7 @@ Or generate the constants from facts so they can never drift (`starchart codegen
 | `starchart hook claude` | Claude Code PostToolUse hook: impact as live agent context |
 | `starchart mcp` | MCP server for agents |
 | `starchart adapters` | List adapters and whether each may write |
+| `starchart about` | The Jolly Roger, version and links |
 
 Use `sc` as a short alias. Global options: `-C <dir>`, `--no-color`, `-q`. See the [CLI reference](https://github.com/space-pirate-zero/starchart/wiki/CLI-Reference) for every flag.
 
@@ -247,3 +260,25 @@ examples/pro-universe demo universe (SwiftUI + Next.js + Stripe + App Store)
 ```
 
 See [PLAN.md](PLAN.md) for the full design and roadmap.
+
+---
+
+```text
+        ·              ✦                ·
+    ★               _________               ·
+                .-'           '-.
+     ·         /                 \         ✦
+              |   .---.   .---.   |
+              |   ( ✦ )   ( ✦ )   |
+      ✦        \  '---'   '---'  /        ·
+                '.     /_\     .'
+                  |'|'|'|'|'|'|
+                  '-._______.-'
+                        ·
+      \\\\\\                         //////
+           >=======   S P Z   =======<
+      //////                         \\\\\\
+            ·           ★           ·
+```
+
+<p align="center"><b>STARCHART</b> · a Space Pirate Zero joint · <code>starchart about</code></p>

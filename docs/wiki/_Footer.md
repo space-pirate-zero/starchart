@@ -1,1 +1,1 @@
-STARCHART · a Space Pirate Zero project · Apache-2.0 · [Repo](https://github.com/space-pirate-zero/starchart) · [Issues](https://github.com/space-pirate-zero/starchart/issues)
+`★ STARCHART ☠ SPZ` · every dependency, code to cosmos · a Space Pirate Zero joint · Apache-2.0 · [Repo](https://github.com/space-pirate-zero/starchart) · [Issues](https://github.com/space-pirate-zero/starchart/issues)

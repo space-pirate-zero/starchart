@@ -28,6 +28,7 @@ import { buildProject, writeLock, type Project } from "../project.js";
 import { renderViewerHtml, viewerData } from "../viewer/html.js";
 import { serve } from "../viewer/serve.js";
 import { xrayPayload } from "../viewer/xray.js";
+import { renderBanner, renderJollyRoger } from "./banner.js";
 import { runInit } from "./init.js";
 
 type Format = "text" | "markdown" | "json";
@@ -65,6 +66,10 @@ export async function run(argv: string[]): Promise<number> {
     if (!globals().quiet) for (const w of project.warnings) process.stderr.write(`${pc.yellow("warn")} ${w}\n`);
     return project;
   };
+  const banner = () => renderBanner({ color: color(), columns: process.stdout.columns });
+  // the banner tops the root help only; subcommand help stays compact
+  program.addHelpText("before", () => `${banner()}\n`);
+
   const formatOption = (choices: Format[] = ["text", "markdown", "json"]) =>
     new Option("-f, --format <format>", "output format").choices(choices).default("text");
   const printPlan = (plan: Plan, format: Format, verbose = false) => {
@@ -79,7 +84,8 @@ export async function run(argv: string[]): Promise<number> {
     .option("--discover", "propose facts, artifacts and bridges found in code and content")
     .option("--force", "overwrite an existing config.yaml")
     .action(async (opts: { discover?: boolean; force?: boolean }) => {
-      out(await runInit(cwd(), { discover: opts.discover, force: opts.force, color: color() }));
+      const result = await runInit(cwd(), { discover: opts.discover, force: opts.force, color: color() });
+      out(`${banner()}\n\n${result}`);
     });
 
   program
@@ -508,7 +514,7 @@ export async function run(argv: string[]): Promise<number> {
     .option("-w, --watch", "rebuild on file changes")
     .action(async (opts: { port: string; host: string; watch?: boolean }) => {
       const server = await serve({ root: cwd(), port: Number(opts.port), host: opts.host, watch: opts.watch });
-      out(`${pc.magenta("★")} STARCHART at ${pc.bold(server.url)}  ${pc.dim("(ctrl+c to stop)")}`);
+      out(`${banner()}\n\n${pc.magenta("★")} STARCHART at ${pc.bold(server.url)}  ${pc.dim("(ctrl+c to stop)")}`);
       await new Promise<void>((done) => {
         const stop = () => void server.close().then(done);
         process.once("SIGINT", stop);
@@ -535,6 +541,19 @@ export async function run(argv: string[]): Promise<number> {
     });
 
   program
+    .command("about")
+    .description("who made this thing")
+    .action(() => {
+      const c = color() ? pc : pc.createColors(false);
+      out(renderJollyRoger({ color: color() }));
+      out("");
+      out(`  ${c.bold("STARCHART")} ${VERSION} ${c.dim("·")} every dependency. code to cosmos.`);
+      out(`  a ${c.magenta("Space Pirate Zero")} joint ${c.dim("·")} Apache-2.0`);
+      out(`  ${c.dim("repo")}  https://github.com/space-pirate-zero/starchart`);
+      out(`  ${c.dim("wiki")}  https://github.com/space-pirate-zero/starchart/wiki`);
+    });
+
+  program
     .command("adapters")
     .description("list adapters and whether they may write")
     .action(async () => {
@@ -546,6 +565,14 @@ export async function run(argv: string[]): Promise<number> {
         out(`${a.id.padEnd(10)} ${writes ? pc.green("writes") : pc.dim("read-only")}  ${pc.dim(caps)}`);
       }
     });
+
+  // bare `starchart` (only global flags): show the banner and help instead of an error
+  const rest = argv.slice(2).filter((a, i, all) => !a.startsWith("-") && all[i - 1] !== "-C" && all[i - 1] !== "--cwd");
+  if (rest.length === 0 && !argv.slice(2).some((a) => ["-h", "--help", "-V", "--version"].includes(a))) {
+    program.parseOptions(argv.slice(2));
+    out(program.helpInformation().length ? `${banner()}\n\n${program.helpInformation()}` : banner());
+    return 0;
+  }
 
   try {
     await program.parseAsync(argv);

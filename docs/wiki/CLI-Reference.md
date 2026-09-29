@@ -834,6 +834,44 @@ claude mcp add starchart -- node /path/to/starchart/packages/starchart/dist/cli/
 
 See [MCP Server](MCP-Server).
 
+## The banner
+
+Bare `starchart` (no command), `starchart --help`, `init` and `serve` open with the SPZ banner: the STARCHART logo in hot pink, a gold-and-dim starfield, and the tagline in phosphor green. Subcommand help, `--version` and every machine-readable output (`-f json`, `emit`, `hook`, `mcp`) never print it.
+
+- Colors only on a TTY; piped output, `--no-color` and `NO_COLOR` get the same art as plain text.
+- Terminals narrower than 76 columns get the one-line mark instead: `★ STARCHART — every dependency. code to cosmos. ☠ a Space Pirate Zero joint`.
+
+### `about`
+
+```text
+starchart about
+```
+
+The Jolly Roger, the version and the links. Exit code 0.
+
+```text
+        ·              ✦                ·
+    ★               _________               ·
+                .-'           '-.
+     ·         /                 \         ✦
+              |   .---.   .---.   |
+              |   ( ✦ )   ( ✦ )   |
+      ✦        \  '---'   '---'  /        ·
+                '.     /_\     .'
+                  |'|'|'|'|'|'|
+                  '-._______.-'
+                        ·
+      \\\\\\                         //////
+           >=======   S P Z   =======<
+      //////                         \\\\\\
+            ·           ★           ·
+
+  STARCHART 0.1.0 · every dependency. code to cosmos.
+  a Space Pirate Zero joint · Apache-2.0
+  repo  https://github.com/space-pirate-zero/starchart
+  wiki  https://github.com/space-pirate-zero/starchart/wiki
+```
+
 ## See also
 
 - [Getting Started](Getting-Started)

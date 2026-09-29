@@ -1,3 +1,8 @@
+```text
+ ★ STARCHART
+ ☠ a Space Pirate Zero joint
+```
+
 **[STARCHART](Home)**
 *Every dependency. Code to cosmos.*
 

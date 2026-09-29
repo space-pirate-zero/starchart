@@ -1,6 +1,7 @@
 import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
 import { canWrite } from "../adapters/registry.js";
+import { BANNER } from "../cli/banner.js";
 import type { SerializedGraph } from "../core/graph.js";
 import { staleArtifacts } from "../core/lock.js";
 import type { Layer } from "../core/model.js";
@@ -171,6 +172,9 @@ export function renderViewerHtml(data: ViewerData): string {
   const name = escapeHtml(data.name);
 
   return `<!doctype html>
+<!--
+${BANNER}
+-->
 <html lang="en">
 <head>
 <meta charset="utf-8">

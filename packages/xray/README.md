@@ -1,5 +1,15 @@
 # STARCHART X-Ray
 
+```text
+███████╗████████╗ █████╗ ██████╗  ██████╗██╗  ██╗ █████╗ ██████╗ ████████╗
+██╔════╝╚══██╔══╝██╔══██╗██╔══██╗██╔════╝██║  ██║██╔══██╗██╔══██╗╚══██╔══╝
+███████╗   ██║   ███████║██████╔╝██║     ███████║███████║██████╔╝   ██║
+╚════██║   ██║   ██╔══██║██╔══██╗██║     ██╔══██║██╔══██║██╔══██╗   ██║
+███████║   ██║   ██║  ██║██║  ██║╚██████╗██║  ██║██║  ██║██║  ██║   ██║
+╚══════╝   ╚═╝   ╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝   ╚═╝
+☠ REALITY X-RAY ── A SPACE PIRATE ZERO JOINT ☠
+```
+
 Browse your own website, App Store page or checkout and see every fact your STARCHART knows about light up in place:
 
 - **green**: the page shows the current value (in sync)

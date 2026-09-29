@@ -1,5 +1,15 @@
 # STARCHART GitHub Action
 
+```text
+███████╗████████╗ █████╗ ██████╗  ██████╗██╗  ██╗ █████╗ ██████╗ ████████╗
+██╔════╝╚══██╔══╝██╔══██╗██╔══██╗██╔════╝██║  ██║██╔══██╗██╔══██╗╚══██╔══╝
+███████╗   ██║   ███████║██████╔╝██║     ███████║███████║██████╔╝   ██║
+╚════██║   ██║   ██╔══██║██╔══██╗██║     ██╔══██║██╔══██║██╔══██╗   ██║
+███████║   ██║   ██║  ██║██║  ██║╚██████╗██║  ██║██║  ██║██║  ██║   ██║
+╚══════╝   ╚═╝   ╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝   ╚═╝
+☠ GITHUB ACTION ── A SPACE PIRATE ZERO JOINT ☠
+```
+
 Posts the cross-layer blast radius of every pull request as a single sticky comment: which
 screens, facts, App Store screenshots, web pages, Stripe prices and promo reels the diff touches,
 classified as auto / review / manual / break, with a why-path for each.
