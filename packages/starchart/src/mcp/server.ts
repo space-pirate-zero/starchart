@@ -196,10 +196,16 @@ export function createServer(opts: ServerOptions = {}): McpServer {
       annotations: readOnly,
     },
     withProject((project, { from, to }: { from: string; to: string }) => {
-      const source = resolveOne(project, from);
+      // a file path resolves to the file and its symbols: explain via whichever gives the shortest path
+      const sources = resolveRef(project, from, project.root);
+      if (sources.length === 0) throw new Error(`no node matches "${from}". Try starchart_query with text: "${from}".`);
       const target = resolveOne(project, to);
-      const item = why(project, source, target);
-      if (!item) return text(`${target} does not depend on ${source}: no impact path within the traversal limits.`);
+      const item = sources
+        .map((s) => why(project, s, target))
+        .filter((i): i is NonNullable<typeof i> => i !== undefined)
+        .sort((a, b) => a.depth - b.depth)[0];
+      const source = item?.path[0]?.from ?? sources[0]!;
+      if (!item) return text(`${target} does not depend on ${from}: no impact path within the traversal limits.`);
       return text(
         [
           `${target} is impacted by ${source} (${item.class}: ${item.reason}; confidence ${item.confidence}).`,

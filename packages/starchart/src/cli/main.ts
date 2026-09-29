@@ -12,7 +12,7 @@ import { scanLiterals } from "../bridge/scan.js";
 import { writeCodegen } from "../codegen/index.js";
 import { LOCK_FILE } from "../config/load.js";
 import { explainPath, type ImpactItem } from "../core/impact.js";
-import { buildLock } from "../core/lock.js";
+import { buildLock, relockArtifacts } from "../core/lock.js";
 import { adapterContext } from "../engine/context.js";
 import { auditProject } from "../engine/audit.js";
 import { ackArtifacts, applyPlan, listJournals, revertJournal } from "../engine/apply.js";
@@ -65,7 +65,8 @@ export async function run(argv: string[]): Promise<number> {
     if (!globals().quiet) for (const w of project.warnings) process.stderr.write(`${pc.yellow("warn")} ${w}\n`);
     return project;
   };
-  const formatOption = () => new Option("-f, --format <format>", "output format").choices(["text", "markdown", "json"]).default("text");
+  const formatOption = (choices: Format[] = ["text", "markdown", "json"]) =>
+    new Option("-f, --format <format>", "output format").choices(choices).default("text");
   const printPlan = (plan: Plan, format: Format, verbose = false) => {
     if (format === "json") out(JSON.stringify(formatPlanJson(plan), null, 2));
     else if (format === "markdown") out(formatPlanMarkdown(plan));
@@ -159,7 +160,8 @@ export async function run(argv: string[]): Promise<number> {
       if (report.pending.length) {
         out(`\n${pc.bold("Still needs a human:")}`);
         for (const t of report.pending) out(`  ${classMark(t.class)} ${t.id} ${pc.dim(t.reason)}`);
-        out(pc.dim(`  mark done with: starchart ack <id…>`));
+        if (report.pending.some((t) => project.graph.node(t.id)?.kind === "artifact")) out(pc.dim("  mark artifacts done with: starchart ack <id…>"));
+        if (report.pending.some((t) => t.class === "code")) out(pc.dim("  code items: edit the constant, or generate it with starchart codegen"));
       }
       if (report.journal) out(pc.dim(`journal: ${report.journal} (undo with: starchart revert ${report.journal})`));
       if (report.failed) setExit(1);
@@ -174,6 +176,7 @@ export async function run(argv: string[]): Promise<number> {
       const project = await load();
       const report = await revertJournal(project, journal, { dryRun: opts.dryRun });
       out(JSON.stringify(report, null, 2));
+      if (!report.ok) setExit(1);
     });
 
   program
@@ -202,7 +205,9 @@ export async function run(argv: string[]): Promise<number> {
     .argument("[ids...]", "only relock these artifacts")
     .action(async (ids: string[]) => {
       const project = await load();
-      const lock = buildLock(project.graph, project.lock, ids.length ? ids : undefined);
+      const opts = { maxCodeDepth: project.loaded.config.code.maxCodeDepth };
+      // a partial relock must not forget the old values other stale artifacts still need
+      const lock = ids.length ? relockArtifacts(project.graph, project.lock, ids, opts) : buildLock(project.graph, project.lock, undefined, opts);
       writeLock(project.root, lock);
       out(`${pc.green("✓")} ${LOCK_FILE}: ${Object.keys(lock.artifacts).length} artifacts, ${Object.keys(lock.facts).length} facts, ${Object.keys(lock.code).length} code pins`);
     });
@@ -229,6 +234,7 @@ export async function run(argv: string[]): Promise<number> {
       const project = await load();
       const report = await auditProject(project, { ids: opts.ids });
       if (opts.format === "json") out(JSON.stringify(report, null, 2));
+      else if (opts.format === "markdown") out(auditMarkdown(report));
       else {
         for (const d of report.diffs) {
           const mark = d.kind === "break" ? pc.red("✗ break ") : d.kind === "stale" ? pc.yellow("! stale ") : pc.yellow("? " + d.kind.padEnd(7));
@@ -265,6 +271,10 @@ export async function run(argv: string[]): Promise<number> {
         out(`${pc.bold(c.sdk)} ${pc.dim(c.package)} [${c.platforms.join(", ")}]${c.tracking ? pc.red(" tracking") : ""}`);
         out(`  collects: ${c.dataTypes.join(", ") || "—"}${c.optionalDataTypes.length ? pc.dim(`  (optional: ${c.optionalDataTypes.join(", ")})`) : ""}`);
       }
+      if (!project.loaded.config.packs.some((p) => /(^|\/|-)privacy$/.test(p))) {
+        out(`\n${pc.yellow("!")} the privacy rule pack is not enabled; add "privacy" to packs in .starchart/config.yaml to check disclosures`);
+        return;
+      }
       const violations = evaluateProjectRules(project).filter((v) => v.pack === "privacy");
       if (violations.length) {
         out("");
@@ -277,7 +287,7 @@ export async function run(argv: string[]): Promise<number> {
     .command("orphans")
     .description("dead stars: things nothing depends on anymore")
     .option("--external", "also list resources in external systems (e.g. Stripe prices) that nothing references")
-    .addOption(formatOption())
+    .addOption(formatOption(["text", "json"]))
     .action(async (opts: { external?: boolean; format: Format }) => {
       const project = await load();
       const listed: Record<string, ListedResource[]> = {};
@@ -305,7 +315,7 @@ export async function run(argv: string[]): Promise<number> {
     .option("--badge <file>", "write a README badge SVG")
     .option("--badge-json <file>", "write a shields.io endpoint JSON")
     .option("--audit", "include live audit results (slower, needs credentials)")
-    .addOption(formatOption())
+    .addOption(formatOption(["text", "json"]))
     .action(async (opts: { badge?: string; badgeJson?: string; audit?: boolean; format: Format }) => {
       const project = await load();
       const auditDiffs = opts.audit ? (await auditProject(project)).diffs : undefined;
@@ -326,7 +336,7 @@ export async function run(argv: string[]): Promise<number> {
     .description("change-cost heatmap: what it costs to change each fact, and how to cut it")
     .argument("[facts...]", "fact or entity ids (default: all)")
     .option("-n, --top <n>", "show the top N", "15")
-    .addOption(formatOption())
+    .addOption(formatOption(["text", "json"]))
     .action(async (facts: string[], opts: { top: string; format: Format }) => {
       const project = await load();
       const reports = changeCost(project.graph, facts.length ? facts : undefined, { canWrite: impactOptions(project).canWrite });
@@ -377,7 +387,7 @@ export async function run(argv: string[]): Promise<number> {
     .option("--edge <type>", "nodes with an outgoing edge of this type")
     .option("--to <id>", "…pointing at this id or prefix")
     .option("-n, --limit <n>", "max results", "50")
-    .addOption(formatOption())
+    .addOption(formatOption(["text", "json"]))
     .action(async (opts: { kind?: string; layer?: string; prefix?: string; text?: string; edge?: string; to?: string; limit: string; format: Format }) => {
       const project = await load();
       const nodes = query(project.graph, { ...opts, limit: Number(opts.limit) });
@@ -404,7 +414,7 @@ export async function run(argv: string[]): Promise<number> {
     .command("scan")
     .description("find fact values in code and content that the chart doesn't know about")
     .option("--all", "include bound occurrences")
-    .addOption(formatOption())
+    .addOption(formatOption(["text", "json"]))
     .action(async (opts: { all?: boolean; format: Format }) => {
       const project = await load();
       const occurrences = (await scanLiterals(project.root, project.graph, { roots: project.loaded.config.content })).filter((o) => opts.all || !o.bound);
@@ -435,7 +445,8 @@ export async function run(argv: string[]): Promise<number> {
     .option("--script", "wrap in a <script type=application/ld+json> tag")
     .option("--code", "include the code layer in the full export")
     .action(async (opts: { entity?: string; script?: boolean; code?: boolean }) => {
-      const project = await load({ skipCode: !opts.code });
+      // always ingest code: code-authority facts get their values from it
+      const project = await load();
       const doc = opts.entity ? schemaOrgFor(project.graph, opts.entity) : toJsonLd(project.graph, { includeCode: opts.code });
       out(opts.script ? jsonLdScriptTag(doc) : JSON.stringify(doc, null, 2));
     });
@@ -473,8 +484,8 @@ export async function run(argv: string[]): Promise<number> {
     .option("-n, --limit <n>", "commits to scan", "200")
     .action(async (fact: string, opts: { limit: string }) => {
       const project = await load({ skipCode: true });
-      const versions = await factHistory(project.root, fact, { limit: Number(opts.limit) });
-      if (versions.length === 0) out(`no history for ${fact} (is ${LOCK_FILE} committed?)`);
+      const versions = (await factHistory(project.root, fact, { limit: Number(opts.limit) })).filter((v) => v.value !== undefined);
+      if (versions.length === 0) out(`no history for ${fact} (unknown fact, or ${LOCK_FILE} not committed yet)`);
       for (const v of versions) out(`${pc.dim(v.commit.slice(0, 8))} ${v.date.slice(0, 10)} ${pc.bold(formatValue(v.value))}  ${pc.dim(`${v.author}: ${v.subject}`)}`);
     });
 
@@ -519,7 +530,8 @@ export async function run(argv: string[]): Promise<number> {
     .description("start the MCP server on stdio")
     .action(async () => {
       const { startStdio } = await import("../mcp/stdio.js");
-      await startStdio(cwd());
+      // -C wins; otherwise the server resolves $STARCHART_ROOT, then the working directory
+      await startStdio(globals().cwd ? cwd() : undefined);
     });
 
   program
@@ -559,6 +571,20 @@ function violationsText(violations: Violation[], useColor: boolean): string {
   const lines = violations.map((v) => `${tint[v.severity](v.severity.padEnd(5))} ${c.dim(v.rule)}  ${v.message}${v.file ? c.dim(`  (${v.file})`) : ""}`);
   const counts = (["error", "warn", "info"] as const).map((s) => `${violations.filter((v) => v.severity === s).length} ${s}`).join(" · ");
   return `${lines.join("\n")}\n${counts}`;
+}
+
+function auditMarkdown(report: Awaited<ReturnType<typeof auditProject>>): string {
+  const cell = (s: string) => s.replace(/\|/g, "\\|").replace(/\n/g, " ");
+  const lines = [`**STARCHART audit:** ${report.checked.length} checked · ${report.diffs.length} diff(s) · ${report.errors.length} error(s) · ${report.skipped.length} skipped`];
+  if (report.diffs.length) {
+    lines.push("", "| Kind | Artifact | Where | Finding |", "|---|---|---|---|");
+    for (const d of report.diffs) lines.push(`| ${d.kind} | \`${d.artifact}\` | ${cell(d.where ?? "")} | ${cell(d.message)} |`);
+  }
+  if (report.errors.length) {
+    lines.push("", "| Artifact | Adapter | Error |", "|---|---|---|");
+    for (const e of report.errors) lines.push(`| \`${e.artifact}\` | ${e.adapter} | ${cell(e.error)} |`);
+  }
+  return lines.join("\n");
 }
 
 function violationsMarkdown(violations: Violation[]): string {

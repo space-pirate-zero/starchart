@@ -90,7 +90,8 @@ function resolveUrl(raw: string, site: string | undefined): string | undefined {
   if (/^https?:\/\//i.test(raw)) return raw;
   if (!site) return undefined;
   try {
-    return new URL(raw, site.endsWith("/") ? site : `${site}/`).toString();
+    // same rule as the url adapter: relative bindings keep the site's base path
+    return new URL(raw.replace(/^\/+/, ""), site.endsWith("/") ? site : `${site}/`).toString();
   } catch {
     return undefined;
   }

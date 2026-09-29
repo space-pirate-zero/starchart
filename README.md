@@ -1,5 +1,7 @@
 # STARCHART
 
+[![CI](https://github.com/space-pirate-zero/starchart/actions/workflows/ci.yml/badge.svg)](https://github.com/space-pirate-zero/starchart/actions/workflows/ci.yml) [![License](https://img.shields.io/badge/license-Apache--2.0-ff1493)](LICENSE) [![Wiki](https://img.shields.io/badge/docs-wiki-00ff41)](https://github.com/space-pirate-zero/starchart/wiki)
+
 **Every dependency. Code to cosmos.**
 
 STARCHART is a dependency graph for everything your product touches, not just the code. It charts three layers:
@@ -14,19 +16,26 @@ CODE    files · symbols · routes · screens · packages · env · flags · eve
 
 Change anything on any layer and STARCHART walks the whole chart. It tells you what else is now wrong, explains *why*, fixes what it can, and turns the rest into a checklist.
 
-```
+```text
 $ starchart plan
 
 Change: addon:pro.price.usd  4.99 → 5.99
 
-  ~ auto    web:pricing-page               embeds    replace embedded value
-  ~ auto    web:og-pro                     renders   regenerate from template
-  ! manual  stripe:price/pro-monthly       mirrors   update in stripe (adapter is read-only)
-  ! manual  appstore:screenshots/6.9/03    embeds    value is burned into media
-  ✗ retire  reel:spring-2026               embeds    expired 2026-06-30
-  ⌘ code    symbol:ios/Pricing.proUSD      anchors   hardcoded value anchors this fact
-  ✓ test    test:ios/Tests/PaywallTests.swift        run these tests
+  ! manual  appstore:screenshots/6.9/03                         embeds     value is burned into media
+  ! manual  stripe:price/pro-monthly                            mirrors    update in stripe (adapter is read-only)
+  ~ auto    web:og-pro                                          renders    regenerate from template
+  ~ auto    web:pricing-page                                    embeds     replace embedded value
+  ~ auto    symbol:web/lib/starchart-facts#ADDON_PRO_PRICE_USD  anchors    regenerate fact constants (codegen)
+  ? review  web:landing-hero                                    describes  describes this semantically
+  ⌘ code    symbol:ios/Pricing.proUSD                           anchors    hardcoded value anchors this fact; update or switch to codegen
+  ✗ retire  reel:spring-2026                                    embeds     expired 2026-06-30
+  ✓ tests   test:ios/Tests/PaywallTests.swift                   tests      run these tests
+  …
+
+Plan: 5 manual · 6 auto · 1 review · 2 code · 1 retire · 1 tests
 ```
+
+(Trimmed from the real output for the demo universe. The full walkthrough is in the [wiki tutorial](https://github.com/space-pirate-zero/starchart/wiki/Tutorial-Pro-Universe).)
 
 A Space Pirate Zero project. Apache-2.0.
 
@@ -34,35 +43,51 @@ A Space Pirate Zero project. Apache-2.0.
 
 ## Quick start
 
+> **Not on npm yet.** `@spz/starchart` isn't published. Until it is, run it from source (below). Always use the scoped name: the unscoped `starchart` package on npm belongs to someone else.
+
 ```bash
-npm i -D @spz/starchart
+git clone https://github.com/space-pirate-zero/starchart.git && cd starchart
 ```
 
 ```bash
-npx starchart init --discover
+pnpm install && pnpm build
 ```
 
 ```bash
-npx starchart lock
+alias starchart="node $PWD/packages/starchart/dist/cli/bin.js"
 ```
 
-The first command writes `.starchart/config.yaml`, detects your code scopes (Next.js, SwiftUI, Compose, Go), and proposes facts and bridges it found in your code. `lock` pins every artifact to today's facts and code; commit `starchart.lock`.
-
-Then, whenever something changes:
+Then, in your project:
 
 ```bash
-npx starchart plan
+starchart init --discover
 ```
 
 ```bash
-npx starchart apply --dry-run
+starchart lock
 ```
 
-Try the bundled demo universe, a SwiftUI app plus a Next.js site with a paid Pro add-on:
+`init` writes `.starchart/config.yaml` and detects your code scopes (Next.js, SwiftUI, Compose, Go). `--discover` proposes facts and bridges from your code in `.starchart/proposals/discovered.yaml`; review it and move it into `.starchart/`. `lock` pins every artifact to today's facts and code; commit `starchart.lock`.
+
+Whenever something changes:
 
 ```bash
-cd examples/pro-universe && npx starchart impact addon:pro.price.usd
+starchart plan
 ```
+
+```bash
+starchart apply --dry-run
+```
+
+Try the bundled demo universe (a SwiftUI app plus a Next.js site with a paid Pro add-on):
+
+```bash
+starchart -C examples/pro-universe impact addon:pro.price.usd
+```
+
+Once published, `npx @spz/starchart <command>` will work everywhere.
+
+📖 **Full documentation: the [STARCHART wiki](https://github.com/space-pirate-zero/starchart/wiki).**
 
 ---
 
@@ -153,7 +178,7 @@ Or generate the constants from facts so they can never drift (`starchart codegen
 | `starchart audit` | Compare the graph with live systems (site, Stripe, App Store); detect breaks |
 | `starchart rules` | Evaluate invariants and rule packs (core, appstore, privacy, seo) |
 | `starchart privacy` | SDK data collection vs PrivacyInfo.xcprivacy and privacy labels |
-| `starchart orphans` | Dead stars: unused facts, unlinked artifacts, unreferenced Stripe prices |
+| `starchart orphans [--external]` | Dead stars: unused facts, unlinked artifacts; `--external` adds unreferenced Stripe prices |
 | `starchart score [--badge f.svg]` | Reality Score: % of artifacts bound, in sync, fresh |
 | `starchart cost` | Change-cost heatmap and suggestions |
 | `starchart why <from> <to>` | The exact path that makes `to` depend on `from` |
@@ -167,20 +192,21 @@ Or generate the constants from facts so they can never drift (`starchart codegen
 | `starchart serve` | Viewer + API for the X-Ray browser extension |
 | `starchart hook claude` | Claude Code PostToolUse hook: impact as live agent context |
 | `starchart mcp` | MCP server for agents |
+| `starchart adapters` | List adapters and whether each may write |
 
-Use `sc` as a short alias.
+Use `sc` as a short alias. Global options: `-C <dir>`, `--no-color`, `-q`. See the [CLI reference](https://github.com/space-pirate-zero/starchart/wiki/CLI-Reference) for every flag.
 
 ---
 
 ## Integrations
 
-**Claude Code hook.** Every file an agent edits gets its world impact injected back into the conversation. Add this to `.claude/settings.json`:
+**Claude Code hook.** Every file an agent edits gets its world impact injected back into the conversation. Add this to `.claude/settings.json` (until the package is published, replace `npx @spz/starchart` with `node /path/to/starchart/packages/starchart/dist/cli/bin.js`):
 
 ```json
 {
   "hooks": {
     "PostToolUse": [
-      { "matcher": "Edit|Write|MultiEdit", "hooks": [{ "type": "command", "command": "npx starchart hook claude" }] }
+      { "matcher": "Edit|Write|MultiEdit|NotebookEdit", "hooks": [{ "type": "command", "command": "npx @spz/starchart hook claude" }] }
     ]
   }
 }
@@ -189,7 +215,7 @@ Use `sc` as a short alias.
 **MCP.**
 
 ```bash
-claude mcp add starchart -- npx starchart mcp
+claude mcp add starchart -- npx @spz/starchart mcp
 ```
 
 **GitHub Action.** A sticky PR comment with the cross-layer blast radius. See [action/README.md](action/README.md).

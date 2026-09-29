@@ -160,8 +160,10 @@ describe("apply → revert", () => {
     // lock + journal
     expect(report.lockUpdated).toBe(true);
     const lock = readLock(root);
-    expect(lock.facts["addon:pro.price.usd"]?.value).toBe(5.99);
+    // web:landing still needs review, so the old value stays pinned until it is synced or acked
+    expect(lock.facts["addon:pro.price.usd"]?.value).toBe(4.99);
     expect(check(project).map((s) => s.id)).toEqual(["web:landing"]);
+    expect(planFromLock(project).impact.items.filter((i) => i.node.kind === "artifact").map((i) => i.id)).toEqual(["web:landing"]);
     expect(report.journal).toMatch(/^\.starchart\/journal\/.+\.json$/);
     const journals = await listJournals(root);
     expect(journals).toHaveLength(1);
@@ -170,7 +172,8 @@ describe("apply → revert", () => {
     // reload from disk: the new binding and lock are in effect
     const reloaded = await buildProject(root, { skipCode: true });
     expect(reloaded.graph.node("stripe:price/pro")?.binding?.price).toBe("price_new");
-    expect(planFromLock(reloaded).steps).toEqual([]);
+    // only the review item is left, and plan agrees with check about it
+    expect(planFromLock(reloaded).steps.map((st) => st.item.id)).toEqual(["web:landing"]);
 
     // revert everything
     const reverted = await revertJournal(reloaded, journals[0]!.id, { fetch: stripe.fetch, env });

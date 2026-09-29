@@ -274,6 +274,13 @@ async function revert(undo: UndoRecord, ctx: AdapterContext): Promise<ApplyResul
 export const appstoreAdapter: Adapter = {
   id: "appstore",
   capabilities: { read: true, write: true, dryRun: true, rollback: true },
+  canApply(node) {
+    try {
+      return bindingOf(node) !== undefined;
+    } catch {
+      return false;
+    }
+  },
   audit,
   apply,
   revert,

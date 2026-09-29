@@ -36,6 +36,11 @@ export const ProjectConfig = z.object({
   content: z.array(z.string()).optional(),
   /** Base URL used by the url adapter for relative bindings. */
   site: z.string().optional(),
+  /**
+   * Modules that extend STARCHART: paths relative to the project root or package names. Each
+   * exports `adapters` and/or `packs` (directly or on its default export).
+   */
+  plugins: z.array(z.string()).default([]),
 });
 export type ProjectConfig = z.infer<typeof ProjectConfig>;
 

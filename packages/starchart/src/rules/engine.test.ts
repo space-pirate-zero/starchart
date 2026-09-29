@@ -114,7 +114,7 @@ describe("evaluateRules", () => {
     const { rules } = loadYamlRules();
     const vs = evaluateRules(world(), rules, { now: NOW });
     expect(vs.map((v) => `${v.severity} ${v.rule} ${v.node}: ${v.message}`)).toEqual([
-      "error offer-mirrored addon:team: addon:team has 0 incoming mirrors from a appstore artifact (min 1)",
+      "error offer-mirrored addon:team: addon:team has 0 incoming mirrors from an appstore artifact (min 1)",
       'warn listing-name-length listing:app: listing:app name [en-US] "Pro+ Ultimate Deluxe Themes!!!!" is 31 chars (max 30)',
       "warn promo-fresh promo:spring: promo:spring expired on 2026-06-30",
       "warn promo-fresh promo:spring: promo:spring has no owners",

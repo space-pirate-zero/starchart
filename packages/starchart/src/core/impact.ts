@@ -34,8 +34,8 @@ export interface ImpactOptions {
    * "surface" = screens, routes, tests and anchored symbols; "all"; "none".
    */
   includeCode?: "surface" | "all" | "none";
-  /** Whether an adapter can write. Decides auto vs manual. */
-  canWrite?: (adapter: string) => boolean;
+  /** Whether an adapter can write this artifact. Decides auto vs manual. */
+  canWrite?: (adapter: string, node?: GraphNode) => boolean;
   now?: Date;
 }
 
@@ -161,13 +161,15 @@ export function classify(
   node: GraphNode,
   via: EdgeType,
   path: ImpactHop[],
-  canWrite: (adapter: string) => boolean,
+  canWrite: (adapter: string, node?: GraphNode) => boolean,
   now: Date,
 ): { cls: ImpactClass; reason: string } {
   if (node.layer === "code") {
     if (node.kind === "test") return { cls: "test", reason: "run these tests" };
     if (via === "anchors") {
       if (node.meta?.generated) return { cls: "auto", reason: "regenerate fact constants (codegen)" };
+      const from = graph.node(path[path.length - 1]!.from);
+      if (from?.kind === "artifact") return { cls: "code", reason: "holds this artifact's external id; update it if the id changes" };
       return { cls: "code", reason: "hardcoded value anchors this fact; update or switch to codegen" };
     }
     return { cls: "info", reason: `${node.kind} affected` };
@@ -183,7 +185,7 @@ export function classify(
     return { cls: "retire", reason: "depends on a retired entity" };
   }
   const adapter = node.binding?.adapter;
-  const writable = adapter ? canWrite(adapter) : false;
+  const writable = adapter ? canWrite(adapter, node) : false;
   const isMedia = node.types?.some((t) => MEDIA_TYPES.has(t)) ?? false;
   switch (via) {
     case "renders":

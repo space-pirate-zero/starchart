@@ -6,9 +6,10 @@ import { errorMessage } from "../adapters/errors.js";
 import { canWrite, getAdapter } from "../adapters/registry.js";
 import type { ApplyResult, UndoRecord } from "../adapters/types.js";
 import type { Plan } from "../api.js";
+import { writeCodegen } from "../codegen/index.js";
 import { STARCHART_DIR } from "../config/load.js";
 import { explainPath, type ImpactItem } from "../core/impact.js";
-import { buildLock, staleArtifacts, type LockFile } from "../core/lock.js";
+import { relockArtifacts, type LockFile } from "../core/lock.js";
 import { buildProject, writeLock, type Project } from "../project.js";
 import { adapterContext, type EngineIO } from "./context.js";
 
@@ -98,6 +99,7 @@ export async function applyPlan(project: Project, plan: Plan, opts: ApplyOptions
   const entries: JournalEntry[] = [];
   const lockBefore = project.lock;
   const emit = (e: StepEvent) => opts.onStep?.(e);
+  let codegen: Promise<ApplyResult> | undefined;
 
   for (const { item } of plan.steps) {
     if (only && !only.has(item.id)) continue;
@@ -106,6 +108,23 @@ export async function applyPlan(project: Project, plan: Plan, opts: ApplyOptions
     if (item.class !== "auto") {
       report.pending.push(pendingTask(item));
       emit({ type: "skip", id: item.id, adapter: adapterId, reason: item.reason });
+      continue;
+    }
+    if (item.node.layer === "code" && item.node.meta?.generated) {
+      // generated fact constants are regenerated in one codegen pass, not per symbol
+      if (report.failed) {
+        report.notRun.push(item.id);
+        continue;
+      }
+      codegen ??= runCodegen(project, dryRun);
+      const result = { ...(await codegen), artifact: item.id };
+      if (result.ok) {
+        report.applied.push(result);
+        emit({ type: "done", id: item.id, adapter: "codegen", result });
+      } else {
+        report.failed = result;
+        emit({ type: "fail", id: item.id, adapter: "codegen", result });
+      }
       continue;
     }
     if (!adapterId || !adapter?.apply) {
@@ -150,34 +169,32 @@ export async function applyPlan(project: Project, plan: Plan, opts: ApplyOptions
     // re-read the project before pinning; otherwise the artifact is stale against its own edit
     const hasCode = project.graph.nodes({ layer: "code" }).length > 0;
     project.graph = (await buildProject(project.root, { skipCode: !hasCode })).graph;
-    project.lock = relock(project, appliedIds);
+    // only artifacts are pinned; regenerated code is re-read above and pinned through its artifacts
+    const appliedArtifacts = appliedIds.filter((id) => project.graph.node(id)?.kind === "artifact");
+    project.lock = relock(project, appliedArtifacts);
     writeLock(project.root, project.lock);
     report.lockUpdated = true;
   }
   return report;
 }
 
-/** Whether an artifact's adapter rewrites embedded/mirrored values, and so needs the old values to find them. */
-function replacesValues(project: Project, id: string): boolean {
-  const adapter = project.graph.node(id)?.binding?.adapter;
-  if (!adapter || !canWrite(adapter, project.loaded.config.adapters)) return false;
-  return project.graph.outgoing(id).some((e) => e.type === "embeds" || e.type === "mirrors");
+/** Regenerates every codegen target once; generated files are reproducible, so they are not journaled. */
+async function runCodegen(project: Project, dryRun: boolean): Promise<ApplyResult> {
+  if (project.loaded.config.codegen.length === 0) {
+    return { artifact: "codegen", ok: false, changes: [], error: "generated constants found but no codegen targets are configured" };
+  }
+  if (dryRun) return { artifact: "codegen", ok: true, changes: [`would regenerate ${project.loaded.config.codegen.map((t) => t.out).join(", ")}`] };
+  try {
+    const { changed } = writeCodegen(project);
+    return { artifact: "codegen", ok: true, changes: changed.length ? changed.map((f) => `regenerated ${f}`) : ["generated constants already current"] };
+  } catch (error) {
+    return { artifact: "codegen", ok: false, changes: [], error: errorMessage(error) };
+  }
 }
 
-/**
- * Pins `ids` to the current graph. Previous fact values are kept for facts that other, still-stale
- * writable artifacts depend on, so their later apply can still find the old text to replace.
- */
+/** Pins artifacts to the current graph, keeping old fact values that still-stale artifacts need. */
 function relock(project: Project, ids: string[]): LockFile {
-  const next = buildLock(project.graph, project.lock, ids);
-  for (const stale of staleArtifacts(project.graph, next)) {
-    if (stale.unlocked || !replacesValues(project, stale.id)) continue;
-    for (const dep of stale.changed) {
-      const previous = project.lock.facts[dep];
-      if (previous && project.graph.node(dep)?.kind === "fact") next.facts[dep] = previous;
-    }
-  }
-  return next;
+  return relockArtifacts(project.graph, project.lock, ids, { maxCodeDepth: project.loaded.config.code.maxCodeDepth });
 }
 
 const escapeRegex = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");

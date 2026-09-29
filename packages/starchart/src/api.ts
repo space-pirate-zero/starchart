@@ -29,7 +29,7 @@ export function impactOptions(project: Project, extra: ImpactOptions = {}): Impa
   const settings = project.loaded.config.adapters;
   return {
     maxCodeDepth: project.loaded.config.code.maxCodeDepth,
-    canWrite: (adapter) => adapterCanWrite(adapter, settings),
+    canWrite: (adapter, node) => adapterCanWrite(adapter, settings, node),
     ...extra,
   };
 }
@@ -52,9 +52,28 @@ export function planFromSeeds(project: Project, changes: Change[], extra?: Impac
   return { changes, impact, steps, cycles, summary: summarize(impact.items) };
 }
 
-/** Plans everything that changed since the lock (facts edited in YAML, code hashes moved). */
+/**
+ * Plans everything still out of sync with the lock: facts edited in YAML, moved code hashes, and
+ * the changed dependencies of artifacts that are still stale. Locked artifacts that are already in
+ * sync are dropped, so `plan` and `check` always agree.
+ */
 export function planFromLock(project: Project, extra?: ImpactOptions): Plan {
-  return planFromSeeds(project, changedSince(project.graph, project.lock), extra);
+  const { graph, lock } = project;
+  const stale = staleArtifacts(graph, lock);
+  const changes = changedSince(graph, lock);
+  const seen = new Set(changes.map((c) => c.id));
+  for (const s of stale) {
+    for (const dep of s.changed) {
+      if (seen.has(dep) || !graph.hasNode(dep)) continue;
+      seen.add(dep);
+      changes.push({ id: dep, before: lock.facts[dep]?.value, after: graph.node(dep)?.value });
+    }
+  }
+  const staleIds = new Set(stale.map((s) => s.id));
+  const plan = planFromSeeds(project, changes, extra);
+  const keep = (i: ImpactItem) => i.node.kind !== "artifact" || !lock.artifacts[i.id] || staleIds.has(i.id);
+  const items = plan.impact.items.filter(keep);
+  return { ...plan, impact: { ...plan.impact, items }, steps: plan.steps.filter((s) => keep(s.item)), summary: summarize(items) };
 }
 
 /** Plans the blast radius of a git diff against `base`. */

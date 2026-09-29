@@ -83,6 +83,12 @@ export { renderOg } from "./render/og.js";
 export { importTokens } from "./tokens.js";
 export { factHistory, lockAt } from "./history.js";
 
+// plugins
+export { loadPlugins, type StarchartPlugin } from "./plugins.js";
+export { registerPack } from "./rules/packs/index.js";
+export { auditText, findValue, leafFacts, planReplacements, applyReplacements } from "./adapters/text.js";
+export { MissingCredentialsError } from "./adapters/errors.js";
+
 // viewer + integrations
 export { renderViewerHtml, serve, viewerData, xrayPayload, type ServeHandle, type ViewerData, type XrayPayload } from "./viewer/index.js";
 export { claudeHookSettingsSnippet, runClaudeHook } from "./hooks/claude.js";

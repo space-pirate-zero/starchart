@@ -110,6 +110,8 @@ So you change the Pro add-on and then play whack-a-mole across code, copy, store
 
 ## 3. Code intelligence: how STARCHART reads code
 
+> **As built (v0.1):** TS/JS is parsed with the TypeScript compiler API; Swift, Kotlin and Go use purpose-built lexers with name-based reference resolution. SCIP and tree-sitter below remain the plan for precise cross-file resolution. See the [Code Ingestion](https://github.com/space-pirate-zero/starchart/wiki/Code-Ingestion) wiki page.
+
 Don't reinvent code analysis. Stand on proven indexers and normalize them into the graph.
 
 | Source | Tool | Gives us |
@@ -242,6 +244,8 @@ $ starchart audit
 ---
 
 ## 6. Features
+
+> The checkboxes below are the original plan. What actually shipped in v0.1 is tracked in [§0 Build status](#0-build-status-v010-2026-09-29).
 
 ### v0.1: "It sees" (the code layer and the bridge)
 - [ ] Graph core: nodes/edges, traversal, path explanation, lockfile
@@ -436,6 +440,8 @@ Natural language over the graph, backed by a real query engine so answers are ex
 ---
 
 ## 8. Architecture
+
+> **As built (v0.1):** one package, `packages/starchart`, with these areas as directories under `src/` (see the [Architecture](https://github.com/space-pirate-zero/starchart/wiki/Architecture) wiki page), plus `packages/xray` and `action/`. The multi-package split below is the target once APIs settle.
 
 TypeScript monorepo (pnpm + turborepo). Git is the database. Nothing is written to the outside world without `apply`.
 

@@ -68,20 +68,7 @@ export async function auditProject(project: Project, opts: AuditOptions = {}): P
   return report;
 }
 
-/** Facts a code symbol anchors, plus their container ancestors (a stripe artifact may mirror either). */
-function anchoredFacts(graph: Graph, symbolId: string): string[] {
-  const out = new Set<string>();
-  const climb = (id: string) => {
-    if (out.has(id)) return;
-    out.add(id);
-    for (const e of graph.outgoing(id, "partOf")) if (graph.node(e.to)?.kind === "fact") climb(e.to);
-  };
-  for (const e of graph.outgoing(symbolId, "anchors")) if (graph.node(e.to)?.kind === "fact") climb(e.to);
-  for (const e of graph.incoming(symbolId, "anchors")) if (graph.node(e.from)?.kind === "fact") climb(e.from);
-  return [...out];
-}
-
-/** Stripe price ids referenced from code: literal price ids, and prices of stripe artifacts mirroring an anchored fact. */
+/** Stripe price ids referenced from code: literal price ids, and prices of Stripe artifacts a symbol anchors. */
 export function codePriceReferences(graph: Graph): Map<string, GraphNode[]> {
   const refs = new Map<string, GraphNode[]>();
   const add = (price: string, symbol: GraphNode) => {
@@ -94,12 +81,12 @@ export function codePriceReferences(graph: Graph): Map<string, GraphNode[]> {
       add(symbol.value, symbol);
       continue;
     }
-    for (const fact of anchoredFacts(graph, symbol.id)) {
-      for (const e of graph.incoming(fact, "mirrors")) {
-        const artifact = graph.node(e.from);
-        const price = artifact?.binding?.price;
-        if (artifact?.binding?.adapter === "stripe" && typeof price === "string") add(price, symbol);
-      }
+    // a symbol that anchors a Stripe artifact directly is the code's handle on that price;
+    // symbols anchoring other facts the artifact mirrors (a product name) are not price references
+    for (const e of graph.outgoing(symbol.id, "anchors")) {
+      const artifact = graph.node(e.to);
+      const price = artifact?.binding?.price;
+      if (artifact?.kind === "artifact" && artifact.binding?.adapter === "stripe" && typeof price === "string") add(price, symbol);
     }
   }
   return refs;

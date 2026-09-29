@@ -55,7 +55,17 @@ describe("url adapter", () => {
     expect(diffs).toEqual([expect.objectContaining({ kind: "stale", actual: 4.99, where: expect.stringContaining("https://example.com/pricing near") })]);
   });
 
-  it("turns HTTP errors into breaks", async () => {
+  it("treats unreachable networks and server errors as audit errors, not drift", async () => {
+    const { graph, ctx } = setup();
+    const offline = (async () => {
+      throw new TypeError("fetch failed");
+    }) as typeof fetch;
+    await expect(urlAdapter.audit(graph.node("web:pricing")!, ctx(offline))).rejects.toThrow(/request failed: fetch failed/);
+    const down = (async () => new Response("", { status: 503, statusText: "Service Unavailable" })) as typeof fetch;
+    await expect(urlAdapter.audit(graph.node("web:pricing")!, ctx(down))).rejects.toThrow(/HTTP 503/);
+  });
+
+  it("turns a missing page into a break", async () => {
     const { graph, ctx } = setup();
     const f = (async () => new Response("nope", { status: 404, statusText: "Not Found" })) as typeof fetch;
     expect(await urlAdapter.audit(graph.node("web:pricing")!, ctx(f))).toEqual([

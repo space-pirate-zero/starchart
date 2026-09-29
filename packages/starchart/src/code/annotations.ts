@@ -27,7 +27,8 @@ export function parseAnnotations(comment: AnnotationComment): AnnotationEntry[] 
         if (name && TARGET_RE.test(name)) targets.push(name);
       } else {
         for (const t of tokens) {
-          if (!t.includes(":") || !TARGET_RE.test(t)) break;
+          // node ids carry a colon (addon:pro.name) or a dot (tokens.color.brand); prose words have neither
+          if ((!t.includes(":") && !t.includes(".")) || !TARGET_RE.test(t)) break;
           targets.push(t);
         }
       }

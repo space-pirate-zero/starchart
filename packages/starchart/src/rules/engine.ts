@@ -406,7 +406,7 @@ function describeEdge(req: EdgeRequirement): string {
   const dir = req.direction === "in" ? "incoming" : "outgoing";
   const parts = [`${dir} ${req.type}`];
   const prep = req.direction === "in" ? "from" : "to";
-  if (req.adapter) parts.push(`${prep} a ${req.adapter} artifact`);
+  if (req.adapter) parts.push(`${prep} ${/^[aeiou]/i.test(req.adapter) ? "an" : "a"} ${req.adapter} artifact`);
   if (req.to) parts.push(`${req.adapter ? "matching" : prep} ${req.to}`);
   return parts.join(" ");
 }

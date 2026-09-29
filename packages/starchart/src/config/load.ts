@@ -48,7 +48,7 @@ export function loadProject(root: string): LoadedProject {
   if (!parsedConfig.success) throw new ConfigError(formatZod(parsedConfig.error), configPath && relative(root, configPath));
 
   const project: LoadedProject = { root, config: parsedConfig.data, entities: [], artifacts: [], edges: [], rules: [] };
-  const files = fg.sync(["**/*.yaml", "**/*.yml"], { cwd: dir, ignore: ["config.yaml", "config.yml", "preview/**", "journal/**"] }).sort();
+  const files = fg.sync(["**/*.yaml", "**/*.yml"], { cwd: dir, ignore: ["config.yaml", "config.yml", "preview/**", "journal/**", "proposals/**"] }).sort();
 
   for (const file of files) {
     const path = join(dir, file);

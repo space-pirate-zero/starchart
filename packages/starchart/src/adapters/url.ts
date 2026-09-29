@@ -101,10 +101,10 @@ function snippet(text: string, index: number): string {
   return s.length > 0 ? `near "${s}"` : "";
 }
 
-async function fetchPage(url: string, ctx: AdapterContext): Promise<{ ok: true; html: string } | { ok: false; message: string }> {
+async function fetchPage(url: string, ctx: AdapterContext): Promise<{ ok: true; html: string } | { ok: false; message: string; status?: number }> {
   try {
     const res = await ctx.fetch(url, { headers: { "user-agent": "starchart-audit", accept: "text/html,*/*" }, redirect: "follow" });
-    if (!res.ok) return { ok: false, message: `HTTP ${res.status}${res.statusText ? ` ${res.statusText}` : ""}` };
+    if (!res.ok) return { ok: false, status: res.status, message: `HTTP ${res.status}${res.statusText ? ` ${res.statusText}` : ""}` };
     return { ok: true, html: await res.text() };
   } catch (e) {
     return { ok: false, message: `request failed: ${errorMessage(e)}` };
@@ -119,7 +119,11 @@ export const urlAdapter: Adapter = {
     const url = resolveUrl(node, ctx.settings);
     const facts = leafFacts(ctx.graph, node.id, ["embeds", "mirrors", "renders"]);
     const page = await fetchPage(url, ctx);
-    if (!page.ok) return [{ artifact: node.id, kind: "break", message: `${url}: ${page.message}`, where: url }];
+    if (!page.ok) {
+      // a page that is gone breaks the artifact; an unreachable network is an audit error, not drift
+      if (page.status === 404 || page.status === 410) return [{ artifact: node.id, kind: "break", message: `${url}: ${page.message}`, where: url }];
+      throw new Error(`${url}: ${page.message}`);
+    }
     if (facts.length === 0) return [];
     const text = extractPageText(page.html);
     return auditText({

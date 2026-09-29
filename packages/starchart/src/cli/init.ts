@@ -113,14 +113,16 @@ export async function runInit(root: string, opts: InitOptions = {}): Promise<str
     // scan the whole repo, not just code scopes: marketing copy and emails live elsewhere
     const occurrences = await scanLiterals(root, withProposedFacts(project.graph, proposal), { roots: ["."] });
     const artifacts = proposeArtifacts(occurrences, proposal);
-    const discoveredPath = join(dir, "discovered.yaml");
+    // proposals stay inert until a human moves them into .starchart/
+    mkdirSync(join(dir, "proposals"), { recursive: true });
+    const discoveredPath = join(dir, "proposals", "discovered.yaml");
     writeFileSync(discoveredPath, renderDiscovered(proposal, artifacts));
     const { size } = project.graph;
     lines.push(`${c.green("✓")} charted ${size.nodes} nodes / ${size.edges} edges from code`);
     lines.push(
-      `${c.green("✓")} proposed ${Object.keys(proposal.facts).length} facts, ${proposal.stripe.length + artifacts.length} artifacts, ${proposal.anchors.length} bridges → ${relative(root, discoveredPath)}`,
+      `${c.green("✓")} proposed ${Object.keys(proposal.facts).length} facts, ${proposal.stripe.length + artifacts.length} artifacts, ${proposal.anchors.length + proposal.stripe.length} bridges → ${relative(root, discoveredPath)}`,
     );
-    lines.push(c.dim("  review it, rename ids, delete what's wrong, then run: starchart lock"));
+    lines.push(c.dim(`  review it, rename ids, delete what's wrong, move it into ${STARCHART_DIR}/, then run: starchart lock`));
   } else {
     lines.push(c.dim("next: describe your facts in .starchart/entities/, artifacts in .starchart/artifacts/, then run: starchart lock"));
   }
@@ -259,6 +261,7 @@ function renderDiscovered(proposal: ChartProposal, artifacts: { id: string; path
   ];
   return [
     "# Proposed by `starchart init --discover`. Everything here is a guess: review, rename, delete.",
+    "# This file is ignored until you move it into .starchart/ (e.g. .starchart/entities/offer.yaml).",
     "# Where each proposal came from:",
     ...(provenance.length ? provenance : ["#   (nothing found — describe facts by hand in entities/)"]),
     "",

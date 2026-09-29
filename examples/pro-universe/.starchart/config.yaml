@@ -9,8 +9,6 @@ adapters:
   fs: {}
   stripe:
     secretEnv: STRIPE_SECRET_KEY
-  appstore:
-    keyId: ${ASC_KEY_ID}
 packs: [core, appstore, privacy, seo]
 codegen:
   - lang: ts

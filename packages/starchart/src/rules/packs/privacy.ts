@@ -396,7 +396,7 @@ const privacyDisclosureExists: CustomRule = {
       const types = [...new Set(ds.flatMap((d) => d.dataTypes))].sort();
       out.push({
         node: ds[0]!.package,
-        message: `${pkgs.join(", ")} collect ${types.join(", ")} on ${platform} but no disclosure exists; add ${PLATFORM_HINT[platform]}`,
+        message: `${pkgs.join(", ")} ${pkgs.length === 1 ? "collects" : "collect"} ${types.join(", ")} on ${platform} but no disclosure exists; add ${PLATFORM_HINT[platform]}`,
       });
     }
     return out;

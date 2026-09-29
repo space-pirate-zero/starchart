@@ -227,5 +227,9 @@ export function importTokens(graph: Graph, root: string, files: string[]): { cou
     const node = graph.node(factId(groupPath))!;
     graph.addNode({ ...node, value: assemble(groupPath) });
   }
+  // aliases follow their target: changing the target impacts everything bound to the alias
+  for (const token of tokens) {
+    if (token.aliasOf) graph.addEdge({ from: factId(token.path), to: factId(token.aliasOf), type: "derivedFrom", origin: "declared" });
+  }
   return { count: tokens.length };
 }

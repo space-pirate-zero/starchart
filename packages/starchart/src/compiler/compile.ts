@@ -70,7 +70,7 @@ export function compileProject(project: LoadedProject): CompileResult {
 
   for (const e of project.edges) {
     if (!isEdgeType(e.type)) throw new ConfigError(`unknown edge type "${e.type}"`, e.file);
-    declared.push({ from: e.from, to: e.to, type: e.type, file: e.file, meta: e.confidence ? { confidence: e.confidence } : undefined });
+    declared.push({ from: e.from, to: e.to, type: e.type, file: e.file, meta: e.confidence !== undefined ? { confidence: e.confidence } : undefined });
   }
 
   const danglingTargets: CompileResult["danglingTargets"] = [];
@@ -84,7 +84,7 @@ export function compileProject(project: LoadedProject): CompileResult {
   return { graph, pendingCodeFacts, danglingTargets };
 }
 
-function isFactSpec(value: unknown): value is { value?: unknown; authority?: string; source?: Record<string, unknown> } {
+function isFactSpec(value: unknown): value is { value?: unknown; authority?: string; source?: Record<string, unknown>; description?: string } {
   if (!value || typeof value !== "object" || Array.isArray(value)) return false;
   const keys = Object.keys(value);
   return keys.length > 0 && keys.every((k) => FACT_SPEC_KEYS.has(k)) && ("value" in value || "authority" in value || "source" in value);
@@ -109,7 +109,9 @@ function flattenFacts(
     if (isFactSpec(raw)) {
       const authority = raw.authority ?? "graph";
       const symbol = typeof raw.source?.symbol === "string" ? raw.source.symbol : undefined;
-      graph.addNode({ id, kind: "fact", value: raw.value, authority, source: raw.source, owners, meta: { file, entity: entityId } });
+      const meta: Record<string, unknown> = { file, entity: entityId };
+      if (typeof (raw as { description?: unknown }).description === "string") meta.description = (raw as { description: string }).description;
+      graph.addNode({ id, kind: "fact", value: raw.value, authority, source: raw.source, owners, meta });
       if (authority === "code") {
         if (!symbol) throw new ConfigError(`fact ${id} has authority "code" but no source.symbol`, file);
         pending.push({ factId: id, symbol: normalizeSymbol(symbol) });

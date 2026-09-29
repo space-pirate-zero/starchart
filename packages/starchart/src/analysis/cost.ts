@@ -1,3 +1,4 @@
+import { getAdapter } from "../adapters/registry.js";
 import type { Graph } from "../core/graph.js";
 import { computeImpact, type ImpactClass, type ImpactItem } from "../core/impact.js";
 import { hasType, isLeafFact, plural } from "../rules/util.js";
@@ -68,7 +69,7 @@ export function changeCost(graph: Graph, factIds?: string[], opts: CostOptions =
       hours,
       hardcoded: byClass.code,
       mediaBurnIns: media.length,
-      suggestions: suggest(items, media, byClass, hours, rates),
+      suggestions: suggest(graph, items, media, hours, rates),
     };
     reports.push(report);
   }
@@ -76,17 +77,19 @@ export function changeCost(graph: Graph, factIds?: string[], opts: CostOptions =
 }
 
 function suggest(
+  graph: Graph,
   items: ImpactItem[],
   media: ImpactItem[],
-  byClass: Record<ImpactClass, number>,
   hours: number,
   rates: Record<ImpactClass, number>,
 ): string[] {
   const out: string[] = [];
   let saved = 0;
-  if (byClass.code > 0) {
-    out.push(`${plural(byClass.code, "hardcoded code anchor")}: generate constants with \`starchart codegen\` to make these auto`);
-    saved += byClass.code * (rates.code - rates.auto);
+  // only constants that anchor a fact can be generated; a Stripe price-id constant cannot
+  const generatable = items.filter((i) => i.class === "code" && graph.node(i.path[i.path.length - 1]!.from)?.kind === "fact");
+  if (generatable.length > 0) {
+    out.push(`${plural(generatable.length, "hardcoded code anchor")}: generate constants with \`starchart codegen\` to make these auto`);
+    saved += generatable.length * (rates.code - rates.auto);
   }
   if (media.length > 0) {
     const noun = media.every((m) => hasType(m.node, ["schema:VideoObject"])) ? "video" : media.every((m) => hasType(m.node, ["schema:ImageObject"])) ? "image" : "media asset";
@@ -95,7 +98,11 @@ function suggest(
   }
   const manual = items.filter((i) => i.class === "manual" && !media.includes(i) && i.via !== "captures");
   const unbound = manual.filter((i) => !i.node.binding);
-  const readOnly = manual.filter((i) => i.node.binding);
+  // suggest enabling writes only where the adapter can write this artifact at all
+  const readOnly = manual.filter((i) => {
+    const adapter = i.node.binding ? getAdapter(i.node.binding.adapter) : undefined;
+    return adapter?.capabilities.write === true && typeof adapter.apply === "function" && (!adapter.canApply || adapter.canApply(i.node));
+  });
   if (unbound.length > 0) {
     out.push(`${plural(unbound.length, "artifact")} ${unbound.length === 1 ? "has" : "have"} no binding: bind ${unbound.length === 1 ? "it" : "them"} so STARCHART can audit and update ${unbound.length === 1 ? "it" : "them"}`);
   }

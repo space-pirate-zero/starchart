@@ -9,6 +9,8 @@ import { PROPAGATION, type GraphNode } from "./model.js";
  */
 export interface LockFile {
   version: 1;
+  /** Code hops followed when pinning dependencies (config `code.maxCodeDepth`). */
+  maxCodeDepth?: number;
   facts: Record<string, { hash: string; value: unknown }>;
   code: Record<string, string>;
   artifacts: Record<string, { deps: Record<string, string> }>;
@@ -39,7 +41,7 @@ export function currentHash(node: GraphNode): string | undefined {
  * Every fact and hashed code node whose change would impact `artifactId`:
  * a reverse walk against each edge's propagation direction.
  */
-export function dependencies(graph: Graph, artifactId: string, maxCodeDepth = 4): string[] {
+export function dependencies(graph: Graph, artifactId: string, maxCodeDepth: number = 4): string[] {
   const out = new Set<string>();
   const seen = new Map<string, number>([[artifactId, 0]]);
   const queue: { id: string; codeDepth: number }[] = [{ id: artifactId, codeDepth: 0 }];
@@ -76,15 +78,22 @@ export function dependencies(graph: Graph, artifactId: string, maxCodeDepth = 4)
  * Builds a lock that marks the given artifacts (default: all) as in sync with the current graph.
  * Artifacts not listed keep their previous pins.
  */
-export function buildLock(graph: Graph, previous: LockFile = emptyLock(), artifactIds?: string[]): LockFile {
+export function buildLock(
+  graph: Graph,
+  previous: LockFile = emptyLock(),
+  artifactIds?: string[],
+  opts: { maxCodeDepth?: number } = {},
+): LockFile {
+  const maxCodeDepth = opts.maxCodeDepth ?? previous.maxCodeDepth;
   const lock: LockFile = { version: 1, facts: {}, code: {}, artifacts: { ...previous.artifacts } };
+  if (maxCodeDepth !== undefined) lock.maxCodeDepth = maxCodeDepth;
   for (const n of graph.nodes({ kind: "fact" })) lock.facts[n.id] = { hash: hashValue(n.value), value: n.value };
   const trackedCode = new Set<string>();
 
   const targets = artifactIds ?? graph.nodes({ kind: "artifact" }).map((n) => n.id);
   for (const id of targets) {
     const deps: Record<string, string> = {};
-    for (const dep of dependencies(graph, id)) {
+    for (const dep of dependencies(graph, id, maxCodeDepth)) {
       deps[dep] = currentHash(graph.node(dep)!)!;
       if (graph.node(dep)!.layer === "code") trackedCode.add(dep);
     }
@@ -122,7 +131,7 @@ export function staleArtifacts(graph: Graph, lock: LockFile): StaleArtifact[] {
       continue;
     }
     const changed: string[] = [];
-    const current = new Set(dependencies(graph, node.id));
+    const current = new Set(dependencies(graph, node.id, lock.maxCodeDepth));
     for (const [dep, hash] of Object.entries(entry.deps)) {
       const depNode = graph.node(dep);
       if (!depNode || currentHash(depNode) !== hash) changed.push(dep);
@@ -147,4 +156,21 @@ export function changedSince(graph: Graph, lock: LockFile): { id: string; before
     else if (node.hash !== hash) out.push({ id, before: hash, after: node.hash });
   }
   return out;
+}
+
+/**
+ * Pins `ids` to the current graph like {@link buildLock}, but keeps the previous value of every
+ * fact that a still-stale artifact depends on. Those artifacts can then still find the old text to
+ * replace, and plans keep listing them until they are synced or acked.
+ */
+export function relockArtifacts(graph: Graph, previous: LockFile, ids: string[], opts: { maxCodeDepth?: number } = {}): LockFile {
+  const next = buildLock(graph, previous, ids, opts);
+  for (const stale of staleArtifacts(graph, next)) {
+    if (stale.unlocked) continue;
+    for (const dep of stale.changed) {
+      const pinned = previous.facts[dep];
+      if (pinned && graph.node(dep)?.kind === "fact") next.facts[dep] = pinned;
+    }
+  }
+  return next;
 }

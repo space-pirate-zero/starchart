@@ -74,5 +74,10 @@ export interface Adapter {
   /** Brings the artifact in line with current facts. Required when capabilities.write. */
   apply?(node: GraphNode, ctx: AdapterContext): Promise<ApplyResult>;
   revert?(undo: UndoRecord, ctx: AdapterContext): Promise<ApplyResult>;
+  /**
+   * Whether `apply` supports this particular artifact. Adapters that write some bindings but not
+   * others (App Store text fields vs. screenshots) return false so the plan marks them manual.
+   */
+  canApply?(node: GraphNode): boolean;
   list?(ctx: AdapterContext): Promise<ListedResource[]>;
 }

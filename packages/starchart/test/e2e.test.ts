@@ -1,4 +1,4 @@
-import { cpSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync, existsSync } from "node:fs";
+import { cpSync, existsSync, mkdtempSync, readFileSync, readdirSync, renameSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
@@ -118,10 +118,14 @@ describe("init", () => {
 
     const { out } = await sc(dir, "init", "--discover");
     expect(out).toContain("proposed 2 facts");
-    const discovered = readFileSync(join(dir, ".starchart/discovered.yaml"), "utf8");
+    const proposalPath = join(dir, ".starchart/proposals/discovered.yaml");
+    const discovered = readFileSync(proposalPath, "utf8");
     expect(discovered).toContain("price_1NebulaPro499");
     expect(discovered).toContain("marketing/emails/onboarding-day-3.md");
 
+    // inert until moved into .starchart/
+    expect((await buildProject(dir)).graph.hasNode("offer:main")).toBe(false);
+    renameSync(proposalPath, join(dir, ".starchart/discovered.yaml"));
     const project = await buildProject(dir);
     expect(project.graph.node("offer:main.features")?.value).toEqual(["Themes", "iCloud sync"]);
     const proposal = discoverChart(project.graph, "offer:x");
