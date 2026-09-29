@@ -1,7 +1,9 @@
 import { beforeAll, describe, expect, it } from "vitest";
 import { Graph } from "../core/graph.js";
 import { computeImpact, type ImpactOptions } from "../core/impact.js";
-import { impactConfig, probeDecay, writableAdapters, type ImpactConfig } from "./impact-config.js";
+import type { GraphNode } from "../core/model.js";
+import { impactConfig, probeDecay, unwritableArtifacts, writableAdapters, type ImpactConfig } from "./impact-config.js";
+import { canWrite as registryCanWrite } from "../adapters/registry.js";
 
 interface BrowserImpactItem {
   id: string;
@@ -117,6 +119,37 @@ function compare(graph: Graph, seeds: string[], includeCode: ImpactOptions["incl
   expect(strip(browser.items)).toEqual(strip(core.items as unknown as BrowserImpactItem[]));
   return core;
 }
+
+describe("in-browser impact port: per-binding writes", () => {
+  it("matches core when an adapter vetoes a binding and for external-id anchors", () => {
+    const g = new Graph();
+    g.addNode({ id: "addon:pro", kind: "entity" });
+    g.addNode({ id: "addon:pro.price", kind: "fact", value: 4.99 });
+    g.addEdge({ from: "addon:pro.price", to: "addon:pro", type: "partOf" });
+    g.addNode({ id: "appstore:iap", kind: "artifact", binding: { adapter: "appstore", app: "1", product: "p" } });
+    g.addNode({ id: "appstore:listing", kind: "artifact", binding: { adapter: "appstore", app: "1", field: "description" } });
+    g.addNode({ id: "stripe:price", kind: "artifact", binding: { adapter: "stripe", price: "price_1" } });
+    g.addNode({ id: "symbol:web/lib#PRICE", kind: "symbol", value: "price_1", hash: "h" });
+    g.addEdge({ from: "appstore:iap", to: "addon:pro.price", type: "mirrors" });
+    g.addEdge({ from: "appstore:listing", to: "addon:pro.price", type: "embeds" });
+    g.addEdge({ from: "stripe:price", to: "addon:pro.price", type: "mirrors" });
+    g.addEdge({ from: "symbol:web/lib#PRICE", to: "stripe:price", type: "anchors" });
+
+    const settings = { appstore: { write: true } };
+    const nodeCanWrite = (adapter: string, node?: GraphNode) => registryCanWrite(adapter, settings, node);
+    const serialized = g.toJSON();
+    const core = computeImpact(Graph.from(serialized), ["addon:pro.price"], { now, canWrite: nodeCanWrite });
+    const writable = writableAdapters(serialized, (a) => registryCanWrite(a, settings));
+    const cfg = impactConfig(serialized, {
+      writableAdapters: writable,
+      unwritableArtifacts: unwritableArtifacts(serialized, writable, (a, n) => registryCanWrite(a, settings, n)),
+    });
+    const browser = Impact.computeImpact(Impact.createIndex(serialized), ["addon:pro.price"], cfg, { now });
+    expect(strip(browser.items)).toEqual(strip(core.items as unknown as BrowserImpactItem[]));
+    const cls = Object.fromEntries(core.items.map((i) => [i.id, i.class]));
+    expect(cls).toMatchObject({ "appstore:iap": "manual", "appstore:listing": "auto", "symbol:web/lib#PRICE": "code" });
+  });
+});
 
 describe("in-browser impact port", () => {
   it("measures decay tables from the core", () => {

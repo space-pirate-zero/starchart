@@ -5,7 +5,7 @@ import type { SerializedGraph } from "../core/graph.js";
 import { staleArtifacts } from "../core/lock.js";
 import type { Layer } from "../core/model.js";
 import type { Project } from "../project.js";
-import { impactConfig, writableAdapters, type ImpactConfig } from "./impact-config.js";
+import { impactConfig, unwritableArtifacts, writableAdapters, type ImpactConfig } from "./impact-config.js";
 
 export interface ViewerData {
   name: string;
@@ -17,6 +17,7 @@ export interface ViewerData {
   lockFacts?: Record<string, unknown>;
   /** Adapters that can write (decides auto vs manual in the impact classes). */
   writableAdapters?: string[];
+  unwritableArtifacts?: string[];
   /** Project's configured code-hop limit for impact traversal. */
   maxCodeDepth?: number;
   /** Served with live reload (`serve({ watch: true })`): the page listens on /events. */
@@ -71,6 +72,7 @@ export function viewerData(project: Project): ViewerData {
     lockFacts,
     writableAdapters: writableAdapters(graph, (adapter) => canWrite(adapter, settings)),
   };
+  data.unwritableArtifacts = unwritableArtifacts(graph, data.writableAdapters!, (adapter, node) => canWrite(adapter, settings, node));
   const maxCodeDepth = project.loaded.config.code.maxCodeDepth;
   if (maxCodeDepth !== undefined) data.maxCodeDepth = maxCodeDepth;
   return data;
@@ -142,6 +144,7 @@ export function renderViewerHtml(data: ViewerData): string {
   const stats = computeStats(data);
   const config: ImpactConfig = impactConfig(data.graph, {
     writableAdapters: data.writableAdapters,
+    unwritableArtifacts: data.unwritableArtifacts,
     maxCodeDepth: data.maxCodeDepth,
   });
   const payload = {

@@ -78,6 +78,8 @@
       if (node.kind === "test") return { cls: "test", reason: "run these tests" };
       if (via === "anchors") {
         if (node.meta && node.meta.generated) return { cls: "auto", reason: "regenerate fact constants (codegen)" };
+        var fromNode = index.nodes.get(path[path.length - 1].from);
+        if (fromNode && fromNode.kind === "artifact") return { cls: "code", reason: "holds this artifact's external id; update it if the id changes" };
         return { cls: "code", reason: "hardcoded value anchors this fact; update or switch to codegen" };
       }
       return { cls: "info", reason: node.kind + " affected" };
@@ -99,7 +101,7 @@
       return { cls: "retire", reason: "depends on a retired entity" };
     }
     var adapter = node.binding ? node.binding.adapter : undefined;
-    var writable = adapter ? cfg.writable.indexOf(adapter) !== -1 : false;
+    var writable = adapter ? cfg.writable.indexOf(adapter) !== -1 && (cfg.unwritable || []).indexOf(node.id) === -1 : false;
     var isMedia = false;
     if (node.types) {
       for (var t = 0; t < node.types.length; t++) {

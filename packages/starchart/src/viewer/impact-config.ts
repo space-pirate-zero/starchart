@@ -14,6 +14,8 @@ export interface ImpactConfig {
   containsConfidence: number;
   mediaTypes: string[];
   writable: string[];
+  /** Artifacts whose adapter writes, but not this binding (adapter canApply veto). */
+  unwritable: string[];
   bridgeEdges: EdgeType[];
   maxDepth: number;
   maxCodeDepth: number;
@@ -68,7 +70,7 @@ export function probeMediaTypes(graph: SerializedGraph): string[] {
 
 export function impactConfig(
   graph: SerializedGraph,
-  options: { writableAdapters?: string[]; maxCodeDepth?: number } = {},
+  options: { writableAdapters?: string[]; unwritableArtifacts?: string[]; maxCodeDepth?: number } = {},
 ): ImpactConfig {
   const { decay, containsConfidence } = probeDecay();
   return {
@@ -77,11 +79,26 @@ export function impactConfig(
     containsConfidence,
     mediaTypes: probeMediaTypes(graph),
     writable: [...new Set(options.writableAdapters ?? [])].sort(),
+    unwritable: [...new Set(options.unwritableArtifacts ?? [])].sort(),
     bridgeEdges: [...BRIDGE_EDGES],
     maxDepth: DEFAULT_MAX_DEPTH,
     maxCodeDepth: options.maxCodeDepth ?? DEFAULT_MAX_CODE_DEPTH,
     minConfidence: DEFAULT_MIN_CONFIDENCE,
   };
+}
+
+/** Artifacts bound to a writable adapter that nonetheless cannot write that binding. */
+export function unwritableArtifacts(
+  graph: SerializedGraph,
+  writable: string[],
+  canWriteNode: (adapter: string, node: SerializedGraph["nodes"][number]) => boolean,
+): string[] {
+  const out: string[] = [];
+  for (const n of graph.nodes) {
+    const adapter = n.binding?.adapter;
+    if (n.kind === "artifact" && adapter && writable.includes(adapter) && !canWriteNode(adapter, n)) out.push(n.id);
+  }
+  return out.sort();
 }
 
 /** Distinct adapters bound in `graph` that `canWrite` accepts. */

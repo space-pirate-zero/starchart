@@ -1,5 +1,6 @@
 import { getAdapter } from "../adapters/registry.js";
 import type { Graph } from "../core/graph.js";
+import type { GraphNode } from "../core/model.js";
 import { computeImpact, type ImpactClass, type ImpactItem } from "../core/impact.js";
 import { hasType, isLeafFact, plural } from "../rules/util.js";
 
@@ -20,7 +21,7 @@ export interface CostReport {
 
 export interface CostOptions {
   hours?: Partial<Record<ImpactClass, number>>;
-  canWrite?: (adapter: string) => boolean;
+  canWrite?: (adapter: string, node?: GraphNode) => boolean;
 }
 
 export const DEFAULT_HOURS: Record<ImpactClass, number> = {
