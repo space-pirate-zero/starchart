@@ -1740,6 +1740,10 @@
       setStatus("EMPTY CHART — ADD ENTITIES OR ARTIFACTS UNDER .starchart/");
       requestRender();
     } else {
+      // band-only framing is a placeholder; frame the settled stars unless the user took the wheel
+      layoutDoneCallbacks.push(function () {
+        if (!restored && !userMoved) fit(false);
+      });
       layoutDoneCallbacks.push(selectFromHash);
       runLayout(false);
     }

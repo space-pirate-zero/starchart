@@ -5,6 +5,7 @@ import { stringify } from "yaml";
 import { scanLiterals } from "../bridge/scan.js";
 import { STARCHART_DIR } from "../config/load.js";
 import type { Graph } from "../core/graph.js";
+import { stableStringify } from "../core/lock.js";
 import type { GraphNode } from "../core/model.js";
 import { buildProject } from "../project.js";
 
@@ -109,7 +110,8 @@ export async function runInit(root: string, opts: InitOptions = {}): Promise<str
   if (opts.discover) {
     const project = await buildProject(root);
     const proposal = discoverChart(project.graph);
-    const occurrences = await scanLiterals(root, withProposedFacts(project.graph, proposal));
+    // scan the whole repo, not just code scopes: marketing copy and emails live elsewhere
+    const occurrences = await scanLiterals(root, withProposedFacts(project.graph, proposal), { roots: ["."] });
     const artifacts = proposeArtifacts(occurrences, proposal);
     const discoveredPath = join(dir, "discovered.yaml");
     writeFileSync(discoveredPath, renderDiscovered(proposal, artifacts));
@@ -159,6 +161,20 @@ export function discoverChart(graph: Graph, entity = "offer:main"): ChartProposa
     taken.add(k);
     return k;
   };
+  // one fact per distinct value: a second constant holding the same value anchors the same fact
+  const byValue = new Map<string, string>();
+  const propose = (base: string, value: unknown, fact: Omit<ProposedFact, "from" | "where">, s: GraphNode, where: string, anchor: boolean) => {
+    const sig = `${base.split(".")[0]}:${stableStringify(value)}`;
+    const existing = byValue.get(sig);
+    if (existing) {
+      proposal.anchors.push({ from: s.id, to: `${entity}.${existing}` });
+      return;
+    }
+    const k = key(base);
+    byValue.set(sig, k);
+    proposal.facts[k] = { ...fact, from: s.id, where };
+    if (anchor) proposal.anchors.push({ from: s.id, to: `${entity}.${k}` });
+  };
   const symbols = graph.nodes({ kind: "symbol" }).filter((s) => s.value !== undefined && !s.meta?.generated);
   for (const s of symbols.sort((a, b) => a.id.localeCompare(b.id))) {
     const name = s.label ?? s.id.split(/[#./]/).pop() ?? s.id;
@@ -167,16 +183,11 @@ export function discoverChart(graph: Graph, entity = "offer:main"): ChartProposa
     if (typeof v === "string" && STRIPE_PRICE.test(v)) {
       proposal.stripe.push({ id: `stripe:price/${slug(name)}`, price: v, symbol: s.id, where });
     } else if (typeof v === "number" && !Number.isInteger(v) && PRICE_NAME.test(name)) {
-      const k = key(`price${currencySuffix(name)}`);
-      proposal.facts[k] = { value: v, from: s.id, where };
-      proposal.anchors.push({ from: s.id, to: `${entity}.${k}` });
+      propose(`price${currencySuffix(name)}`, v, { value: v }, s, where, true);
     } else if (typeof v === "string" && PRODUCT_ID.test(v) && PRODUCT_NAME.test(name)) {
-      const k = key("productId");
-      proposal.facts[k] = { value: v, from: s.id, where };
-      proposal.anchors.push({ from: s.id, to: `${entity}.${k}` });
+      propose("productId", v, { value: v }, s, where, true);
     } else if (Array.isArray(v) && v.length >= 2 && v.every((x) => typeof x === "string") && LIST_NAME.test(name)) {
-      const k = key("features");
-      proposal.facts[k] = { authority: "code", source: { symbol: s.id.replace(/^symbol:/, "") }, from: s.id, where };
+      propose("features", v, { authority: "code", source: { symbol: s.id.replace(/^symbol:/, "") } }, s, where, false);
     }
   }
   return proposal;

@@ -9,7 +9,7 @@ import type { Plan } from "../api.js";
 import { STARCHART_DIR } from "../config/load.js";
 import { explainPath, type ImpactItem } from "../core/impact.js";
 import { buildLock, staleArtifacts, type LockFile } from "../core/lock.js";
-import { writeLock, type Project } from "../project.js";
+import { buildProject, writeLock, type Project } from "../project.js";
 import { adapterContext, type EngineIO } from "./context.js";
 
 /**
@@ -146,6 +146,10 @@ export async function applyPlan(project: Project, plan: Plan, opts: ApplyOptions
   }
   const appliedIds = report.applied.map((r) => r.artifact);
   if (appliedIds.length > 0) {
+    // applied writes may have changed code the chart tracks (a bound page is also a route), so
+    // re-read the project before pinning; otherwise the artifact is stale against its own edit
+    const hasCode = project.graph.nodes({ layer: "code" }).length > 0;
+    project.graph = (await buildProject(project.root, { skipCode: !hasCode })).graph;
     project.lock = relock(project, appliedIds);
     writeLock(project.root, project.lock);
     report.lockUpdated = true;

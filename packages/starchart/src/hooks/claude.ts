@@ -90,7 +90,9 @@ async function hookContext(input: string, cwdOption?: string): Promise<string | 
     const managed = facts.length ? ` It carries facts ${unique(facts).slice(0, 6).join(", ")}; change the facts in .starchart/ rather than hand-editing values.` : "";
     header.push(`(world artifact ${boundArtifacts.join(", ")}).${managed}`);
   }
-  const text = describePlan(plan, `${header.join(" ")} Impacts`, rel, `\`starchart impact ${rel}\``);
+  // the artifact note ends a sentence; otherwise the plan summary continues it
+  const lead = `${header.join(" ")} ${boundArtifacts.length ? "Impacts" : "impacts"}`;
+  const text = describePlan(plan, lead, rel, `\`starchart impact ${rel}\``);
   if (text) return text;
   // An artifact with no downstream impact still deserves the "managed values" note.
   if (boundArtifacts.length) return truncate(header.join(" "), HOOK_CONTEXT_LIMIT);
