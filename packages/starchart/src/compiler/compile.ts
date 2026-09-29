@@ -14,7 +14,7 @@ export interface CompileResult {
   graph: Graph;
   pendingCodeFacts: PendingCodeFact[];
   /** Declared edge targets that do not exist yet; code targets may be satisfied later by ingest. */
-  danglingTargets: { from: string; to: string; type: EdgeType; file: string }[];
+  danglingTargets: { from: string; to: string; type: EdgeType; file: string; missing: string }[];
 }
 
 /** Turns loaded YAML documents into the fact and world layers plus declared edges. */
@@ -78,7 +78,7 @@ export function compileProject(project: LoadedProject): CompileResult {
     const confidence = typeof d.meta?.confidence === "number" ? d.meta.confidence : undefined;
     graph.addEdge({ from: d.from, to: d.to, type: d.type, origin: "declared", confidence });
     for (const end of [d.from, d.to]) {
-      if (!graph.hasNode(end)) danglingTargets.push({ from: d.from, to: end, type: d.type, file: d.file });
+      if (!graph.hasNode(end)) danglingTargets.push({ from: d.from, to: d.to, type: d.type, file: d.file, missing: end });
     }
   }
   return { graph, pendingCodeFacts, danglingTargets };

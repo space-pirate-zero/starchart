@@ -59,7 +59,8 @@ export function changeCost(graph: Graph, factIds?: string[], opts: CostOptions =
     const byClass = emptyByClass();
     for (const item of items) byClass[item.class]++;
     const hours = round2(CLASSES.reduce((sum, cls) => sum + byClass[cls] * rates[cls], 0));
-    const media = items.filter((i) => i.class === "manual" && hasType(i.node, MEDIA));
+    // only values embedded in media can move to a template; captured screens need a re-shoot instead
+    const media = items.filter((i) => i.class === "manual" && i.via === "embeds" && hasType(i.node, MEDIA));
     const report: CostReport = {
       id,
       impacted: items.length,

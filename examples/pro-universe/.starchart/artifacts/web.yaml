@@ -4,7 +4,7 @@ artifacts:
     label: Pricing page
     binding: { adapter: fs, path: apps/web/app/pricing/page.tsx }
     publishedBy: route:web/pricing
-    embeds: [addon:pro.name, addon:pro.price.usd]
+    embeds: [addon:pro.price.usd]
     describes: [addon:pro.features]
     owners: ["@zero"]
 

@@ -84,7 +84,7 @@ export function findOrphans(graph: Graph, listed: Record<string, ListedResource[
   const packages = graph.nodes({ kind: "package" });
   const linkedEcosystems = new Set(packages.filter((p) => graph.incoming(p.id, "dependsOn").length > 0).map((p) => ecosystem(p.id)));
   for (const p of packages) {
-    if (p.meta?.transitive === true || !linkedEcosystems.has(ecosystem(p.id))) continue;
+    if (p.meta?.transitive === true || !linkedEcosystems.has(ecosystem(p.id)) || isImplicitPackage(p.id)) continue;
     if (graph.incoming(p.id, "dependsOn").length === 0) {
       out.push({ id: p.id, kind: "package-unused", message: `${p.id} is a dependency but no file uses it` });
     }
@@ -123,4 +123,14 @@ function externalUnreferenced(graph: Graph, listed: Record<string, ListedResourc
     }
   }
   return out;
+}
+
+/**
+ * Packages used without an import: frameworks that own the build or runtime, toolchains and
+ * type packages. Reporting them as unused would be noise.
+ */
+const IMPLICIT_NPM = /^pkg:npm\/(?:next|react|react-dom|typescript|@types\/.*|eslint.*|@eslint\/.*|prettier|tailwindcss|@tailwindcss\/.*|postcss|autoprefixer|vite|vitest|jest|@vitejs\/.*|tsx|ts-node|turbo|nodemon|husky|lint-staged)$/;
+
+export function isImplicitPackage(id: string): boolean {
+  return IMPLICIT_NPM.test(id);
 }

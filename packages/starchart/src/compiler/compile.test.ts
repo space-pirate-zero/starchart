@@ -64,7 +64,7 @@ describe("compileProject", () => {
     expect(graph.node("web:og")?.meta?.template).toBe("og.svg");
     expect(graph.outgoing("web:og", "renders")).toHaveLength(1);
     // code nodes are satisfied later by ingest
-    expect(danglingTargets.map((d) => d.to).sort()).toEqual(["route:web/pricing", "screen:ios/Paywall"]);
+    expect(danglingTargets.map((d) => d.missing).sort()).toEqual(["route:web/pricing", "screen:ios/Paywall"]);
   });
 
   it("resolves code-authority facts from symbols and adds anchors", () => {

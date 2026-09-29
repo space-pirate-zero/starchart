@@ -7,7 +7,7 @@ owners: ["@zero"]
 facts:
   name: Nebula Pro
   price:
-    usd: 5.99
+    usd: 4.99
     eur: 4.99
   billing: monthly
   productId: { value: nebula_pro_monthly, authority: appstore }

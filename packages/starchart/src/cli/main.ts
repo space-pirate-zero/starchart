@@ -350,12 +350,16 @@ export async function run(argv: string[]): Promise<number> {
     .argument("<to>")
     .action(async (from: string, to: string) => {
       const project = await load();
-      const [source] = resolveRef(project, from, cwd());
-      const [target] = resolveRef(project, to, cwd());
-      if (!source || !target) throw new Error(`unknown node: ${!source ? from : to}`);
-      const item = why(project, source, target);
+      const sources = resolveRef(project, from, cwd());
+      const targets = resolveRef(project, to, cwd());
+      if (!sources.length || !targets.length) throw new Error(`unknown node: ${!sources.length ? from : to}`);
+      // a file path resolves to the file and its symbols: take the shortest explanation from any of them
+      const item = sources
+        .flatMap((s) => targets.map((t) => why(project, s, t)))
+        .filter((i): i is ImpactItem => i !== undefined)
+        .sort((a, b) => a.depth - b.depth)[0];
       if (!item) {
-        out(`${target} does not depend on ${source}`);
+        out(`${targets.join(", ")} does not depend on ${from}`);
         setExit(1);
         return;
       }

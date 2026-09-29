@@ -20,6 +20,7 @@ artifacts:
     label: App Store privacy label
     type: sc:PrivacyLabel
     meta:
+      platform: ios
       declares: [NSPrivacyCollectedDataTypePurchaseHistory, NSPrivacyCollectedDataTypeUserID, NSPrivacyCollectedDataTypeDeviceID]
       tracking: false
     owners: ["@zero"]

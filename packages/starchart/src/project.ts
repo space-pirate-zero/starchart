@@ -7,6 +7,8 @@ import type { Graph } from "./core/graph.js";
 import { emptyLock, type LockFile } from "./core/lock.js";
 import { importTokens } from "./tokens.js";
 
+const CODE_ID = /^(?:file|symbol|screen|route|pkg|env|flag|event|i18n|test):/;
+
 export interface Project {
   root: string;
   loaded: LoadedProject;
@@ -35,9 +37,11 @@ export async function buildProject(start?: string, options: BuildOptions = {}): 
     graph.merge(code);
     unresolved = resolveCodeFacts(graph, pendingCodeFacts).unresolved;
   }
-  for (const u of unresolved) warnings.push(`fact ${u.factId}: code symbol ${u.symbol} not found`);
+  // without the code layer, references into it are expected to dangle
+  if (!options.skipCode) for (const u of unresolved) warnings.push(`fact ${u.factId}: code symbol ${u.symbol} not found`);
   for (const d of danglingTargets) {
-    if (!graph.hasNode(d.to)) warnings.push(`${d.file}: ${d.from} --${d.type}--> ${d.to}: unknown node "${d.to}"`);
+    if (graph.hasNode(d.missing) || (options.skipCode && CODE_ID.test(d.missing))) continue;
+    warnings.push(`${d.file}: ${d.from} --${d.type}--> ${d.to}: unknown node "${d.missing}"`);
   }
   return { root, loaded, graph, lock: readLock(root), warnings };
 }

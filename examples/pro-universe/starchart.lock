@@ -66,11 +66,25 @@
     "symbol:ios/Pricing.display": "04d5679a379b8ecd",
     "symbol:ios/Pricing.proUSD": "20bc1f157ce5a99f",
     "symbol:ios/ProductID.proMonthly": "e1727ae50366341c",
+    "symbol:ios/StarchartFacts.AddonPro.Price.eur": "4a878bf9e93fa0ca",
+    "symbol:ios/StarchartFacts.AddonPro.Price.usd": "30cadb1ff2511476",
+    "symbol:ios/StarchartFacts.AddonPro.billing": "f2ff14427644fa99",
+    "symbol:ios/StarchartFacts.AddonPro.features": "4552c84c5461c655",
+    "symbol:ios/StarchartFacts.AddonPro.name": "9397d32a1ce9ffe1",
+    "symbol:ios/StarchartFacts.AddonPro.productId": "0e7caecfdb8f37f4",
+    "symbol:ios/StarchartFacts.AddonPro.status": "87c1bc6ed80d4fbf",
     "symbol:web/app/pricing/page#PricingPage": "116e9b8a40f11e15",
     "symbol:web/lib/pricing#PRO_FEATURES": "4dad69bec9142673",
     "symbol:web/lib/pricing#PRO_NAME": "1acc7871f70bf692",
     "symbol:web/lib/pricing#PRO_PRICE_USD": "d1faeadaaa28126a",
     "symbol:web/lib/pricing#formatPrice": "dfad17de58a0d16f",
+    "symbol:web/lib/starchart-facts#ADDON_PRO_BILLING": "905ca8d8b3a9941c",
+    "symbol:web/lib/starchart-facts#ADDON_PRO_FEATURES": "bd1765d74f4d1f80",
+    "symbol:web/lib/starchart-facts#ADDON_PRO_NAME": "033a9118603e038f",
+    "symbol:web/lib/starchart-facts#ADDON_PRO_PRICE_EUR": "c3c7b7bbb431204d",
+    "symbol:web/lib/starchart-facts#ADDON_PRO_PRICE_USD": "8a6d29f35549d402",
+    "symbol:web/lib/starchart-facts#ADDON_PRO_PRODUCT_ID": "1ac1b743100bd314",
+    "symbol:web/lib/starchart-facts#ADDON_PRO_STATUS": "1849a7aa6987ceab",
     "symbol:web/lib/stripe#PRICE_PRO_MONTHLY": "c3d580064eebc169"
   },
   "artifacts": {
@@ -80,7 +94,14 @@
         "addon:pro.name": "7458c2007d89f182",
         "addon:pro.price.usd": "71b62336ac91dd67",
         "symbol:ios/Entitlements.proFeatures": "67931739280ac34c",
-        "symbol:ios/Pricing.proUSD": "20bc1f157ce5a99f"
+        "symbol:ios/Pricing.proUSD": "20bc1f157ce5a99f",
+        "symbol:ios/StarchartFacts.AddonPro.Price.usd": "30cadb1ff2511476",
+        "symbol:ios/StarchartFacts.AddonPro.features": "4552c84c5461c655",
+        "symbol:ios/StarchartFacts.AddonPro.name": "9397d32a1ce9ffe1",
+        "symbol:web/lib/pricing#PRO_NAME": "1acc7871f70bf692",
+        "symbol:web/lib/starchart-facts#ADDON_PRO_FEATURES": "bd1765d74f4d1f80",
+        "symbol:web/lib/starchart-facts#ADDON_PRO_NAME": "033a9118603e038f",
+        "symbol:web/lib/starchart-facts#ADDON_PRO_PRICE_USD": "8a6d29f35549d402"
       }
     },
     "appstore:screenshots/6.9/03": {
@@ -95,7 +116,13 @@
         "symbol:ios/PaywallView.body": "76fa0c546d38bb54",
         "symbol:ios/Pricing.display": "04d5679a379b8ecd",
         "symbol:ios/Pricing.proUSD": "20bc1f157ce5a99f",
-        "symbol:ios/ProductID.proMonthly": "e1727ae50366341c"
+        "symbol:ios/ProductID.proMonthly": "e1727ae50366341c",
+        "symbol:ios/StarchartFacts.AddonPro.Price.usd": "30cadb1ff2511476",
+        "symbol:ios/StarchartFacts.AddonPro.features": "4552c84c5461c655",
+        "symbol:ios/StarchartFacts.AddonPro.productId": "0e7caecfdb8f37f4",
+        "symbol:web/lib/starchart-facts#ADDON_PRO_FEATURES": "bd1765d74f4d1f80",
+        "symbol:web/lib/starchart-facts#ADDON_PRO_PRICE_USD": "8a6d29f35549d402",
+        "symbol:web/lib/starchart-facts#ADDON_PRO_PRODUCT_ID": "1ac1b743100bd314"
       }
     },
     "reel:spring-2026": {
@@ -115,7 +142,22 @@
         "symbol:ios/PaywallView.body": "76fa0c546d38bb54",
         "symbol:ios/Pricing.display": "04d5679a379b8ecd",
         "symbol:ios/Pricing.proUSD": "20bc1f157ce5a99f",
-        "symbol:ios/ProductID.proMonthly": "e1727ae50366341c"
+        "symbol:ios/ProductID.proMonthly": "e1727ae50366341c",
+        "symbol:ios/StarchartFacts.AddonPro.Price.eur": "4a878bf9e93fa0ca",
+        "symbol:ios/StarchartFacts.AddonPro.Price.usd": "30cadb1ff2511476",
+        "symbol:ios/StarchartFacts.AddonPro.billing": "f2ff14427644fa99",
+        "symbol:ios/StarchartFacts.AddonPro.features": "4552c84c5461c655",
+        "symbol:ios/StarchartFacts.AddonPro.name": "9397d32a1ce9ffe1",
+        "symbol:ios/StarchartFacts.AddonPro.productId": "0e7caecfdb8f37f4",
+        "symbol:ios/StarchartFacts.AddonPro.status": "87c1bc6ed80d4fbf",
+        "symbol:web/lib/pricing#PRO_NAME": "1acc7871f70bf692",
+        "symbol:web/lib/starchart-facts#ADDON_PRO_BILLING": "905ca8d8b3a9941c",
+        "symbol:web/lib/starchart-facts#ADDON_PRO_FEATURES": "bd1765d74f4d1f80",
+        "symbol:web/lib/starchart-facts#ADDON_PRO_NAME": "033a9118603e038f",
+        "symbol:web/lib/starchart-facts#ADDON_PRO_PRICE_EUR": "c3c7b7bbb431204d",
+        "symbol:web/lib/starchart-facts#ADDON_PRO_PRICE_USD": "8a6d29f35549d402",
+        "symbol:web/lib/starchart-facts#ADDON_PRO_PRODUCT_ID": "1ac1b743100bd314",
+        "symbol:web/lib/starchart-facts#ADDON_PRO_STATUS": "1849a7aa6987ceab"
       }
     },
     "email:onboarding-day-3": {
@@ -130,7 +172,22 @@
         "addon:pro.status": "9bc378a6b90345b0",
         "symbol:ios/Entitlements.proFeatures": "67931739280ac34c",
         "symbol:ios/Pricing.proUSD": "20bc1f157ce5a99f",
-        "symbol:ios/ProductID.proMonthly": "e1727ae50366341c"
+        "symbol:ios/ProductID.proMonthly": "e1727ae50366341c",
+        "symbol:ios/StarchartFacts.AddonPro.Price.eur": "4a878bf9e93fa0ca",
+        "symbol:ios/StarchartFacts.AddonPro.Price.usd": "30cadb1ff2511476",
+        "symbol:ios/StarchartFacts.AddonPro.billing": "f2ff14427644fa99",
+        "symbol:ios/StarchartFacts.AddonPro.features": "4552c84c5461c655",
+        "symbol:ios/StarchartFacts.AddonPro.name": "9397d32a1ce9ffe1",
+        "symbol:ios/StarchartFacts.AddonPro.productId": "0e7caecfdb8f37f4",
+        "symbol:ios/StarchartFacts.AddonPro.status": "87c1bc6ed80d4fbf",
+        "symbol:web/lib/pricing#PRO_NAME": "1acc7871f70bf692",
+        "symbol:web/lib/starchart-facts#ADDON_PRO_BILLING": "905ca8d8b3a9941c",
+        "symbol:web/lib/starchart-facts#ADDON_PRO_FEATURES": "bd1765d74f4d1f80",
+        "symbol:web/lib/starchart-facts#ADDON_PRO_NAME": "033a9118603e038f",
+        "symbol:web/lib/starchart-facts#ADDON_PRO_PRICE_EUR": "c3c7b7bbb431204d",
+        "symbol:web/lib/starchart-facts#ADDON_PRO_PRICE_USD": "8a6d29f35549d402",
+        "symbol:web/lib/starchart-facts#ADDON_PRO_PRODUCT_ID": "1ac1b743100bd314",
+        "symbol:web/lib/starchart-facts#ADDON_PRO_STATUS": "1849a7aa6987ceab"
       }
     },
     "privacy:appstore-label": {
@@ -141,6 +198,11 @@
         "addon:pro.name": "7458c2007d89f182",
         "addon:pro.price.usd": "71b62336ac91dd67",
         "symbol:ios/Pricing.proUSD": "20bc1f157ce5a99f",
+        "symbol:ios/StarchartFacts.AddonPro.Price.usd": "30cadb1ff2511476",
+        "symbol:ios/StarchartFacts.AddonPro.name": "9397d32a1ce9ffe1",
+        "symbol:web/lib/pricing#PRO_NAME": "1acc7871f70bf692",
+        "symbol:web/lib/starchart-facts#ADDON_PRO_NAME": "033a9118603e038f",
+        "symbol:web/lib/starchart-facts#ADDON_PRO_PRICE_USD": "8a6d29f35549d402",
         "symbol:web/lib/stripe#PRICE_PRO_MONTHLY": "c3d580064eebc169"
       }
     },
@@ -151,7 +213,13 @@
         "addon:pro.price.usd": "71b62336ac91dd67",
         "addon:pro.productId": "2faeb1e613851aa5",
         "symbol:ios/Pricing.proUSD": "20bc1f157ce5a99f",
-        "symbol:ios/ProductID.proMonthly": "e1727ae50366341c"
+        "symbol:ios/ProductID.proMonthly": "e1727ae50366341c",
+        "symbol:ios/StarchartFacts.AddonPro.Price.eur": "4a878bf9e93fa0ca",
+        "symbol:ios/StarchartFacts.AddonPro.Price.usd": "30cadb1ff2511476",
+        "symbol:ios/StarchartFacts.AddonPro.productId": "0e7caecfdb8f37f4",
+        "symbol:web/lib/starchart-facts#ADDON_PRO_PRICE_EUR": "c3c7b7bbb431204d",
+        "symbol:web/lib/starchart-facts#ADDON_PRO_PRICE_USD": "8a6d29f35549d402",
+        "symbol:web/lib/starchart-facts#ADDON_PRO_PRODUCT_ID": "1ac1b743100bd314"
       }
     },
     "web:pricing-page": {
@@ -162,31 +230,49 @@
         "route:web/pricing": "1f061885d61c7365",
         "symbol:ios/Entitlements.proFeatures": "67931739280ac34c",
         "symbol:ios/Pricing.proUSD": "20bc1f157ce5a99f",
+        "symbol:ios/StarchartFacts.AddonPro.Price.usd": "30cadb1ff2511476",
+        "symbol:ios/StarchartFacts.AddonPro.features": "4552c84c5461c655",
+        "symbol:ios/StarchartFacts.AddonPro.name": "9397d32a1ce9ffe1",
         "symbol:web/app/pricing/page#PricingPage": "116e9b8a40f11e15",
         "symbol:web/lib/pricing#PRO_FEATURES": "4dad69bec9142673",
         "symbol:web/lib/pricing#PRO_NAME": "1acc7871f70bf692",
         "symbol:web/lib/pricing#PRO_PRICE_USD": "d1faeadaaa28126a",
-        "symbol:web/lib/pricing#formatPrice": "dfad17de58a0d16f"
+        "symbol:web/lib/pricing#formatPrice": "dfad17de58a0d16f",
+        "symbol:web/lib/starchart-facts#ADDON_PRO_FEATURES": "bd1765d74f4d1f80",
+        "symbol:web/lib/starchart-facts#ADDON_PRO_NAME": "033a9118603e038f",
+        "symbol:web/lib/starchart-facts#ADDON_PRO_PRICE_USD": "8a6d29f35549d402"
       }
     },
     "web:messages-en": {
       "deps": {
         "addon:pro.name": "7458c2007d89f182",
         "addon:pro.price.usd": "71b62336ac91dd67",
-        "symbol:ios/Pricing.proUSD": "20bc1f157ce5a99f"
+        "symbol:ios/Pricing.proUSD": "20bc1f157ce5a99f",
+        "symbol:ios/StarchartFacts.AddonPro.Price.usd": "30cadb1ff2511476",
+        "symbol:ios/StarchartFacts.AddonPro.name": "9397d32a1ce9ffe1",
+        "symbol:web/lib/pricing#PRO_NAME": "1acc7871f70bf692",
+        "symbol:web/lib/starchart-facts#ADDON_PRO_NAME": "033a9118603e038f",
+        "symbol:web/lib/starchart-facts#ADDON_PRO_PRICE_USD": "8a6d29f35549d402"
       }
     },
     "web:og-pro": {
       "deps": {
         "addon:pro.name": "7458c2007d89f182",
         "addon:pro.price.usd": "71b62336ac91dd67",
-        "symbol:ios/Pricing.proUSD": "20bc1f157ce5a99f"
+        "symbol:ios/Pricing.proUSD": "20bc1f157ce5a99f",
+        "symbol:ios/StarchartFacts.AddonPro.Price.usd": "30cadb1ff2511476",
+        "symbol:ios/StarchartFacts.AddonPro.name": "9397d32a1ce9ffe1",
+        "symbol:web/lib/pricing#PRO_NAME": "1acc7871f70bf692",
+        "symbol:web/lib/starchart-facts#ADDON_PRO_NAME": "033a9118603e038f",
+        "symbol:web/lib/starchart-facts#ADDON_PRO_PRICE_USD": "8a6d29f35549d402"
       }
     },
     "web:live-pricing": {
       "deps": {
         "addon:pro.price.usd": "71b62336ac91dd67",
-        "symbol:ios/Pricing.proUSD": "20bc1f157ce5a99f"
+        "symbol:ios/Pricing.proUSD": "20bc1f157ce5a99f",
+        "symbol:ios/StarchartFacts.AddonPro.Price.usd": "30cadb1ff2511476",
+        "symbol:web/lib/starchart-facts#ADDON_PRO_PRICE_USD": "8a6d29f35549d402"
       }
     },
     "web:landing-hero": {
@@ -201,7 +287,22 @@
         "addon:pro.status": "9bc378a6b90345b0",
         "symbol:ios/Entitlements.proFeatures": "67931739280ac34c",
         "symbol:ios/Pricing.proUSD": "20bc1f157ce5a99f",
-        "symbol:ios/ProductID.proMonthly": "e1727ae50366341c"
+        "symbol:ios/ProductID.proMonthly": "e1727ae50366341c",
+        "symbol:ios/StarchartFacts.AddonPro.Price.eur": "4a878bf9e93fa0ca",
+        "symbol:ios/StarchartFacts.AddonPro.Price.usd": "30cadb1ff2511476",
+        "symbol:ios/StarchartFacts.AddonPro.billing": "f2ff14427644fa99",
+        "symbol:ios/StarchartFacts.AddonPro.features": "4552c84c5461c655",
+        "symbol:ios/StarchartFacts.AddonPro.name": "9397d32a1ce9ffe1",
+        "symbol:ios/StarchartFacts.AddonPro.productId": "0e7caecfdb8f37f4",
+        "symbol:ios/StarchartFacts.AddonPro.status": "87c1bc6ed80d4fbf",
+        "symbol:web/lib/pricing#PRO_NAME": "1acc7871f70bf692",
+        "symbol:web/lib/starchart-facts#ADDON_PRO_BILLING": "905ca8d8b3a9941c",
+        "symbol:web/lib/starchart-facts#ADDON_PRO_FEATURES": "bd1765d74f4d1f80",
+        "symbol:web/lib/starchart-facts#ADDON_PRO_NAME": "033a9118603e038f",
+        "symbol:web/lib/starchart-facts#ADDON_PRO_PRICE_EUR": "c3c7b7bbb431204d",
+        "symbol:web/lib/starchart-facts#ADDON_PRO_PRICE_USD": "8a6d29f35549d402",
+        "symbol:web/lib/starchart-facts#ADDON_PRO_PRODUCT_ID": "1ac1b743100bd314",
+        "symbol:web/lib/starchart-facts#ADDON_PRO_STATUS": "1849a7aa6987ceab"
       }
     }
   }

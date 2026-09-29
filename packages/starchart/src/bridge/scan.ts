@@ -48,6 +48,9 @@ function defaultRoots(graph: Graph): string[] {
  * Finds every whole-token occurrence of a leaf fact value (strings and numbers) in text files,
  * and says whether the chart already accounts for it.
  */
+/** Import / package lines in Swift, Kotlin, Go, TS/JS and Python. */
+const IMPORT_LINE = /^(?:@testable\s+)?(?:import|package|using)\b|^from\s+\S+\s+import\b|^export\b.*\bfrom\s+["']/;
+
 export async function scanLiterals(root: string, graph: Graph, opts: ScanOptions = {}): Promise<LiteralOccurrence[]> {
   const needles = new Map<string, string[]>();
   for (const fact of leafFacts(graph)) {
@@ -94,6 +97,8 @@ export async function scanLiterals(root: string, graph: Graph, opts: ScanOptions
       const lineStart = lineStarts[line - 1]!;
       const lineEnd = text.indexOf("\n", lineStart);
       const lineText = text.slice(lineStart, lineEnd < 0 ? text.length : lineEnd).trim();
+      // module imports name code, not product copy ("import Nebula" is not the app name on display)
+      if (IMPORT_LINE.test(lineText)) continue;
       for (const factId of needles.get(needle) ?? []) {
         out.push({
           factId,
