@@ -148,6 +148,7 @@ describe("in-browser impact port: per-binding writes", () => {
     expect(strip(browser.items)).toEqual(strip(core.items as unknown as BrowserImpactItem[]));
     const cls = Object.fromEntries(core.items.map((i) => [i.id, i.class]));
     expect(cls).toMatchObject({ "appstore:iap": "manual", "appstore:listing": "auto", "symbol:web/lib#PRICE": "code" });
+    expect(core.items.find((i) => i.id === "appstore:iap")?.reason).toBe("appstore cannot update this binding; update it by hand");
   });
 });
 

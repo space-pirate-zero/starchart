@@ -101,7 +101,9 @@
       return { cls: "retire", reason: "depends on a retired entity" };
     }
     var adapter = node.binding ? node.binding.adapter : undefined;
-    var writable = adapter ? cfg.writable.indexOf(adapter) !== -1 && (cfg.unwritable || []).indexOf(node.id) === -1 : false;
+    var adapterWrites = adapter ? cfg.writable.indexOf(adapter) !== -1 : false;
+    var writable = adapterWrites && (cfg.unwritable || []).indexOf(node.id) === -1;
+    var bindingVeto = adapterWrites && !writable;
     var isMedia = false;
     if (node.types) {
       for (var t = 0; t < node.types.length; t++) {
@@ -115,11 +117,11 @@
         if (isMedia) return { cls: "manual", reason: "value is burned into media" };
         return writable
           ? { cls: "auto", reason: "replace embedded value" }
-          : { cls: "manual", reason: adapter ? 'adapter "' + adapter + '" cannot write' : "no binding" };
+          : { cls: "manual", reason: bindingVeto ? adapter + " cannot update this binding; update it by hand" : adapter ? 'adapter "' + adapter + '" cannot write' : "no binding" };
       case "mirrors":
         return writable
           ? { cls: "auto", reason: "sync via " + adapter }
-          : { cls: "manual", reason: adapter ? "update in " + adapter + " (adapter is read-only)" : "no binding" };
+          : { cls: "manual", reason: bindingVeto ? adapter + " cannot update this binding; update it by hand" : adapter ? "update in " + adapter + " (adapter is read-only)" : "no binding" };
       case "captures":
         return { cls: "manual", reason: "screen changed; re-capture" };
       case "describes":

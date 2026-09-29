@@ -186,6 +186,8 @@ export function classify(
   }
   const adapter = node.binding?.adapter;
   const writable = adapter ? canWrite(adapter, node) : false;
+  // the adapter writes in general but not this binding (e.g. App Store screenshots)
+  const bindingVeto = !writable && adapter !== undefined && canWrite(adapter);
   const isMedia = node.types?.some((t) => MEDIA_TYPES.has(t)) ?? false;
   switch (via) {
     case "renders":
@@ -194,11 +196,11 @@ export function classify(
       if (isMedia) return { cls: "manual", reason: "value is burned into media" };
       return writable
         ? { cls: "auto", reason: "replace embedded value" }
-        : { cls: "manual", reason: adapter ? `adapter "${adapter}" cannot write` : "no binding" };
+        : { cls: "manual", reason: bindingVeto ? `${adapter} cannot update this binding; update it by hand` : adapter ? `adapter "${adapter}" cannot write` : "no binding" };
     case "mirrors":
       return writable
         ? { cls: "auto", reason: `sync via ${adapter}` }
-        : { cls: "manual", reason: adapter ? `update in ${adapter} (adapter is read-only)` : "no binding" };
+        : { cls: "manual", reason: bindingVeto ? `${adapter} cannot update this binding; update it by hand` : adapter ? `update in ${adapter} (adapter is read-only)` : "no binding" };
     case "captures":
       return { cls: "manual", reason: "screen changed; re-capture" };
     case "describes":
