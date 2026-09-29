@@ -1,0 +1,14 @@
+id: addon:pro
+type: [schema:Offer, sc:AddOn]
+label: Nebula Pro
+of: app:nebula
+status: active
+owners: ["@zero"]
+facts:
+  name: Nebula Pro
+  price:
+    usd: 5.99
+    eur: 4.99
+  billing: monthly
+  productId: { value: nebula_pro_monthly, authority: appstore }
+  features: { authority: code, source: { symbol: ios/Entitlements.proFeatures } }

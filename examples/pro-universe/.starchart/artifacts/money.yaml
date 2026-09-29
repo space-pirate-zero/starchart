@@ -1,0 +1,12 @@
+artifacts:
+  - id: stripe:price/pro-monthly
+    label: Stripe price — Pro monthly (USD)
+    binding: { adapter: stripe, price: price_1NebulaPro499 }
+    mirrors: [addon:pro.price.usd, addon:pro.name]
+    owners: ["@zero"]
+
+  - id: appstore:iap/pro-monthly
+    label: App Store subscription — Pro monthly
+    binding: { adapter: appstore, app: "6450000000", product: nebula_pro_monthly }
+    mirrors: [addon:pro.price, addon:pro.productId]
+    owners: ["@zero"]

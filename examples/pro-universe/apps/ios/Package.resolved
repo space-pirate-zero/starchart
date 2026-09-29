@@ -1,0 +1,18 @@
+{
+  "originHash" : "5f1c0e0b8d2f",
+  "pins" : [
+    {
+      "identity" : "purchases-ios",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/RevenueCat/purchases-ios.git",
+      "state" : { "revision" : "a1b2c3", "version" : "5.30.0" }
+    },
+    {
+      "identity" : "sentry-cocoa",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/getsentry/sentry-cocoa.git",
+      "state" : { "revision" : "d4e5f6", "version" : "8.50.0" }
+    }
+  ],
+  "version" : 3
+}

@@ -29,7 +29,7 @@ export const ProjectConfig = z.object({
   code: CodeConfig.default({ scopes: { app: "." }, exclude: [] }),
   adapters: z.record(z.string(), z.record(z.string(), z.unknown())).default({}),
   packs: z.array(z.string()).default(["core"]),
-  /** DTCG design tokens file(s) imported as facts under `token:`. */
+  /** DTCG design tokens file(s) imported as facts under the `tokens` entity (`tokens.color.brand.primary`). */
   tokens: stringOrList.optional(),
   codegen: z.array(CodegenTarget).default([]),
   /** Content roots scanned for unbound fact literals (default: code scopes). */

@@ -1,0 +1,9 @@
+id: app:nebula
+type: [schema:SoftwareApplication]
+label: Nebula
+owners: ["@zero"]
+facts:
+  name: Nebula
+  category: ProductivityApplication
+  operatingSystem: iOS 18+
+  appStoreId: "6450000000"

@@ -1,0 +1,208 @@
+{
+  "version": 1,
+  "facts": {
+    "app:nebula.name": {
+      "hash": "6c2edd59abcae4c9",
+      "value": "Nebula"
+    },
+    "app:nebula.category": {
+      "hash": "11fbb02300a16c05",
+      "value": "ProductivityApplication"
+    },
+    "app:nebula.operatingSystem": {
+      "hash": "c284e5471164344b",
+      "value": "iOS 18+"
+    },
+    "app:nebula.appStoreId": {
+      "hash": "c68082d1b7433d86",
+      "value": "6450000000"
+    },
+    "addon:pro.name": {
+      "hash": "7458c2007d89f182",
+      "value": "Nebula Pro"
+    },
+    "addon:pro.price": {
+      "hash": "64a7596467e5e883",
+      "value": {
+        "usd": 4.99,
+        "eur": 4.99
+      }
+    },
+    "addon:pro.price.usd": {
+      "hash": "71b62336ac91dd67",
+      "value": 4.99
+    },
+    "addon:pro.price.eur": {
+      "hash": "71b62336ac91dd67",
+      "value": 4.99
+    },
+    "addon:pro.billing": {
+      "hash": "55605cd9f455edbb",
+      "value": "monthly"
+    },
+    "addon:pro.productId": {
+      "hash": "2faeb1e613851aa5",
+      "value": "nebula_pro_monthly"
+    },
+    "addon:pro.features": {
+      "hash": "42015baa93fd11f1",
+      "value": [
+        "Themes",
+        "iCloud sync"
+      ]
+    },
+    "addon:pro.status": {
+      "hash": "9bc378a6b90345b0",
+      "value": "active"
+    }
+  },
+  "code": {
+    "i18n:ios/paywall.title": "4c3f514ba283e814",
+    "route:web/pricing": "1f061885d61c7365",
+    "screen:ios/Paywall": "3298c1c584b4d89b",
+    "symbol:ios/Entitlements.proFeatures": "67931739280ac34c",
+    "symbol:ios/PaywallView": "3298c1c584b4d89b",
+    "symbol:ios/PaywallView.body": "76fa0c546d38bb54",
+    "symbol:ios/Pricing.display": "04d5679a379b8ecd",
+    "symbol:ios/Pricing.proUSD": "20bc1f157ce5a99f",
+    "symbol:ios/ProductID.proMonthly": "e1727ae50366341c",
+    "symbol:web/app/pricing/page#PricingPage": "116e9b8a40f11e15",
+    "symbol:web/lib/pricing#PRO_FEATURES": "4dad69bec9142673",
+    "symbol:web/lib/pricing#PRO_NAME": "1acc7871f70bf692",
+    "symbol:web/lib/pricing#PRO_PRICE_USD": "d1faeadaaa28126a",
+    "symbol:web/lib/pricing#formatPrice": "dfad17de58a0d16f",
+    "symbol:web/lib/stripe#PRICE_PRO_MONTHLY": "c3d580064eebc169"
+  },
+  "artifacts": {
+    "appstore:listing/description": {
+      "deps": {
+        "addon:pro.features": "42015baa93fd11f1",
+        "addon:pro.name": "7458c2007d89f182",
+        "addon:pro.price.usd": "71b62336ac91dd67",
+        "symbol:ios/Entitlements.proFeatures": "67931739280ac34c",
+        "symbol:ios/Pricing.proUSD": "20bc1f157ce5a99f"
+      }
+    },
+    "appstore:screenshots/6.9/03": {
+      "deps": {
+        "addon:pro.features": "42015baa93fd11f1",
+        "addon:pro.price.usd": "71b62336ac91dd67",
+        "addon:pro.productId": "2faeb1e613851aa5",
+        "i18n:ios/paywall.title": "4c3f514ba283e814",
+        "screen:ios/Paywall": "3298c1c584b4d89b",
+        "symbol:ios/Entitlements.proFeatures": "67931739280ac34c",
+        "symbol:ios/PaywallView": "3298c1c584b4d89b",
+        "symbol:ios/PaywallView.body": "76fa0c546d38bb54",
+        "symbol:ios/Pricing.display": "04d5679a379b8ecd",
+        "symbol:ios/Pricing.proUSD": "20bc1f157ce5a99f",
+        "symbol:ios/ProductID.proMonthly": "e1727ae50366341c"
+      }
+    },
+    "reel:spring-2026": {
+      "deps": {
+        "addon:pro.billing": "55605cd9f455edbb",
+        "addon:pro.features": "42015baa93fd11f1",
+        "addon:pro.name": "7458c2007d89f182",
+        "addon:pro.price": "64a7596467e5e883",
+        "addon:pro.price.eur": "71b62336ac91dd67",
+        "addon:pro.price.usd": "71b62336ac91dd67",
+        "addon:pro.productId": "2faeb1e613851aa5",
+        "addon:pro.status": "9bc378a6b90345b0",
+        "i18n:ios/paywall.title": "4c3f514ba283e814",
+        "screen:ios/Paywall": "3298c1c584b4d89b",
+        "symbol:ios/Entitlements.proFeatures": "67931739280ac34c",
+        "symbol:ios/PaywallView": "3298c1c584b4d89b",
+        "symbol:ios/PaywallView.body": "76fa0c546d38bb54",
+        "symbol:ios/Pricing.display": "04d5679a379b8ecd",
+        "symbol:ios/Pricing.proUSD": "20bc1f157ce5a99f",
+        "symbol:ios/ProductID.proMonthly": "e1727ae50366341c"
+      }
+    },
+    "email:onboarding-day-3": {
+      "deps": {
+        "addon:pro.billing": "55605cd9f455edbb",
+        "addon:pro.features": "42015baa93fd11f1",
+        "addon:pro.name": "7458c2007d89f182",
+        "addon:pro.price": "64a7596467e5e883",
+        "addon:pro.price.eur": "71b62336ac91dd67",
+        "addon:pro.price.usd": "71b62336ac91dd67",
+        "addon:pro.productId": "2faeb1e613851aa5",
+        "addon:pro.status": "9bc378a6b90345b0",
+        "symbol:ios/Entitlements.proFeatures": "67931739280ac34c",
+        "symbol:ios/Pricing.proUSD": "20bc1f157ce5a99f",
+        "symbol:ios/ProductID.proMonthly": "e1727ae50366341c"
+      }
+    },
+    "privacy:appstore-label": {
+      "deps": {}
+    },
+    "stripe:price/pro-monthly": {
+      "deps": {
+        "addon:pro.name": "7458c2007d89f182",
+        "addon:pro.price.usd": "71b62336ac91dd67",
+        "symbol:ios/Pricing.proUSD": "20bc1f157ce5a99f",
+        "symbol:web/lib/stripe#PRICE_PRO_MONTHLY": "c3d580064eebc169"
+      }
+    },
+    "appstore:iap/pro-monthly": {
+      "deps": {
+        "addon:pro.price": "64a7596467e5e883",
+        "addon:pro.price.eur": "71b62336ac91dd67",
+        "addon:pro.price.usd": "71b62336ac91dd67",
+        "addon:pro.productId": "2faeb1e613851aa5",
+        "symbol:ios/Pricing.proUSD": "20bc1f157ce5a99f",
+        "symbol:ios/ProductID.proMonthly": "e1727ae50366341c"
+      }
+    },
+    "web:pricing-page": {
+      "deps": {
+        "addon:pro.features": "42015baa93fd11f1",
+        "addon:pro.name": "7458c2007d89f182",
+        "addon:pro.price.usd": "71b62336ac91dd67",
+        "route:web/pricing": "1f061885d61c7365",
+        "symbol:ios/Entitlements.proFeatures": "67931739280ac34c",
+        "symbol:ios/Pricing.proUSD": "20bc1f157ce5a99f",
+        "symbol:web/app/pricing/page#PricingPage": "116e9b8a40f11e15",
+        "symbol:web/lib/pricing#PRO_FEATURES": "4dad69bec9142673",
+        "symbol:web/lib/pricing#PRO_NAME": "1acc7871f70bf692",
+        "symbol:web/lib/pricing#PRO_PRICE_USD": "d1faeadaaa28126a",
+        "symbol:web/lib/pricing#formatPrice": "dfad17de58a0d16f"
+      }
+    },
+    "web:messages-en": {
+      "deps": {
+        "addon:pro.name": "7458c2007d89f182",
+        "addon:pro.price.usd": "71b62336ac91dd67",
+        "symbol:ios/Pricing.proUSD": "20bc1f157ce5a99f"
+      }
+    },
+    "web:og-pro": {
+      "deps": {
+        "addon:pro.name": "7458c2007d89f182",
+        "addon:pro.price.usd": "71b62336ac91dd67",
+        "symbol:ios/Pricing.proUSD": "20bc1f157ce5a99f"
+      }
+    },
+    "web:live-pricing": {
+      "deps": {
+        "addon:pro.price.usd": "71b62336ac91dd67",
+        "symbol:ios/Pricing.proUSD": "20bc1f157ce5a99f"
+      }
+    },
+    "web:landing-hero": {
+      "deps": {
+        "addon:pro.billing": "55605cd9f455edbb",
+        "addon:pro.features": "42015baa93fd11f1",
+        "addon:pro.name": "7458c2007d89f182",
+        "addon:pro.price": "64a7596467e5e883",
+        "addon:pro.price.eur": "71b62336ac91dd67",
+        "addon:pro.price.usd": "71b62336ac91dd67",
+        "addon:pro.productId": "2faeb1e613851aa5",
+        "addon:pro.status": "9bc378a6b90345b0",
+        "symbol:ios/Entitlements.proFeatures": "67931739280ac34c",
+        "symbol:ios/Pricing.proUSD": "20bc1f157ce5a99f",
+        "symbol:ios/ProductID.proMonthly": "e1727ae50366341c"
+      }
+    }
+  }
+}

@@ -1,0 +1,134 @@
+name: STARCHART blast radius
+description: Comment the cross-layer blast radius (code → facts → world) of a pull request, and optionally fail on lockfile drift.
+author: Space Pirate Zero
+branding:
+  icon: star
+  color: purple
+
+inputs:
+  base:
+    description: Base branch to diff against. Defaults to the pull request base branch (github.base_ref), then "main".
+    required: false
+    default: ""
+  working-directory:
+    description: Directory containing the .starchart/ folder.
+    required: false
+    default: "."
+  comment:
+    description: Post (or update) a single sticky PR comment with the blast radius.
+    required: false
+    default: "true"
+  fail-on-stale:
+    description: Run `starchart check` and fail the job when artifacts are stale against starchart.lock.
+    required: false
+    default: "false"
+  node-version:
+    description: Node.js version used to run STARCHART.
+    required: false
+    default: "22"
+  starchart-version:
+    description: Version (or dist-tag) of @spz/starchart to run.
+    required: false
+    default: "latest"
+  github-token:
+    description: Token used to read and write PR comments (needs pull-requests write).
+    required: false
+    default: ${{ github.token }}
+
+outputs:
+  report:
+    description: Path to the markdown blast-radius report.
+    value: ${{ steps.impact.outputs.report }}
+
+runs:
+  using: composite
+  steps:
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ inputs.node-version }}
+
+    - name: Compute blast radius
+      id: impact
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      env:
+        INPUT_BASE: ${{ inputs.base }}
+        PR_BASE_REF: ${{ github.base_ref }}
+        STARCHART_VERSION: ${{ inputs.starchart-version }}
+      run: |
+        set -euo pipefail
+
+        if [[ ! "${STARCHART_VERSION}" =~ ^[A-Za-z0-9][A-Za-z0-9._+-]*$ ]]; then
+          echo "::error::invalid starchart-version: ${STARCHART_VERSION}"
+          exit 1
+        fi
+
+        base="${INPUT_BASE:-${PR_BASE_REF:-main}}"
+        base="${base#refs/heads/}"
+        base="${base#origin/}"
+        if ! git check-ref-format --branch "${base}" >/dev/null 2>&1; then
+          echo "::error::invalid base branch: ${base}"
+          exit 1
+        fi
+
+        if ! git fetch --no-tags --quiet origin "+refs/heads/${base}:refs/remotes/origin/${base}"; then
+          echo "::warning::could not fetch origin/${base}; using the existing local ref"
+        fi
+
+        report="${RUNNER_TEMP}/starchart.md"
+        npx --yes "@spz/starchart@${STARCHART_VERSION}" impact --diff "origin/${base}" --format markdown > "${report}"
+
+        echo "report=${report}" >> "${GITHUB_OUTPUT}"
+        cat "${report}" >> "${GITHUB_STEP_SUMMARY}"
+
+    - name: Post sticky PR comment
+      if: inputs.comment == 'true' && (github.event_name == 'pull_request' || github.event_name == 'pull_request_target')
+      shell: bash
+      env:
+        GH_TOKEN: ${{ inputs.github-token }}
+        REPORT: ${{ steps.impact.outputs.report }}
+        PR_NUMBER: ${{ github.event.pull_request.number }}
+        REPO: ${{ github.repository }}
+      run: |
+        set -euo pipefail
+
+        marker='<!-- starchart-blast-radius -->'
+        body="${RUNNER_TEMP}/starchart-comment.md"
+        { printf '%s\n' "${marker}"; cat "${REPORT}"; } > "${body}"
+
+        # GitHub rejects comment bodies over 65536 characters; truncate on a character boundary.
+        node -e '
+          const fs = require("fs");
+          const [file] = process.argv.slice(1);
+          const max = 65000;
+          const text = fs.readFileSync(file, "utf8");
+          const chars = Array.from(text);
+          if (chars.length > max) {
+            const note = "\n\n_…truncated. Run `starchart plan` locally for the full blast radius._\n";
+            fs.writeFileSync(file, chars.slice(0, max - note.length).join("") + note);
+          }
+        ' "${body}"
+
+        existing="$(gh api --paginate "repos/${REPO}/issues/${PR_NUMBER}/comments" \
+          --jq '.[] | select(.body | startswith("<!-- starchart-blast-radius -->")) | .id' | awk 'NR == 1')"
+
+        if [[ -n "${existing}" ]]; then
+          if ! gh api --method PATCH "repos/${REPO}/issues/comments/${existing}" -F "body=@${body}" > /dev/null; then
+            echo "::warning::could not update the STARCHART comment (does the token have pull-requests: write?)"
+          fi
+        else
+          if ! gh api --method POST "repos/${REPO}/issues/${PR_NUMBER}/comments" -F "body=@${body}" > /dev/null; then
+            echo "::warning::could not post the STARCHART comment (does the token have pull-requests: write?)"
+          fi
+        fi
+
+    - name: Fail on stale artifacts
+      if: inputs.fail-on-stale == 'true'
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      env:
+        STARCHART_VERSION: ${{ inputs.starchart-version }}
+      run: |
+        set -euo pipefail
+        npx --yes "@spz/starchart@${STARCHART_VERSION}" check

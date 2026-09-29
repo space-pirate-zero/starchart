@@ -5,6 +5,7 @@ import { compileProject, resolveCodeFacts, type PendingCodeFact } from "./compil
 import { findRoot, loadProject, LOCK_FILE, ConfigError, type LoadedProject } from "./config/load.js";
 import type { Graph } from "./core/graph.js";
 import { emptyLock, type LockFile } from "./core/lock.js";
+import { importTokens } from "./tokens.js";
 
 export interface Project {
   root: string;
@@ -26,6 +27,7 @@ export async function buildProject(start?: string, options: BuildOptions = {}): 
   const loaded = loadProject(root);
   const { graph, pendingCodeFacts, danglingTargets } = compileProject(loaded);
   const warnings: string[] = [];
+  if (loaded.config.tokens?.length) importTokens(graph, root, loaded.config.tokens);
 
   let unresolved: PendingCodeFact[] = pendingCodeFacts;
   if (!options.skipCode) {

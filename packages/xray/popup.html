@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="color-scheme" content="dark">
+<title>STARCHART X-Ray</title>
+<link rel="stylesheet" href="popup.css">
+</head>
+<body>
+<header class="bar">
+  <img src="icons/icon-32.png" width="20" height="20" alt="">
+  <h1>STARCHART <span>X-RAY</span></h1>
+</header>
+<main>
+  <section class="status" aria-live="polite">
+    <span id="dot" class="dot" aria-hidden="true"></span>
+    <div>
+      <p id="status-text" class="status-text">Connecting…</p>
+      <p id="project" class="project"></p>
+    </div>
+  </section>
+
+  <button type="button" id="scan" class="scan" disabled>SCAN PAGE</button>
+  <div class="row">
+    <button type="button" id="clear" class="ghost" disabled>CLEAR MARKS</button>
+    <button type="button" id="open" class="ghost" disabled>OPEN CHART</button>
+  </div>
+
+  <section id="result" class="result" aria-live="polite" hidden>
+    <div class="stat sync"><span id="n-sync">0</span><small>in sync</small></div>
+    <div class="stat stale"><span id="n-stale">0</span><small>stale</small></div>
+    <div class="stat unbound"><span id="n-unbound">–</span><small>unbound</small></div>
+  </section>
+  <p id="message" class="message" role="alert"></p>
+
+  <fieldset class="options">
+    <legend class="sr-only">Options</legend>
+    <label class="switch">
+      <input type="checkbox" id="unbound">
+      <span>Mark unbound prices</span>
+    </label>
+    <label class="switch">
+      <input type="checkbox" id="auto">
+      <span>Auto-scan matching pages</span>
+    </label>
+    <p id="auto-hint" class="hint">Scans pages whose URL matches an artifact URL. Asks for access to those sites only.</p>
+  </fieldset>
+</main>
+<footer>
+  <span id="server" class="server"></span>
+  <button type="button" id="settings" class="link">Settings</button>
+</footer>
+<script src="src-shared/match.js"></script>
+<script src="popup.js"></script>
+</body>
+</html>

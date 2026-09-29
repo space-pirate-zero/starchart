@@ -1,0 +1,40 @@
+artifacts:
+  - id: web:pricing-page
+    type: schema:WebPage
+    label: Pricing page
+    binding: { adapter: fs, path: apps/web/app/pricing/page.tsx }
+    publishedBy: route:web/pricing
+    embeds: [addon:pro.name, addon:pro.price.usd]
+    describes: [addon:pro.features]
+    owners: ["@zero"]
+
+  - id: web:messages-en
+    type: sc:StringTable
+    label: Web copy (en)
+    binding: { adapter: fs, path: apps/web/messages/en.json }
+    embeds: [addon:pro.name, addon:pro.price.usd]
+    owners: ["@zero"]
+
+  - id: web:og-pro
+    type: schema:ImageObject
+    label: OG image for Pro
+    tags: [og]
+    binding: { adapter: fs, path: apps/web/public/og/pro.png }
+    renders: { template: apps/web/og/pro.svg, with: [addon:pro.name, addon:pro.price.usd] }
+    meta: { width: 1200, height: 630 }
+    owners: ["@zero"]
+
+  - id: web:live-pricing
+    type: schema:WebPage
+    label: Live pricing page
+    binding: { adapter: url, url: /pricing }
+    embeds: [addon:pro.price.usd]
+    after: [web:pricing-page]
+    owners: ["@zero"]
+
+  - id: web:landing-hero
+    type: schema:WebPage
+    label: Landing hero copy
+    binding: { adapter: fs, path: apps/web/app/page.tsx }
+    describes: [addon:pro]
+    owners: ["@zero"]

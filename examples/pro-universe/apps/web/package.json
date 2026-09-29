@@ -1,0 +1,11 @@
+{
+  "name": "nebula-web",
+  "private": true,
+  "dependencies": {
+    "next": "15.5.0",
+    "react": "19.1.0",
+    "stripe": "18.4.0",
+    "posthog-js": "1.260.0",
+    "@sentry/nextjs": "10.5.0"
+  }
+}

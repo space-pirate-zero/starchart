@@ -1,0 +1,7 @@
+{
+  // path aliases resolved by STARCHART
+  "compilerOptions": {
+    "jsx": "preserve",
+    "paths": { "@/*": ["./*"] }
+  }
+}

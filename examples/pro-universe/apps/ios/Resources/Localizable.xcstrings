@@ -1,0 +1,12 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "paywall.title" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Unlock Nebula Pro" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "Nebula Pro を解放" } }
+      }
+    }
+  },
+  "version" : "1.0"
+}

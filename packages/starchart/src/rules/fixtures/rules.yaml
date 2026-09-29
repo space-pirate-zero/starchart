@@ -1,0 +1,43 @@
+rules:
+  - id: offer-mirrored
+    description: Every offer's price is mirrored in Stripe and the App Store
+    severity: error
+    select:
+      kind: entity
+      type: schema:Offer
+      where: { status: active }
+    require:
+      edge:
+        - { type: mirrors, direction: in, adapter: stripe }
+        - { type: mirrors, direction: in, adapter: appstore }
+
+  - id: listing-name-length
+    description: Localized app names fit the App Store limit
+    severity: warn
+    select:
+      kind: entity
+      type: sc:AppStoreListing
+    require:
+      value:
+        fact: name
+        maxLength: 30
+        locales: all
+
+  - id: promo-fresh
+    severity: warn
+    select:
+      kind: artifact
+      tag: promo
+      whereNot: { status: retired }
+    require:
+      maxAge: { field: meta.publishedAt, days: 90 }
+      notExpired: true
+      owners: true
+
+  - id: paywall-captured
+    severity: info
+    select:
+      prefix: "screen:"
+      where: { meta.flow: onboarding }
+    require:
+      reachable: { from: "appstore:*", edge: captures }

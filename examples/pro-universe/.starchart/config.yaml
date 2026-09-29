@@ -1,0 +1,21 @@
+# STARCHART config for the Pro Universe demo: a SwiftUI app + Next.js site with a paid "Pro" add-on.
+name: pro-universe
+site: https://nebula.example.com
+code:
+  scopes:
+    web: apps/web
+    ios: apps/ios
+adapters:
+  fs: {}
+  stripe:
+    secretEnv: STRIPE_SECRET_KEY
+  appstore:
+    keyId: ${ASC_KEY_ID}
+packs: [core, appstore, privacy, seo]
+codegen:
+  - lang: ts
+    out: apps/web/lib/starchart-facts.ts
+    entities: [addon:pro]
+  - lang: swift
+    out: apps/ios/Sources/Core/StarchartFacts.swift
+    entities: [addon:pro]

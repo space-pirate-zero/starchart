@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <rect width="1200" height="630" fill="#030303"/>
+  <rect x="40" y="40" width="1120" height="550" fill="none" stroke="#ff1493" stroke-width="8"/>
+  <text x="100" y="280" font-family="Helvetica, Arial, sans-serif" font-size="96" font-weight="800" fill="#f5f5f5">{{ addon:pro.name | upper }}</text>
+  <text x="100" y="400" font-family="Menlo, monospace" font-size="72" fill="#00ff41">{{ addon:pro.price.usd | money:USD }} / month</text>
+</svg>

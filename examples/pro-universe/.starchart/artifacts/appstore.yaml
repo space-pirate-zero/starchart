@@ -1,0 +1,17 @@
+artifacts:
+  - id: appstore:listing/description
+    label: App Store description (en-US)
+    type: sc:AppStoreListing
+    binding: { adapter: appstore, app: "6450000000", field: description, locale: en-US }
+    embeds: [addon:pro.name, addon:pro.price.usd]
+    describes: [addon:pro.features]
+    after: [appstore:iap/pro-monthly]
+    owners: ["@zero"]
+
+  - id: appstore:screenshots/6.9/03
+    label: iPhone 6.9" screenshot 3 — Paywall
+    type: schema:ImageObject
+    binding: { adapter: appstore, app: "6450000000", set: "6.9", index: 3 }
+    captures: screen:ios/Paywall
+    embeds: [addon:pro.price.usd]
+    owners: ["@zero"]

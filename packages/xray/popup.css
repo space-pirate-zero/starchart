@@ -1,0 +1,131 @@
+:root {
+  --surface: #030303;
+  --panel: #0d0d10;
+  --panel-2: #16161b;
+  --pink: #ff1493;
+  --green: #00ff41;
+  --red: #ff2d55;
+  --text: #f5f5f5;
+  --muted: #a3a3b2;
+  --mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace;
+  --sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+
+body {
+  width: 320px;
+  margin: 0;
+  background: var(--surface);
+  color: var(--text);
+  font: 13px/1.4 var(--sans);
+}
+
+.sr-only {
+  position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap;
+}
+
+:focus-visible { outline: 3px solid var(--green); outline-offset: 2px; }
+
+.bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  background: var(--pink);
+  border-bottom: 3px solid #000;
+}
+.bar img { image-rendering: pixelated; }
+h1 { margin: 0; font: 900 14px var(--mono); letter-spacing: 0.16em; color: #000; }
+h1 span { background: #000; color: var(--pink); padding: 1px 5px; }
+
+main { padding: 14px; }
+
+.status {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding: 10px;
+  background: var(--panel);
+  border: 2px solid #000;
+  box-shadow: 3px 3px 0 #000;
+}
+.dot { width: 12px; height: 12px; flex: none; border-radius: 50%; border: 2px solid #000; background: var(--muted); }
+.dot.ok { background: var(--green); }
+.dot.err { background: var(--red); }
+.status-text { margin: 0; font: 800 12px var(--mono); letter-spacing: 0.06em; }
+.project { margin: 2px 0 0; color: var(--muted); font: 12px var(--mono); word-break: break-all; }
+.project:empty { display: none; }
+
+button { font: inherit; cursor: pointer; }
+button:disabled { cursor: not-allowed; opacity: 0.45; }
+
+.scan {
+  display: block;
+  width: 100%;
+  margin: 14px 0 10px;
+  padding: 14px;
+  font: 900 18px var(--mono);
+  letter-spacing: 0.2em;
+  color: #000;
+  background: var(--green);
+  border: 3px solid #000;
+  box-shadow: 5px 5px 0 var(--pink);
+  transition: transform 80ms ease, box-shadow 80ms ease;
+}
+.scan:not(:disabled):hover { transform: translate(-1px, -1px); box-shadow: 6px 6px 0 var(--pink); }
+.scan:not(:disabled):active { transform: translate(3px, 3px); box-shadow: 2px 2px 0 var(--pink); }
+
+.row { display: flex; gap: 8px; }
+.ghost {
+  flex: 1;
+  padding: 8px;
+  font: 800 11px var(--mono);
+  letter-spacing: 0.12em;
+  color: var(--text);
+  background: var(--panel-2);
+  border: 2px solid #000;
+  box-shadow: 3px 3px 0 #000;
+}
+.ghost:not(:disabled):hover { box-shadow: 3px 3px 0 var(--pink); }
+
+.result { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 14px; }
+.stat {
+  display: flex;
+  flex-direction: column;
+  padding: 8px;
+  background: var(--panel);
+  border: 2px solid #000;
+  box-shadow: 3px 3px 0 #000;
+}
+.stat span { font: 900 22px/1 var(--mono); }
+.stat small { margin-top: 4px; font: 800 9px var(--mono); letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
+.stat.sync span { color: var(--green); }
+.stat.stale { border-color: var(--red); }
+.stat.stale span { color: var(--red); }
+.stat.unbound span { color: var(--muted); }
+
+.message { margin: 10px 0 0; color: #ff5c7a; font-size: 12px; }
+.message:empty { display: none; }
+
+.options { margin: 16px 0 0; padding: 12px 0 0; border: 0; border-top: 2px solid var(--panel-2); }
+.switch { display: flex; align-items: center; gap: 10px; padding: 4px 0; cursor: pointer; }
+.switch input { width: 16px; height: 16px; margin: 0; accent-color: var(--pink); }
+.hint { margin: 4px 0 0 26px; color: var(--muted); font-size: 11px; }
+
+footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 14px;
+  background: var(--panel);
+  border-top: 2px solid #000;
+}
+.server { font: 11px var(--mono); color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.link { background: none; border: 0; color: var(--pink); font: 700 12px var(--sans); text-decoration: underline; padding: 2px; }
+
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; }
+}

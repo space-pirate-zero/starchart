@@ -1,0 +1,16 @@
+rules:
+  - id: offer-mirrored-in-stores
+    description: Every paid offer is mirrored in Stripe and the App Store
+    severity: error
+    select: { kind: entity, type: schema:Offer }
+    require:
+      edge:
+        - { type: mirrors, direction: in, adapter: stripe }
+        - { type: mirrors, direction: in, adapter: appstore }
+
+  - id: paywall-has-screenshot
+    description: The paywall screen must appear in a store screenshot
+    severity: warn
+    select: { prefix: "screen:ios/Paywall" }
+    require:
+      edge: { type: captures, direction: in, min: 1 }

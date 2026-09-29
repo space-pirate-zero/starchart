@@ -1,0 +1,6 @@
+[versions]
+compose = "1.7.5"
+
+[libraries]
+compose-ui = { module = "androidx.compose.ui:ui", version.ref = "compose" }
+posthog = "com.posthog:posthog-android:3.9.0"

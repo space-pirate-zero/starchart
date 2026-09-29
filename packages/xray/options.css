@@ -1,0 +1,19 @@
+.options-page { width: auto; min-width: 360px; max-width: 560px; }
+.field-label { display: block; margin-bottom: 6px; font: 800 11px var(--mono); letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+#server-url {
+  width: 100%;
+  padding: 9px 10px;
+  font: 600 13px var(--mono);
+  color: var(--text);
+  background: var(--surface);
+  border: 3px solid var(--pink);
+  box-shadow: 3px 3px 0 #000;
+  border-radius: 0;
+}
+#server-url:focus-visible { outline: none; border-color: var(--green); box-shadow: 3px 3px 0 var(--green); }
+#server-url[aria-invalid="true"] { border-color: var(--red); }
+.hint.wide { margin: 6px 0 12px; }
+code { font: 11px var(--mono); color: var(--text); }
+.result-line { margin: 12px 0 0; font: 12px var(--mono); min-height: 1.4em; }
+.result-line.ok { color: var(--green); }
+.result-line.err { color: #ff5c7a; }

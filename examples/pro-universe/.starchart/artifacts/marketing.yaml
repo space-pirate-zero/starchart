@@ -1,0 +1,25 @@
+artifacts:
+  - id: reel:spring-2026
+    label: Spring 2026 promo reel
+    type: schema:VideoObject
+    binding: { adapter: youtube, videoId: dQw4w9WgXcQ }
+    promotes: addon:pro
+    embeds: [addon:pro.price.usd]
+    captures: screen:ios/Paywall
+    validThrough: "2026-06-30"
+    owners: ["@zero"]
+
+  - id: email:onboarding-day-3
+    label: Onboarding email, day 3
+    binding: { adapter: fs, path: marketing/emails/onboarding-day-3.md }
+    describes: addon:pro
+    embeds: [addon:pro.price.usd]
+    owners: ["@zero"]
+
+  - id: privacy:appstore-label
+    label: App Store privacy label
+    type: sc:PrivacyLabel
+    meta:
+      declares: [NSPrivacyCollectedDataTypePurchaseHistory, NSPrivacyCollectedDataTypeUserID, NSPrivacyCollectedDataTypeDeviceID]
+      tracking: false
+    owners: ["@zero"]

@@ -44,6 +44,11 @@ export interface ApplyResult {
   /** Serializable undo record for `starchart revert`. */
   undo?: UndoRecord;
   error?: string;
+  /**
+   * Binding fields that changed in the external system (e.g. Stripe issued a new immutable price
+   * id). The engine rewrites them in the artifact's YAML source.
+   */
+  bindingUpdate?: Record<string, unknown>;
 }
 
 export interface UndoRecord {

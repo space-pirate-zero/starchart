@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="color-scheme" content="dark">
+<title>STARCHART X-Ray settings</title>
+<link rel="stylesheet" href="popup.css">
+<link rel="stylesheet" href="options.css">
+</head>
+<body class="options-page">
+<header class="bar">
+  <img src="icons/icon-32.png" width="20" height="20" alt="">
+  <h1>STARCHART <span>X-RAY</span></h1>
+</header>
+<main>
+  <form id="form" novalidate>
+    <label for="server-url" class="field-label">STARCHART server URL</label>
+    <input id="server-url" name="serverUrl" type="url" inputmode="url" autocomplete="off" spellcheck="false" required aria-describedby="server-help">
+    <p id="server-help" class="hint wide">Where <code>starchart serve</code> listens. Default <code>http://127.0.0.1:4477</code>.</p>
+    <div class="row">
+      <button type="submit" class="ghost">SAVE</button>
+      <button type="button" id="test" class="ghost">TEST CONNECTION</button>
+      <button type="button" id="reset" class="ghost">RESET</button>
+    </div>
+    <p id="result" class="result-line" role="status" aria-live="polite"></p>
+  </form>
+</main>
+<script src="options.js"></script>
+</body>
+</html>
