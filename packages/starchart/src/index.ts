@@ -48,6 +48,7 @@ export {
   dependencies,
   emptyLock,
   hashValue,
+  relockArtifacts,
   stableStringify,
   staleArtifacts,
   type LockFile,
