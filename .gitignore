@@ -20,3 +20,7 @@ coverage
 *.pfx
 credentials*.json
 service-account*.json
+
+# this is a pnpm workspace
+package-lock.json
+yarn.lock

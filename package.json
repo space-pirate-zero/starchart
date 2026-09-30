@@ -8,7 +8,8 @@
     "test": "pnpm -r test",
     "typecheck": "pnpm -r typecheck"
   },
-  "devDependencies": {
-    "@space-pirate-zero/starchart": "^0.1.0"
+  "engines": {
+    "npm": "please-use-pnpm",
+    "pnpm": ">=10"
   }
 }
