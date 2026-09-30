@@ -199,10 +199,10 @@ Lock diffs are readable: a price change shows up as new hashes under the artifac
 | `2` | Error: bad YAML, schema violation, unknown edge type, bad lock version. |
 
 ```yaml
-- run: npx @spz/starchart check -f markdown >> "$GITHUB_STEP_SUMMARY"
+- run: npx @space-pirate-zero/starchart check -f markdown >> "$GITHUB_STEP_SUMMARY"
 ```
 
-`@spz/starchart` isn't published to npm yet. Until it is, build from source in the workflow and call the CLI directly, the way STARCHART's own CI checks the demo:
+`@space-pirate-zero/starchart` isn't published to npm yet. Until it is, build from source in the workflow and call the CLI directly, the way STARCHART's own CI checks the demo:
 
 ```yaml
 - run: git clone https://github.com/space-pirate-zero/starchart.git /tmp/starchart && cd /tmp/starchart && pnpm install && pnpm build   # needs Node 22 and pnpm set up first

@@ -12,16 +12,16 @@ No server, no database, no account. Everything lives in your repo.
 
 ## Install
 
-> **Heads up:** `@spz/starchart` is not published to npm yet. Until it is, `npm i` and `npx @spz/starchart` fail. [Run from source](#run-from-source) instead.
+> **Heads up:** `@space-pirate-zero/starchart` is not published to npm yet. Until it is, `npm i` and `npx @space-pirate-zero/starchart` fail. [Run from source](#run-from-source) instead.
 
 Once the package is on npm:
 
 ```bash
-npm i -D @spz/starchart
-npx @spz/starchart --help
+npm i -D @space-pirate-zero/starchart
+npx @space-pirate-zero/starchart --help
 ```
 
-The package installs two CLI names, `starchart` and the short alias `sc`, plus `starchart-mcp` for agents. Always spell the npx form `npx @spz/starchart …`. Bare `npx starchart` fetches the unscoped `starchart` package, which belongs to someone else.
+The package installs two CLI names, `starchart` and the short alias `sc`, plus `starchart-mcp` for agents. Always spell the npx form `npx @space-pirate-zero/starchart …`. Bare `npx starchart` fetches the unscoped `starchart` package, which belongs to someone else.
 
 ### Run from source
 
@@ -234,7 +234,7 @@ For the full tour on a realistic project, do the [Pro Universe tutorial](Tutoria
 
 - **CI:** run `starchart check` as a required step. Until the package is on npm, build STARCHART from source in the job (clone, `pnpm install`, `pnpm build`) and run `node <starchart>/packages/starchart/dist/cli/bin.js -C <your-project> check`. The [GitHub Action](GitHub-Action) (sticky PR comment with the cross-layer blast radius) needs the published package, so it won't run yet.
 - **Claude Code:** the [Claude Code Hook](Claude-Code-Hook) injects the world impact of every file an agent edits back into its context.
-- **Any MCP client:** `starchart mcp` exposes impact, plan and friends as tools (`claude mcp add starchart -- npx @spz/starchart mcp` once published). See [MCP Server](MCP-Server).
+- **Any MCP client:** `starchart mcp` exposes impact, plan and friends as tools (`claude mcp add starchart -- npx @space-pirate-zero/starchart mcp` once published). See [MCP Server](MCP-Server).
 
 ## See also
 

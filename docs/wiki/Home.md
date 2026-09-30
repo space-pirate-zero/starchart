@@ -120,7 +120,7 @@ So you change the Pro add-on and play whack-a-mole across code, copy, stores, im
 
 ## Quick start
 
-> **Not on npm yet.** `@spz/starchart` isn't published. Until it is, run it from source. Always use the scoped name: the unscoped `starchart` package on npm belongs to someone else.
+> **Not on npm yet.** `@space-pirate-zero/starchart` isn't published. Until it is, run it from source. Always use the scoped name: the unscoped `starchart` package on npm belongs to someone else.
 
 ```bash
 git clone https://github.com/space-pirate-zero/starchart.git && cd starchart
@@ -138,7 +138,7 @@ starchart init --discover
 starchart lock
 ```
 
-`init` writes `.starchart/config.yaml` and detects your code scopes. `--discover` proposes facts, artifacts and bridges in `.starchart/proposals/discovered.yaml`, which the loader ignores until you review it and move it into `.starchart/` (for example `.starchart/entities/offer.yaml`). `lock` pins every artifact to today's facts and code. Commit `.starchart/` and `starchart.lock`. Once the package is published, `npx @spz/starchart <command>` does the same thing. Full walkthrough: [Getting Started](Getting-Started).
+`init` writes `.starchart/config.yaml` and detects your code scopes. `--discover` proposes facts, artifacts and bridges in `.starchart/proposals/discovered.yaml`, which the loader ignores until you review it and move it into `.starchart/` (for example `.starchart/entities/offer.yaml`). `lock` pins every artifact to today's facts and code. Commit `.starchart/` and `starchart.lock`. Once the package is published, `npx @space-pirate-zero/starchart <command>` does the same thing. Full walkthrough: [Getting Started](Getting-Started).
 
 ## Where to go next
 

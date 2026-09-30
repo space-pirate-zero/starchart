@@ -34,7 +34,7 @@ These used to be listed as gaps. They're done:
 
 Things that exist but have sharp edges today. Each is documented where it bites.
 
-- **Not on npm yet.** `@spz/starchart` isn't published, so `npm i @spz/starchart` and `npx @spz/starchart` don't work yet, and the GitHub Action (which installs `@spz/starchart@latest`) can't run until it is. Run from source for now: [Getting Started](Getting-Started#run-from-source), and use the from-source workflow on [GitHub Action](GitHub-Action#until-the-npm-package-is-published). Never `npx starchart`: the unscoped package belongs to someone else.
+- **Not on npm yet.** `@space-pirate-zero/starchart` isn't published, so `npm i @space-pirate-zero/starchart` and `npx @space-pirate-zero/starchart` don't work yet, and the GitHub Action (which installs `@space-pirate-zero/starchart@latest`) can't run until it is. Run from source for now: [Getting Started](Getting-Started#run-from-source), and use the from-source workflow on [GitHub Action](GitHub-Action#until-the-npm-package-is-published). Never `npx starchart`: the unscoped package belongs to someone else.
 - **Live accounts untested.** The Stripe and App Store adapters are tested against mocked APIs only; they've never run against a live account.
 - **No incremental cache.** Every command re-ingests the repo.
 - **App Store audit over-reports coverage.** Bindings without a `field` (IAPs, screenshots) are counted as "checked" in `audit` even though nothing is compared.
@@ -79,7 +79,7 @@ The phase plan from PLAN.md, with where v0.1.0 actually landed:
 
 A suggested order, derived from the gaps above. It's not a committed schedule:
 
-1. Publish `@spz/starchart` to npm so `npx @spz/starchart` and the GitHub Action work as written.
+1. Publish `@space-pirate-zero/starchart` to npm so `npx @space-pirate-zero/starchart` and the GitHub Action work as written.
 2. Run the Stripe and App Store adapters against real test accounts.
 3. Incremental ingest with a content-hash cache, to hit the "under 1 s warm, under 5 s in CI" targets.
 4. SCIP ingest, TypeScript first.

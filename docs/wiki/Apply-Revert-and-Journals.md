@@ -402,7 +402,7 @@ Newest first: id, creation time, number of distinct artifacts (from entries and 
 ## Library API
 
 ```ts
-import { applyPlan, revertJournal, ackArtifacts, listJournals, buildProject, planFromLock } from "@spz/starchart";
+import { applyPlan, revertJournal, ackArtifacts, listJournals, buildProject, planFromLock } from "@space-pirate-zero/starchart";
 
 const project = await buildProject(process.cwd());
 const report = await applyPlan(project, planFromLock(project), {

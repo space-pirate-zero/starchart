@@ -13,15 +13,15 @@ Either way, the root can be any directory inside the project. STARCHART walks up
 
 ### Claude Code
 
-Once `@spz/starchart` is published:
+Once `@space-pirate-zero/starchart` is published:
 
 ```bash
-claude mcp add starchart -- npx @spz/starchart mcp
+claude mcp add starchart -- npx @space-pirate-zero/starchart mcp
 ```
 
 Always use the scoped name. The unscoped npm package `starchart` belongs to someone else, so bare `npx starchart` runs the wrong thing.
 
-> **Heads-up:** `@spz/starchart` is not on npm yet. Until it is, point Claude Code at a source build:
+> **Heads-up:** `@space-pirate-zero/starchart` is not on npm yet. Until it is, point Claude Code at a source build:
 
 ```bash
 git clone https://github.com/space-pirate-zero/starchart.git && cd starchart
@@ -325,7 +325,7 @@ The package exports the server factory as `createMcpServer` (it's `createServer`
 ```ts
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { InMemoryTransport } from "@modelcontextprotocol/sdk/inMemory.js";
-import { createMcpServer } from "@spz/starchart";
+import { createMcpServer } from "@space-pirate-zero/starchart";
 
 const server = createMcpServer({ root: "/path/to/project" });
 const [clientTransport, serverTransport] = InMemoryTransport.createLinkedPair();

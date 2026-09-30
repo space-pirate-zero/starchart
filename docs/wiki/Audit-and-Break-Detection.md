@@ -14,7 +14,7 @@ Source: [`engine/audit.ts`](https://github.com/space-pirate-zero/starchart/blob/
 
 ## Usage
 
-`@spz/starchart` is not on npm yet. Examples assume `starchart` is an alias for the built CLI (`alias starchart="node /path/to/starchart/packages/starchart/dist/cli/bin.js"`, see [Getting Started](Getting-Started)); once published it will be `npx @spz/starchart audit`.
+`@space-pirate-zero/starchart` is not on npm yet. Examples assume `starchart` is an alias for the built CLI (`alias starchart="node /path/to/starchart/packages/starchart/dist/cli/bin.js"`, see [Getting Started](Getting-Started)); once published it will be `npx @space-pirate-zero/starchart audit`.
 
 ```bash
 starchart audit                                   # everything
@@ -205,7 +205,7 @@ The second line is the one that matters: checkout imports a dead price. `PRO_NAM
 
 Unit tests prove your code does what you think. Audits prove the world does. Run them on a schedule, the way you'd run a smoke test.
 
-A nightly GitHub Actions workflow. Until `@spz/starchart` is on npm, build STARCHART from source in the job (the [GitHub Action](GitHub-Action) handles PR impact comments; audits run the CLI directly):
+A nightly GitHub Actions workflow. Until `@space-pirate-zero/starchart` is on npm, build STARCHART from source in the job (the [GitHub Action](GitHub-Action) handles PR impact comments; audits run the CLI directly):
 
 ```yaml
 # .github/workflows/reality.yml
@@ -235,7 +235,7 @@ jobs:
           ASC_PRIVATE_KEY: ${{ secrets.ASC_PRIVATE_KEY }}
 ```
 
-Once the package is published, the two middle steps collapse to `npx @spz/starchart audit`.
+Once the package is published, the two middle steps collapse to `npx @space-pirate-zero/starchart audit`.
 
 Notes:
 

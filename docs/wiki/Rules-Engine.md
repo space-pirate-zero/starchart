@@ -213,7 +213,7 @@ plugins: [./plugins/house.mjs]
 Without a plugin, run them through the [Library API](Library-API). This script was run against the demo:
 
 ```ts
-import { buildProject, defineRule, evaluateRules, loadPacks, parseRules } from "@spz/starchart";
+import { buildProject, defineRule, evaluateRules, loadPacks, parseRules } from "@space-pirate-zero/starchart";
 
 const DAY = 86_400_000;
 

@@ -4,7 +4,7 @@
 > A graph that ties your code to everything it touches in the real world: website, App Store, Stripe, OG images, promo reels. Change one star and STARCHART lights up every star it drags with it.
 
 **Name:** STARCHART, a Space Pirate Zero open source project. A pirate's map of your whole universe.
-**CLI:** `starchart` (alias `sc`) · **Package:** `@spz/starchart` (the unscoped `starchart` is taken on npm) · **Vocab prefix:** `sc:`
+**CLI:** `starchart` (alias `sc`) · **Package:** `@space-pirate-zero/starchart` (the unscoped `starchart` is taken on npm) · **Vocab prefix:** `sc:`
 **Alt names considered:** SHOCKWAVE (a change ripples outward), CHAINSHOT (linked cannonballs = linked deps; free on npm), TRIPWIRE (drift trips CI; taken on npm), DEADRECKON.
 **Avoids collisions with the fleet:** BLACKBOX, WARPCORE, FOUNDRY, PHANTOM, WARROOM, HOLODECK, SIXSIGMA, SIGNALS, IRONCLAD, PULSE, CORTEX, VAULT, BRIDGE, GHOSTDECK, DARKWAVE.
 
@@ -134,7 +134,7 @@ The hard, valuable part. Four mechanisms, from most precise to most magical:
 
 1. **Codegen (graph → code) — the gold standard.** STARCHART generates typed constants from facts:
    ```ts
-   // generated: @spz/starchart-facts (TS)  ·  StarchartFacts.swift  ·  StarchartFacts.kt
+   // generated: @space-pirate-zero/starchart-facts (TS)  ·  StarchartFacts.swift  ·  StarchartFacts.kt
    export const PRO = { name: "Pro+", price: { usd: 5.99 }, productId: "pro_monthly" } as const;
    ```
    Code imports facts instead of hardcoding them. The bridge edge comes for free and is exact. Change the fact and the code updates; the type checker covers the rest.
@@ -421,7 +421,7 @@ Natural language over the graph, backed by a real query engine so answers are ex
 > "What still says $4.99?" · "What breaks if we kill the Pro annual plan?" · "Who owns everything the onboarding flow touches?" · "Which screens have no store screenshot in Japanese?"
 
 ### World-class non-negotiables (the craft bar)
-- **60-second wow:** `npx @spz/starchart init --discover` against a real repo shows cross-layer impact before any YAML is written.
+- **60-second wow:** `npx @space-pirate-zero/starchart init --discover` against a real repo shows cross-layer impact before any YAML is written.
 - **Precision over recall:** every impact line has a *why* path and a confidence score, and low-confidence items are collapsed. One false alarm a week and people uninstall.
 - **Fast:** under 1s `impact` on a warm cache and under 5s on a PR in CI. The core graph can be ported to Rust later if needed.
 - **Single binary + zero infra:** no server or database required. A hosted mode is optional later.
@@ -525,7 +525,7 @@ interface CodeIngestor {
 
 ## 11. Open questions
 
-1. Can we claim the `@spz` npm scope, or should we go unscoped as `chainshot` / a `starchart-cli` package?
+1. ~~npm name~~ Resolved: published as `@space-pirate-zero/starchart` (the `@spz` org belongs to another npm user).
 2. License: Apache-2.0 for core (patent grant) vs MIT?
 3. Swift SCIP: rely on SourceKit-LSP → SCIP conversion, or ship tree-sitter-only Swift in v0.1?
 4. Screenshot drift: compare against the ASC API's published images, or against a local golden set?

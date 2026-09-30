@@ -9,11 +9,11 @@ Source: [`packages/xray`](https://github.com/space-pirate-zero/starchart/blob/ma
 The extension reads from `starchart serve` (see [Viewer and Serve](Viewer-and-Serve)). Run it from your project:
 
 ```bash
-npx @spz/starchart serve            # http://127.0.0.1:4477
-npx @spz/starchart serve --watch    # rebuild when .starchart/, the lock or code change
+npx @space-pirate-zero/starchart serve            # http://127.0.0.1:4477
+npx @space-pirate-zero/starchart serve --watch    # rebuild when .starchart/, the lock or code change
 ```
 
-`@spz/starchart` isn't on npm yet. Until it is, build from source (`git clone https://github.com/space-pirate-zero/starchart.git && cd starchart && pnpm install && pnpm build`) and run `node /path/to/starchart/packages/starchart/dist/cli/bin.js serve` from your project. That checkout also holds the `packages/xray` folder you load below.
+`@space-pirate-zero/starchart` isn't on npm yet. Until it is, build from source (`git clone https://github.com/space-pirate-zero/starchart.git && cd starchart && pnpm install && pnpm build`) and run `node /path/to/starchart/packages/starchart/dist/cli/bin.js serve` from your project. That checkout also holds the `packages/xray` folder you load below.
 
 The extension calls `GET /health` and `GET /xray.json`. The viewer is at `/`.
 

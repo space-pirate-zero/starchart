@@ -10,7 +10,7 @@ Add this to `.claude/settings.json` in your project (it's also returned by `clau
     "PostToolUse": [
       {
         "matcher": "Edit|Write|MultiEdit|NotebookEdit",
-        "hooks": [{ "type": "command", "command": "npx @spz/starchart hook claude" }]
+        "hooks": [{ "type": "command", "command": "npx @space-pirate-zero/starchart hook claude" }]
       }
     ]
   }
@@ -19,7 +19,7 @@ Add this to `.claude/settings.json` in your project (it's also returned by `clau
 
 Use the scoped name. The unscoped `starchart` package on npm is unrelated, so bare `npx starchart` runs the wrong thing.
 
-> **Heads-up:** `@spz/starchart` isn't on npm yet. Until it's published, build from source and point the hook at the CLI by absolute path:
+> **Heads-up:** `@space-pirate-zero/starchart` isn't on npm yet. Until it's published, build from source and point the hook at the CLI by absolute path:
 >
 > ```bash
 > git clone https://github.com/space-pirate-zero/starchart.git && cd starchart && pnpm install && pnpm build
@@ -150,7 +150,7 @@ echo '{bad' | STARCHART_HOOK_DEBUG=1 node …/dist/cli/bin.js hook claude
 {"hookSpecificOutput":{"hookEventName":"PostToolUse","additionalContext":"STARCHART hook error (debug): SyntaxError: Expected property name or '}' in JSON at position 1 (line 1 column 2)\n    at JSON.parse (<anonymous>)\n …"}}
 ```
 
-Set it in the hook command (`STARCHART_HOOK_DEBUG=1 npx @spz/starchart hook claude`, or the `node …/bin.js hook claude` form) while you're setting things up, then remove it.
+Set it in the hook command (`STARCHART_HOOK_DEBUG=1 npx @space-pirate-zero/starchart hook claude`, or the `node …/bin.js hook claude` form) while you're setting things up, then remove it.
 
 ## Performance
 
@@ -162,7 +162,7 @@ The hook builds the whole project (YAML, code ingestion, lockfile) **on every in
 ## Library use
 
 ```ts
-import { runClaudeHook, claudeHookSettingsSnippet } from "@spz/starchart";
+import { runClaudeHook, claudeHookSettingsSnippet } from "@space-pirate-zero/starchart";
 
 const stdout = await runClaudeHook(eventJson, { cwd: "/path/to/project", env: process.env }); // "" or the JSON line
 ```

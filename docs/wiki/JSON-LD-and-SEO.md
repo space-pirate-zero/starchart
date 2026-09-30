@@ -258,12 +258,12 @@ $ starchart emit jsonld --entity addon:pro --script
 
 ## Next.js: inject at build time
 
-Generate the markup as a build step, then render it from a server component. No runtime dependency on STARCHART. (`@spz/starchart` isn't on npm yet; until it is, point the script at a from-source build: `node <starchart checkout>/packages/starchart/dist/cli/bin.js emit jsonld …`. See [Getting Started](Getting-Started).)
+Generate the markup as a build step, then render it from a server component. No runtime dependency on STARCHART. (`@space-pirate-zero/starchart` isn't on npm yet; until it is, point the script at a from-source build: `node <starchart checkout>/packages/starchart/dist/cli/bin.js emit jsonld …`. See [Getting Started](Getting-Started).)
 
 ```json
 {
   "scripts": {
-    "prebuild": "npx @spz/starchart emit jsonld --entity app:nebula > app/(marketing)/nebula.jsonld.json",
+    "prebuild": "npx @space-pirate-zero/starchart emit jsonld --entity app:nebula > app/(marketing)/nebula.jsonld.json",
     "build": "next build"
   }
 }
@@ -291,7 +291,7 @@ Or call the library in a build script (or directly in a server component at buil
 ```ts
 // scripts/jsonld.mts
 import { writeFileSync } from "node:fs";
-import { buildProject, jsonLdScriptTag, schemaOrgFor } from "@spz/starchart";
+import { buildProject, jsonLdScriptTag, schemaOrgFor } from "@space-pirate-zero/starchart";
 
 const project = await buildProject(process.cwd());   // ingests code, so authority: code facts have values
 writeFileSync("app/(marketing)/pro-offer.html", jsonLdScriptTag(schemaOrgFor(project.graph, "addon:pro")));

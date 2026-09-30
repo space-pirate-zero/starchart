@@ -1,6 +1,6 @@
 Your truth lives somewhere STARCHART doesn't speak yet: a headless CMS, a feature-flag service, a pricing API, a spreadsheet. An adapter teaches it. This page walks through the `Adapter` interface (real types, pasted from the source), loading it into the CLI with `plugins:`, the text helpers the built-in adapters share, what to return from `audit` / `apply` / `revert` / `list` / `canApply`, testing with an injected `fetch`, a small `jsonfile` plugin that was run through `starchart adapters`, `audit`, `plan`, `apply` and `revert` on a copy of the demo, and a complete `cms` adapter in TypeScript.
 
-The examples write `starchart <cmd>`. `@spz/starchart` isn't on npm yet, so build it from source (`git clone https://github.com/space-pirate-zero/starchart.git && cd starchart && pnpm install && pnpm build`) and alias `starchart` to `node /path/to/starchart/packages/starchart/dist/cli/bin.js`. Once it's published, `npx @spz/starchart <cmd>` does the same.
+The examples write `starchart <cmd>`. `@space-pirate-zero/starchart` isn't on npm yet, so build it from source (`git clone https://github.com/space-pirate-zero/starchart.git && cd starchart && pnpm install && pnpm build`) and alias `starchart` to `node /path/to/starchart/packages/starchart/dist/cli/bin.js`. Once it's published, `npx @space-pirate-zero/starchart <cmd>` does the same.
 
 ## Two ways to ship an adapter
 
@@ -9,8 +9,8 @@ The examples write `starchart <cmd>`. `@spz/starchart` isn't on npm yet, so buil
 | Where | A JavaScript module that exports `adapters` | `packages/starchart/src/adapters/<id>.ts`, added to `builtinAdapters` in `registry.ts` |
 | Registration | list it under `plugins:` in `.starchart/config.yaml`, or call `registerAdapter(myAdapter)` from the [Library API](Library-API) | automatic on import |
 | Works with the `starchart` CLI | yes, and with the [MCP Server](MCP-Server), `serve` and the [Claude Code Hook](Claude-Code-Hook): plugins load inside `buildProject` | yes |
-| Text helpers (`leafFacts`, `auditText`, `findValue`, `planReplacements`, `applyReplacements`) | import from `@spz/starchart` | import from `./text.js` |
-| `MissingCredentialsError` (skip, don't fail) | import from `@spz/starchart` | import from `./errors.js` |
+| Text helpers (`leafFacts`, `auditText`, `findValue`, `planReplacements`, `applyReplacements`) | import from `@space-pirate-zero/starchart` | import from `./text.js` |
+| `MissingCredentialsError` (skip, don't fail) | import from `@space-pirate-zero/starchart` | import from `./errors.js` |
 
 If your system is common enough (Play Store, RevenueCat, PostHog, YouTube and Figma are all on the [Roadmap](Roadmap)), an in-tree PR helps everyone. See [Contributing](Contributing).
 
@@ -45,7 +45,7 @@ The not-found, neither-export and built-in-pack messages came from real runs (pr
 
 ## The interface
 
-From [`adapters/types.ts`](https://github.com/space-pirate-zero/starchart/blob/main/packages/starchart/src/adapters/types.ts), exported from `@spz/starchart`:
+From [`adapters/types.ts`](https://github.com/space-pirate-zero/starchart/blob/main/packages/starchart/src/adapters/types.ts), exported from `@space-pirate-zero/starchart`:
 
 ```ts
 export interface AdapterCapabilities {
@@ -140,7 +140,7 @@ export interface Adapter {
 - Compare with reality. Return `[]` when in sync.
 - Use `ctx.previousValues[factId]` (the lock's value) to tell `stale` (the old value is still there) from `mismatch` / `missing` (something else is there, or nothing).
 - Return `break` when the world is incompatible (the resource is gone, archived, or answering errors).
-- **Throw** for misconfiguration and unexpected API failures. The engine catches it and lists it under `errors`. Throw `MissingCredentialsError` (`new MissingCredentialsError("cms", "set CMS_TOKEN")`) for a missing key and audit *skips* the artifact instead, like the built-ins do. The engine checks it with `instanceof`, so import it from the same `@spz/starchart` copy the CLI runs from.
+- **Throw** for misconfiguration and unexpected API failures. The engine catches it and lists it under `errors`. Throw `MissingCredentialsError` (`new MissingCredentialsError("cms", "set CMS_TOKEN")`) for a missing key and audit *skips* the artifact instead, like the built-ins do. The engine checks it with `instanceof`, so import it from the same `@space-pirate-zero/starchart` copy the CLI runs from.
 - Never write in `audit`. It runs in CI, in the [MCP Server](MCP-Server), in [Reality Score](Reality-Score) with `--audit`.
 
 Audit runs 4 artifacts at a time, so audits must be safe to run concurrently.
@@ -178,7 +178,7 @@ Rollout order uses `ADAPTER_PRIORITY` in [`core/order.ts`](https://github.com/sp
 
 ## Text helpers
 
-Adapters that hold free text (web pages, store listings, CMS rich text) should use the helpers in [`adapters/text.ts`](https://github.com/space-pirate-zero/starchart/blob/main/packages/starchart/src/adapters/text.ts) so matching behaves exactly like fs, url and appstore. Five of them are exported from `@spz/starchart`:
+Adapters that hold free text (web pages, store listings, CMS rich text) should use the helpers in [`adapters/text.ts`](https://github.com/space-pirate-zero/starchart/blob/main/packages/starchart/src/adapters/text.ts) so matching behaves exactly like fs, url and appstore. Five of them are exported from `@space-pirate-zero/starchart`:
 
 | Helper | Does |
 |---|---|
@@ -191,7 +191,7 @@ Adapters that hold free text (web pages, store listings, CMS rich text) should u
 `findToken`, `tokenPattern`, `textForms` and `lineOf` exist too, but only in-tree: they aren't exported from the package root.
 
 ```js
-import { auditText, leafFacts } from "@spz/starchart";
+import { auditText, leafFacts } from "@space-pirate-zero/starchart";
 
 // inside your adapter object
 async audit(node, ctx) {
@@ -210,7 +210,7 @@ The App Store adapter is the best template for a text adapter: about 40 lines be
 
 ## A tested plugin: `jsonfile`
 
-This plugin mirrors a fact into a key of a JSON file in the repo, and ships a one-rule pack alongside. It has no imports from `@spz/starchart`, so it runs from a bare copy of the demo. Everything below was run on a temp copy of `examples/pro-universe`.
+This plugin mirrors a fact into a key of a JSON file in the repo, and ships a one-rule pack alongside. It has no imports from `@space-pirate-zero/starchart`, so it runs from a bare copy of the demo. Everything below was run on a temp copy of `examples/pro-universe`.
 
 ```js
 // plugins/example.mjs: a `jsonfile` adapter and a `house` rule pack.
@@ -384,10 +384,10 @@ $ starchart plan | grep json
 
 ## A complete example: `cms`
 
-A bigger example, in TypeScript. A headless CMS stores one JSON field per entry. The adapter mirrors a single fact into that field. It audits, applies with a dry run, reverts, and lists entries for orphan detection. It compiles with `strict` and `noUncheckedIndexedAccess` against `@spz/starchart` 0.1.0.
+A bigger example, in TypeScript. A headless CMS stores one JSON field per entry. The adapter mirrors a single fact into that field. It audits, applies with a dry run, reverts, and lists entries for orphan detection. It compiles with `strict` and `noUncheckedIndexedAccess` against `@space-pirate-zero/starchart` 0.1.0.
 
 ```ts
-import type { Adapter, AdapterContext, ApplyResult, Diff, GraphNode, ListedResource, UndoRecord } from "@spz/starchart";
+import type { Adapter, AdapterContext, ApplyResult, Diff, GraphNode, ListedResource, UndoRecord } from "@space-pirate-zero/starchart";
 
 /**
  * cms: a headless CMS that stores one JSON field per entry.
@@ -550,7 +550,7 @@ plugins: [./plugins/cms.mjs]
 Scripts and tests can skip the config and register the adapter directly:
 
 ```ts
-import { applyPlan, auditProject, buildProject, planFromLock, registerAdapter } from "@spz/starchart";
+import { applyPlan, auditProject, buildProject, planFromLock, registerAdapter } from "@space-pirate-zero/starchart";
 import { cmsAdapter } from "./cms-adapter.js";
 
 registerAdapter(cmsAdapter);
@@ -597,7 +597,7 @@ Every HTTP call goes through `ctx.fetch`, and `auditProject` / `applyPlan` / `re
 Unit-test the adapter with a hand-built graph:
 
 ```ts
-import { Graph, canWrite, registerAdapter, type AdapterContext } from "@spz/starchart";
+import { Graph, canWrite, registerAdapter, type AdapterContext } from "@space-pirate-zero/starchart";
 import { cmsAdapter } from "./cms-adapter.js";
 
 registerAdapter(cmsAdapter);

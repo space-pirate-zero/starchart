@@ -1,5 +1,5 @@
 /**
- * @spz/starchart — public library API.
+ * @space-pirate-zero/starchart — public library API.
  * Everything the CLI, MCP server, hooks and GitHub Action use is exported from here.
  */
 

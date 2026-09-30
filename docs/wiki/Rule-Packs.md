@@ -265,7 +265,7 @@ interface RulePack {
 Built-in packs set `pack: "<id>"` on each rule so violations are labelled. A small example:
 
 ```ts
-import { defineRule, type RulePack } from "@spz/starchart";
+import { defineRule, type RulePack } from "@space-pirate-zero/starchart";
 
 const PACK = "growth";
 
@@ -347,7 +347,7 @@ The rules:
 - `packs` can be a named export or live on the default export.
 - The loader calls `registerPack` for each pack. A plugin pack can't take the id of a built-in (`core`, `appstore`, `privacy`, `seo`): loading fails with `rule pack "core" is built in and cannot be replaced` and exit code 2.
 - A registered pack does nothing until its id is in `packs:`.
-- To import `defineRule` in a pack module, the project needs `@spz/starchart` installed where the plugin can resolve it. A plain object with `check` needs no imports at all.
+- To import `defineRule` in a pack module, the project needs `@space-pirate-zero/starchart` installed where the plugin can resolve it. A plain object with `check` needs no imports at all.
 - Duplicate rule ids across packs and your YAML rules are still not detected. Both run. Prefix pack rule ids with the pack id.
 
 Plugins load in `buildProject`, so the pack also runs in the `starchart_rules` [MCP tool](MCP-Server) and the [Claude Code Hook](Claude-Code-Hook). Details on the loader and its error messages: [Writing an Adapter](Writing-an-Adapter#plugins).

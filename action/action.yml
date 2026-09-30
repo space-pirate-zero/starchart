@@ -27,7 +27,7 @@ inputs:
     required: false
     default: "22"
   starchart-version:
-    description: Version (or dist-tag) of @spz/starchart to run.
+    description: Version (or dist-tag) of @space-pirate-zero/starchart to run.
     required: false
     default: "latest"
   github-token:
@@ -77,7 +77,7 @@ runs:
         fi
 
         report="${RUNNER_TEMP}/starchart.md"
-        npx --yes "@spz/starchart@${STARCHART_VERSION}" impact --diff "origin/${base}" --format markdown > "${report}"
+        npx --yes "@space-pirate-zero/starchart@${STARCHART_VERSION}" impact --diff "origin/${base}" --format markdown > "${report}"
 
         echo "report=${report}" >> "${GITHUB_OUTPUT}"
         cat "${report}" >> "${GITHUB_STEP_SUMMARY}"
@@ -131,4 +131,4 @@ runs:
         STARCHART_VERSION: ${{ inputs.starchart-version }}
       run: |
         set -euo pipefail
-        npx --yes "@spz/starchart@${STARCHART_VERSION}" check
+        npx --yes "@space-pirate-zero/starchart@${STARCHART_VERSION}" check

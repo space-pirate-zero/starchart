@@ -8,9 +8,9 @@ Every `starchart` command, subcommand and option, checked against [`cli/main.ts`
 | `sc` | the same CLI, shorter (`sc plan`, `sc impact --diff main`) |
 | `starchart-mcp` | the MCP server on stdio, same as `starchart mcp` (project root from `$STARCHART_ROOT`, else the cwd) |
 
-The package is `@spz/starchart`, so the npx form is `npx @spz/starchart <command>`. Never bare `npx starchart`: the unscoped npm name belongs to someone else. Node 20+.
+The package is `@space-pirate-zero/starchart`, so the npx form is `npx @space-pirate-zero/starchart <command>`. Never bare `npx starchart`: the unscoped npm name belongs to someone else. Node 20+.
 
-> **Not on npm yet.** `@spz/starchart` is not published. Until it is, build from source:
+> **Not on npm yet.** `@space-pirate-zero/starchart` is not published. Until it is, build from source:
 >
 > ```bash
 > git clone https://github.com/space-pirate-zero/starchart.git && cd starchart && pnpm install && pnpm build
@@ -827,7 +827,7 @@ starchart mcp
 Starts the MCP server on stdio. Project root: `-C` if given, else `$STARCHART_ROOT`, else the cwd. Tools: `starchart_impact`, `starchart_plan`, `starchart_diff_impact`, `starchart_check`, `starchart_why`, `starchart_query`, `starchart_node`, `starchart_audit`, `starchart_rules`, `starchart_orphans`, `starchart_score`, `starchart_apply`.
 
 ```bash
-claude mcp add starchart -- npx @spz/starchart mcp
+claude mcp add starchart -- npx @space-pirate-zero/starchart mcp
 # from source, until the package is published:
 claude mcp add starchart -- node /path/to/starchart/packages/starchart/dist/cli/bin.js mcp
 ```

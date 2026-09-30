@@ -183,7 +183,7 @@ export function claudeHookSettingsSnippet(): {
 } {
   return {
     hooks: {
-      PostToolUse: [{ matcher: "Edit|Write|MultiEdit|NotebookEdit", hooks: [{ type: "command", command: "npx @spz/starchart hook claude" }] }],
+      PostToolUse: [{ matcher: "Edit|Write|MultiEdit|NotebookEdit", hooks: [{ type: "command", command: "npx @space-pirate-zero/starchart hook claude" }] }],
     },
   };
 }

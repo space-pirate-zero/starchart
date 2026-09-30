@@ -181,7 +181,7 @@ Every `i18n:` node's per-locale strings are matched with the same needles and to
 From the library (there is no CLI command that prints these yet):
 
 ```ts
-import { buildProject, scanLiterals, discoverEdges } from "@spz/starchart";
+import { buildProject, scanLiterals, discoverEdges } from "@space-pirate-zero/starchart";
 const project = await buildProject("./pro-universe");
 const edges = discoverEdges(project.graph, await scanLiterals(project.root, project.graph));
 ```

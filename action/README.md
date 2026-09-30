@@ -53,7 +53,7 @@ written to the job summary.
 | `comment` | `true` | Post or update the sticky PR comment. |
 | `fail-on-stale` | `false` | Run `starchart check` and fail when artifacts drift from `starchart.lock`. |
 | `node-version` | `22` | Node.js version. |
-| `starchart-version` | `latest` | `@spz/starchart` version or dist-tag. |
+| `starchart-version` | `latest` | `@space-pirate-zero/starchart` version or dist-tag. |
 | `github-token` | `${{ github.token }}` | Token for reading and writing PR comments. |
 
 ## Outputs

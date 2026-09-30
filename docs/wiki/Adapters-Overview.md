@@ -92,7 +92,7 @@ export function getAdapter(id: string): Adapter | undefined;
 export function listAdapters(): Adapter[];
 ```
 
-`registerAdapter`, `getAdapter`, `listAdapters`, `builtinAdapters` and `canWrite` are all exported from `@spz/starchart`.
+`registerAdapter`, `getAdapter`, `listAdapters`, `builtinAdapters` and `canWrite` are all exported from `@space-pirate-zero/starchart`.
 
 Custom adapters reach the CLI through `plugins` in `.starchart/config.yaml`:
 
@@ -260,7 +260,7 @@ The engine journals every `undo` it gets (see [Apply, Revert and Journals](Apply
 
 ## Missing credentials skip, they don't fail
 
-External adapters throw `MissingCredentialsError` when a key isn't configured. `audit` catches it and lists the artifact under **skipped**, not **errors**, so a laptop without a Stripe key still gets a useful audit. `MissingCredentialsError` (from `adapters/errors.ts`) is exported from `@spz/starchart`, so custom adapters can throw it too: `new MissingCredentialsError("myadapter", "MY_API_KEY is not set")`. Anything else they throw lands under errors.
+External adapters throw `MissingCredentialsError` when a key isn't configured. `audit` catches it and lists the artifact under **skipped**, not **errors**, so a laptop without a Stripe key still gets a useful audit. `MissingCredentialsError` (from `adapters/errors.ts`) is exported from `@space-pirate-zero/starchart`, so custom adapters can throw it too: `new MissingCredentialsError("myadapter", "MY_API_KEY is not set")`. Anything else they throw lands under errors.
 
 ## `starchart adapters`
 

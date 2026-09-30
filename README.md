@@ -55,7 +55,7 @@ A Space Pirate Zero project. Apache-2.0.
 
 ## Quick start
 
-> **Not on npm yet.** `@spz/starchart` isn't published. Until it is, run it from source (below). Always use the scoped name: the unscoped `starchart` package on npm belongs to someone else.
+> **Not on npm yet.** `@space-pirate-zero/starchart` isn't published. Until it is, run it from source (below). Always use the scoped name: the unscoped `starchart` package on npm belongs to someone else.
 
 ```bash
 git clone https://github.com/space-pirate-zero/starchart.git && cd starchart
@@ -97,7 +97,7 @@ Try the bundled demo universe (a SwiftUI app plus a Next.js site with a paid Pro
 starchart -C examples/pro-universe impact addon:pro.price.usd
 ```
 
-Once published, `npx @spz/starchart <command>` will work everywhere.
+Once published, `npx @space-pirate-zero/starchart <command>` will work everywhere.
 
 📖 **Full documentation: the [STARCHART wiki](https://github.com/space-pirate-zero/starchart/wiki).**
 
@@ -213,13 +213,13 @@ Use `sc` as a short alias. Global options: `-C <dir>`, `--no-color`, `-q`. See t
 
 ## Integrations
 
-**Claude Code hook.** Every file an agent edits gets its world impact injected back into the conversation. Add this to `.claude/settings.json` (until the package is published, replace `npx @spz/starchart` with `node /path/to/starchart/packages/starchart/dist/cli/bin.js`):
+**Claude Code hook.** Every file an agent edits gets its world impact injected back into the conversation. Add this to `.claude/settings.json` (until the package is published, replace `npx @space-pirate-zero/starchart` with `node /path/to/starchart/packages/starchart/dist/cli/bin.js`):
 
 ```json
 {
   "hooks": {
     "PostToolUse": [
-      { "matcher": "Edit|Write|MultiEdit|NotebookEdit", "hooks": [{ "type": "command", "command": "npx @spz/starchart hook claude" }] }
+      { "matcher": "Edit|Write|MultiEdit|NotebookEdit", "hooks": [{ "type": "command", "command": "npx @space-pirate-zero/starchart hook claude" }] }
     ]
   }
 }
@@ -228,7 +228,7 @@ Use `sc` as a short alias. Global options: `-C <dir>`, `--no-color`, `-q`. See t
 **MCP.**
 
 ```bash
-claude mcp add starchart -- npx @spz/starchart mcp
+claude mcp add starchart -- npx @space-pirate-zero/starchart mcp
 ```
 
 **GitHub Action.** A sticky PR comment with the cross-layer blast radius. See [action/README.md](action/README.md).

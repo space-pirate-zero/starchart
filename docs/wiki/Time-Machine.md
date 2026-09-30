@@ -76,7 +76,7 @@ The lock as committed at any revision git understands (`HEAD~3`, `v1.2.0`, `main
 Useful for diffing fact values between releases:
 
 ```ts
-import { lockAt } from "@spz/starchart";
+import { lockAt } from "@space-pirate-zero/starchart";
 
 const before = await lockAt(process.cwd(), "v1.4.0");
 const after = await lockAt(process.cwd(), "HEAD");

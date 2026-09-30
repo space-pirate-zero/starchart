@@ -174,10 +174,10 @@ Change: addon:pro.features  ["Themes","iCloud sync"] → ["Themes","iCloud sync"
 The bundled [GitHub Action](GitHub-Action) runs exactly this:
 
 ```bash
-npx --yes "@spz/starchart@latest" impact --diff "origin/${base}" --format markdown > "$RUNNER_TEMP/starchart.md"
+npx --yes "@space-pirate-zero/starchart@latest" impact --diff "origin/${base}" --format markdown > "$RUNNER_TEMP/starchart.md"
 ```
 
-and posts the result as a sticky comment. That needs `@spz/starchart` on npm, and it isn't published yet, so the Action won't run today. Until it is, build STARCHART from source in the job:
+and posts the result as a sticky comment. That needs `@space-pirate-zero/starchart` on npm, and it isn't published yet, so the Action won't run today. Until it is, build STARCHART from source in the job:
 
 ```yaml
 - uses: actions/checkout@v4
@@ -194,7 +194,7 @@ and posts the result as a sticky comment. That needs `@spz/starchart` on npm, an
 - run: node "$RUNNER_TEMP/starchart/packages/starchart/dist/cli/bin.js" check   # optional: fail on lockfile drift
 ```
 
-Once the package is published, the two `node …/bin.js` lines become `npx @spz/starchart impact …` and `npx @spz/starchart check`. Never bare `npx starchart`: that unscoped npm package is someone else's.
+Once the package is published, the two `node …/bin.js` lines become `npx @space-pirate-zero/starchart impact …` and `npx @space-pirate-zero/starchart check`. Never bare `npx starchart`: that unscoped npm package is someone else's.
 
 Notes:
 
@@ -206,7 +206,7 @@ Notes:
 ## Library use
 
 ```ts
-import { buildProject, changedNodesFromDiff, planFromDiff, formatPlanMarkdown } from "@spz/starchart";
+import { buildProject, changedNodesFromDiff, planFromDiff, formatPlanMarkdown } from "@space-pirate-zero/starchart";
 
 const project = await buildProject(process.cwd());
 const ids = await changedNodesFromDiff(project.root, project.loaded.config.code, project.graph, "origin/main");

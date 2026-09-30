@@ -32,7 +32,7 @@ starchart score --badge badge.svg             # write a README badge
 starchart score --badge-json reality.json     # write a shields.io endpoint JSON
 ```
 
-`starchart` here is shorthand for `npx @spz/starchart`. The package isn't on npm yet, so for now build from source and alias `starchart` to `node /path/to/starchart/packages/starchart/dist/cli/bin.js` (see [Getting Started](Getting-Started)).
+`starchart` here is shorthand for `npx @space-pirate-zero/starchart`. The package isn't on npm yet, so for now build from source and alias `starchart` to `node /path/to/starchart/packages/starchart/dist/cli/bin.js` (see [Getting Started](Getting-Started)).
 
 `--badge` and `--badge-json` paths resolve against the current directory (or `-C`), and parent directories are created. The command always exits 0. The score is a metric. Use `starchart check` as the gate (see [GitHub Action](GitHub-Action)).
 
@@ -121,7 +121,7 @@ Both are also in the library: `badgeSvg(score)`, `badgeJson(score)`, `realitySco
 
 ## Publishing the badge from CI
 
-The simplest setup commits the badge to a dedicated `badges` branch on every push to `main`, and the README points at the raw file. The action installs `@spz/starchart` from npm, which isn't published yet, so this workflow builds STARCHART from source. See [GitHub Action](GitHub-Action#until-the-npm-package-is-published).
+The simplest setup commits the badge to a dedicated `badges` branch on every push to `main`, and the README points at the raw file. The action installs `@space-pirate-zero/starchart` from npm, which isn't published yet, so this workflow builds STARCHART from source. See [GitHub Action](GitHub-Action#until-the-npm-package-is-published).
 
 ```yaml
 # .github/workflows/reality-badge.yml
@@ -182,7 +182,7 @@ Then pick one of these for the README:
 ![Reality Score](https://img.shields.io/endpoint?url=https%3A%2F%2Fraw.githubusercontent.com%2F<owner>%2F<repo>%2Fbadges%2Freality.json)
 ```
 
-Once `@spz/starchart` is on npm, the build steps collapse to `npx --yes @spz/starchart score --badge … --badge-json …`.
+Once `@space-pirate-zero/starchart` is on npm, the build steps collapse to `npx --yes @space-pirate-zero/starchart score --badge … --badge-json …`.
 
 For a live-audit score, add `--audit` and pass the adapter credentials as secrets: `STRIPE_SECRET_KEY` (or the variable named by `adapters.stripe.secretEnv`), and `ASC_KEY_ID`, `ASC_ISSUER_ID` plus `ASC_PRIVATE_KEY` or `ASC_PRIVATE_KEY_PATH` for App Store Connect. Config values aren't env-interpolated, so don't put `${VAR}` in config.yaml. Without credentials, those artifacts are skipped, not failed.
 

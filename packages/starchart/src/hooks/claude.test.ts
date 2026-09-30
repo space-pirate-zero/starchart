@@ -120,7 +120,7 @@ describe("helpers", () => {
 
   it("exposes the settings snippet", () => {
     expect(claudeHookSettingsSnippet()).toEqual({
-      hooks: { PostToolUse: [{ matcher: "Edit|Write|MultiEdit|NotebookEdit", hooks: [{ type: "command", command: "npx @spz/starchart hook claude" }] }] },
+      hooks: { PostToolUse: [{ matcher: "Edit|Write|MultiEdit|NotebookEdit", hooks: [{ type: "command", command: "npx @space-pirate-zero/starchart hook claude" }] }] },
     });
   });
 });

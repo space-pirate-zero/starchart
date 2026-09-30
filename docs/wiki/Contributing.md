@@ -9,7 +9,7 @@ git clone https://github.com/space-pirate-zero/starchart.git && cd starchart
 pnpm install && pnpm build
 ```
 
-`@spz/starchart` isn't on npm yet, so this from-source build is also how everyone else runs it today. To use your build on another repo, alias it:
+`@space-pirate-zero/starchart` isn't on npm yet, so this from-source build is also how everyone else runs it today. To use your build on another repo, alias it:
 
 ```bash
 alias starchart="node $PWD/packages/starchart/dist/cli/bin.js"
@@ -26,7 +26,7 @@ Root scripts run across the workspace (`pnpm -r`):
 Inside `packages/starchart` there's also a `dev` script that runs the CLI from source with tsx, no build needed:
 
 ```bash
-pnpm --filter @spz/starchart dev --cwd ../../examples/pro-universe impact addon:pro.price.usd
+pnpm --filter @space-pirate-zero/starchart dev --cwd ../../examples/pro-universe impact addon:pro.price.usd
 ```
 
 The script runs from `packages/starchart`, so paths are relative to it. Prefer the long `--cwd` form here, since `-C` is also a pnpm flag.

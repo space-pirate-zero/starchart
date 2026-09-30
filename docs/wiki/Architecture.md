@@ -4,7 +4,7 @@ How STARCHART is built: the package layout, how data flows from YAML and source 
 
 | Path | What lives there |
 |---|---|
-| `packages/starchart/` | The library, the CLI (`starchart` / `sc`) and the MCP server binary (`starchart-mcp`). Package name `@spz/starchart` (not on npm yet). |
+| `packages/starchart/` | The library, the CLI (`starchart` / `sc`) and the MCP server binary (`starchart-mcp`). Package name `@space-pirate-zero/starchart` (not on npm yet). |
 | `packages/xray/` | Reality X-Ray, a Manifest V3 browser extension (plain JS, no build step). |
 | `action/` | The GitHub Action (`action.yml`, a composite action). |
 | `examples/pro-universe/` | The demo universe: SwiftUI app + Next.js site + Stripe + App Store, with a full chart. |

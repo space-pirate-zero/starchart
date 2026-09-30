@@ -1,6 +1,6 @@
 The STARCHART GitHub Action posts the cross-layer blast radius of every pull request as one sticky comment: which screens, facts, App Store screenshots, web pages, Stripe prices and promo reels the diff touches, each classified auto / review / manual / break with a why-path. It can also fail the job when artifacts drift from `starchart.lock`. This page covers the action's inputs and outputs, required permissions, a full workflow, how the sticky comment works, running `check`, `rules` and `score --badge` in CI, and how to build STARCHART from source until the npm package is published. Source: [`action/action.yml`](https://github.com/space-pirate-zero/starchart/blob/main/action/action.yml).
 
-> **Status:** the action runs `npx --yes @spz/starchart@<version>`, and **`@spz/starchart` is not published to npm yet**. Until it is, the action as-is fails at the "Compute blast radius" step. Use the [build-from-source workflow](#until-the-npm-package-is-published) below: it clones and builds STARCHART in the job and runs `node …/dist/cli/bin.js impact --diff … -f markdown`, which is exactly what the action does.
+> **Status:** the action runs `npx --yes @space-pirate-zero/starchart@<version>`, and **`@space-pirate-zero/starchart` is not published to npm yet**. Until it is, the action as-is fails at the "Compute blast radius" step. Use the [build-from-source workflow](#until-the-npm-package-is-published) below: it clones and builds STARCHART in the job and runs `node …/dist/cli/bin.js impact --diff … -f markdown`, which is exactly what the action does.
 
 ## Inputs
 
@@ -11,7 +11,7 @@ The STARCHART GitHub Action posts the cross-layer blast radius of every pull req
 | `comment` | `"true"` | Post or update the sticky PR comment. Only runs on `pull_request` and `pull_request_target` events. |
 | `fail-on-stale` | `"false"` | Run `starchart check` and fail the job if any artifact is stale against `starchart.lock`. |
 | `node-version` | `"22"` | Node.js version for `actions/setup-node@v4`. |
-| `starchart-version` | `"latest"` | Version or dist-tag of `@spz/starchart`. Must match `^[A-Za-z0-9][A-Za-z0-9._+-]*$`. |
+| `starchart-version` | `"latest"` | Version or dist-tag of `@space-pirate-zero/starchart`. Must match `^[A-Za-z0-9][A-Za-z0-9._+-]*$`. |
 | `github-token` | `${{ github.token }}` | Token for reading and writing PR comments. Needs `pull-requests: write`. |
 
 ## Outputs
@@ -29,10 +29,10 @@ The action is a composite of four steps:
 1. `actions/setup-node@v4` with `node-version`.
 2. **Compute blast radius:** validate inputs, `git fetch origin +refs/heads/<base>:refs/remotes/origin/<base>` (if the fetch fails, it logs a warning and uses the local ref), then:
    ```bash
-   npx --yes "@spz/starchart@${STARCHART_VERSION}" impact --diff "origin/${base}" --format markdown > "$RUNNER_TEMP/starchart.md"
+   npx --yes "@space-pirate-zero/starchart@${STARCHART_VERSION}" impact --diff "origin/${base}" --format markdown > "$RUNNER_TEMP/starchart.md"
    ```
 3. **Post sticky PR comment** (when `comment == 'true'` on a PR event).
-4. **Fail on stale artifacts** (when `fail-on-stale == 'true'`): `npx --yes "@spz/starchart@…" check`, which exits 1 on drift.
+4. **Fail on stale artifacts** (when `fail-on-stale == 'true'`): `npx --yes "@space-pirate-zero/starchart@…" check`, which exits 1 on drift.
 
 `impact --diff` seeds from the files changed versus the base plus any fact changes since the lock. See [Git Diff Impact](Git-Diff-Impact). Code-ingest warnings (unknown `@starchart` verbs, unparsable files) go to stderr as `warn …`, so they show up in the job log without leaking into the redirected markdown report.
 

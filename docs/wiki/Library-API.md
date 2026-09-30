@@ -1,22 +1,22 @@
-Everything the CLI does is a function you can call. The CLI, the MCP server, the Claude Code hook and the GitHub Action all sit on the same public API, exported from the package root of `@spz/starchart`. This page lists that API by area with signatures copied from the source, and short examples you can paste into a script, a test, a build step or your own tooling.
+Everything the CLI does is a function you can call. The CLI, the MCP server, the Claude Code hook and the GitHub Action all sit on the same public API, exported from the package root of `@space-pirate-zero/starchart`. This page lists that API by area with signatures copied from the source, and short examples you can paste into a script, a test, a build step or your own tooling.
 
 Source: [`packages/starchart/src/index.ts`](https://github.com/space-pirate-zero/starchart/blob/main/packages/starchart/src/index.ts).
 
 ## Importing
 
 ```ts
-import { buildProject, planFromLock, computeImpact, formatPlanMarkdown } from "@spz/starchart";
+import { buildProject, planFromLock, computeImpact, formatPlanMarkdown } from "@space-pirate-zero/starchart";
 ```
 
-- `@spz/starchart` isn't published to npm yet. Until it is, build from source (`git clone https://github.com/space-pirate-zero/starchart.git && cd starchart && pnpm install && pnpm build`) and depend on the local package, for example `"@spz/starchart": "file:/path/to/starchart/packages/starchart"`.
+- `@space-pirate-zero/starchart` isn't published to npm yet. Until it is, build from source (`git clone https://github.com/space-pirate-zero/starchart.git && cd starchart && pnpm install && pnpm build`) and depend on the local package, for example `"@space-pirate-zero/starchart": "file:/path/to/starchart/packages/starchart"`.
 - ESM only (`"type": "module"`), Node 20+. Types ship in `dist/index.d.ts`.
-- The package `exports` map exposes only the root entry (`"." → ./dist/index.js`). Deep imports such as `@spz/starchart/dist/core/graph.js` are blocked by Node's exports resolution. If a helper is not listed below (for example `formatValue`, `discoverChart`, `detectScopes`, `jsonLdContext`), it is internal.
+- The package `exports` map exposes only the root entry (`"." → ./dist/index.js`). Deep imports such as `@space-pirate-zero/starchart/dist/core/graph.js` are blocked by Node's exports resolution. If a helper is not listed below (for example `formatValue`, `discoverChart`, `detectScopes`, `jsonLdContext`), it is internal.
 - The MCP server factory is exported as **`createMcpServer`** (it is `createServer` inside `mcp/server.ts`).
 
 ## A five-minute tour
 
 ```ts
-import { buildProject, planFromSeeds, formatPlanText, check, why, explainPath } from "@spz/starchart";
+import { buildProject, planFromSeeds, formatPlanText, check, why, explainPath } from "@space-pirate-zero/starchart";
 
 // 1. Load config, compile YAML, ingest code, resolve code facts, read the lock.
 const project = await buildProject("./examples/pro-universe");
@@ -171,7 +171,7 @@ export function explainPath(path: ImpactHop[]): string
 `computeImpact` is breadth-first, so every item carries its shortest path. `computeImpact` on its own defaults `canWrite` to "fs only"; `impactOptions(project)` gives you the project's real adapter settings. `classify` passes the artifact node to `canWrite`, so an adapter's `canApply(node)` can keep individual artifacts `manual` (App Store screenshots and IAPs, for example).
 
 ```ts
-import { computeImpact, explainPath } from "@spz/starchart";
+import { computeImpact, explainPath } from "@space-pirate-zero/starchart";
 
 for (const i of computeImpact(project.graph, ["screen:ios/Paywall"]).items) {
   console.log(i.class, i.id, explainPath(i.path));
@@ -215,7 +215,7 @@ export function changedSince(graph: Graph, lock: LockFile): { id: string; before
 `buildLock` records `opts.maxCodeDepth` (falling back to `previous.maxCodeDepth`) in the lock and uses it for the dependency walk. `staleArtifacts` walks with the lock's recorded value, so pass the project's setting:
 
 ```ts
-import { buildLock, writeLock } from "@spz/starchart";
+import { buildLock, writeLock } from "@space-pirate-zero/starchart";
 const opts = { maxCodeDepth: project.loaded.config.code.maxCodeDepth };
 writeLock(project.root, buildLock(project.graph, project.lock, undefined, opts));   // what `starchart lock` does
 ```
@@ -236,7 +236,7 @@ export function applyDiscovered(graph: Graph, edges: DiscoveredEdge[], minConfid
 ```
 
 ```ts
-import { scanLiterals, discoverEdges, applyDiscovered } from "@spz/starchart";
+import { scanLiterals, discoverEdges, applyDiscovered } from "@space-pirate-zero/starchart";
 
 const occurrences = await scanLiterals(project.root, project.graph, { roots: ["apps", "marketing"] });
 const unbound = occurrences.filter((o) => !o.bound);
@@ -300,7 +300,7 @@ export async function buildPreview(project: Project, plan: Plan, outDir: string)
 `ApplyReport` is `{ dryRun, applied, failed?, notRun, pending, bindingEdits, journal?, lockUpdated }`. `fetch` and `env` are injectable for tests.
 
 ```ts
-import { buildProject, planFromLock, applyPlan } from "@spz/starchart";
+import { buildProject, planFromLock, applyPlan } from "@space-pirate-zero/starchart";
 
 const project = await buildProject();
 const report = await applyPlan(project, planFromLock(project), {
@@ -330,7 +330,7 @@ export interface Violation { rule: string; severity: "error" | "warn" | "info"; 
 `loadPacks` accepts bare ids and published names (`@starchart/pack-seo`, `pack-seo`), and resolves built-in packs first, then registered ones. `registerPack` adds or replaces a non-built-in pack; `registerPack({ id: "core", … })` throws `rule pack "core" is built in and cannot be replaced`. What `starchart rules` does:
 
 ```ts
-import { parseRules, loadPacks, evaluateRules } from "@spz/starchart";
+import { parseRules, loadPacks, evaluateRules } from "@space-pirate-zero/starchart";
 
 const { rules, errors } = parseRules(project.loaded.rules);
 const packs = loadPacks(project.loaded.config.packs);
@@ -352,7 +352,7 @@ export async function loadPlugins(root: string, specifiers: string[]): Promise<S
 `loadPlugins` is what `buildProject` calls with `config.plugins`. Relative specifiers resolve from `root`, bare ones from `root`'s `node_modules`. Each module is imported once per process (keyed by resolved path); its adapters go through `registerAdapter` and its packs through `registerPack`. Problems throw `ConfigError`. You only need it to load plugins outside a project build:
 
 ```ts
-import { loadPlugins, loadPacks } from "@spz/starchart";
+import { loadPlugins, loadPacks } from "@space-pirate-zero/starchart";
 
 await loadPlugins(process.cwd(), ["./plugins/example.mjs"]);
 const { rules, unknown } = loadPacks(["core", "house"]);
@@ -372,7 +372,7 @@ export function changeCost(graph: Graph, factIds?: string[], opts: { hours?: Par
 ```
 
 ```ts
-import { realityScore, badgeSvg, changeCost, impactOptions } from "@spz/starchart";
+import { realityScore, badgeSvg, changeCost, impactOptions } from "@space-pirate-zero/starchart";
 import { writeFileSync } from "node:fs";
 
 const { score } = realityScore(project.graph, project.lock);          // 83
@@ -426,7 +426,7 @@ export function xrayPayload(project: Project): XrayPayload
 ```
 
 ```ts
-import { buildProject, viewerData, renderViewerHtml, serve } from "@spz/starchart";
+import { buildProject, viewerData, renderViewerHtml, serve } from "@space-pirate-zero/starchart";
 import { writeFileSync } from "node:fs";
 
 writeFileSync("chart.html", renderViewerHtml(viewerData(await buildProject())));
@@ -451,7 +451,7 @@ export function createMcpServer(opts: { root?: string } = {}): McpServer
 `runClaudeHook` takes the hook's stdin JSON and returns the stdout payload (`{"hookSpecificOutput":{…}}`) or `""`. It never throws. `createMcpServer` returns an `McpServer` from `@modelcontextprotocol/sdk`; connect it to any transport. Its root defaults to `$STARCHART_ROOT`, then the cwd.
 
 ```ts
-import { createMcpServer } from "@spz/starchart";
+import { createMcpServer } from "@space-pirate-zero/starchart";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 
 const server = createMcpServer({ root: "/path/to/repo" });
@@ -466,7 +466,7 @@ See [Claude Code Hook](Claude-Code-Hook) and [MCP Server](MCP-Server).
 
 ```ts
 import { test, expect } from "vitest";
-import { buildProject, scanLiterals } from "@spz/starchart";
+import { buildProject, scanLiterals } from "@space-pirate-zero/starchart";
 
 test("no unbound fact literals", async () => {
   const project = await buildProject();
@@ -478,7 +478,7 @@ test("no unbound fact literals", async () => {
 **PR bot without the Action:**
 
 ```ts
-import { buildProject, planFromDiff, formatPlanMarkdown } from "@spz/starchart";
+import { buildProject, planFromDiff, formatPlanMarkdown } from "@space-pirate-zero/starchart";
 const project = await buildProject();
 const md = formatPlanMarkdown(await planFromDiff(project, "origin/main"), { maxItems: 20 });
 ```

@@ -2,7 +2,7 @@ The star chart, literally. `starchart graph` writes a single self-contained HTML
 
 Sources: [`viewer/html.ts`](https://github.com/space-pirate-zero/starchart/blob/main/packages/starchart/src/viewer/html.ts), [`viewer/serve.ts`](https://github.com/space-pirate-zero/starchart/blob/main/packages/starchart/src/viewer/serve.ts), [`viewer/assets/viewer.js`](https://github.com/space-pirate-zero/starchart/blob/main/packages/starchart/src/viewer/assets/viewer.js), [`viewer/assets/impact-core.js`](https://github.com/space-pirate-zero/starchart/blob/main/packages/starchart/src/viewer/assets/impact-core.js).
 
-Examples below write `starchart <cmd>`. Once the package is published that's `npx @spz/starchart <cmd>`; until then it's `node /path/to/starchart/packages/starchart/dist/cli/bin.js <cmd>` from a source build (see [Getting Started](Getting-Started)).
+Examples below write `starchart <cmd>`. Once the package is published that's `npx @space-pirate-zero/starchart <cmd>`; until then it's `node /path/to/starchart/packages/starchart/dist/cli/bin.js <cmd>` from a source build (see [Getting Started](Getting-Started)).
 
 ## starchart graph
 
