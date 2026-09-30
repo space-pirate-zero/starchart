@@ -1,6 +1,6 @@
-What STARCHART v0.1.0 actually does today, what it doesn't, and where it's headed. Status is honest: "built" means shipped in the code and covered by tests, not "designed". The long-form design lives in [PLAN.md](https://github.com/space-pirate-zero/starchart/blob/main/PLAN.md).
+What STARCHART v0.1.1 actually does today, what it doesn't, and where it's headed. Status is honest: "built" means shipped in the code and covered by tests, not "designed". The long-form design lives in [PLAN.md](https://github.com/space-pirate-zero/starchart/blob/main/PLAN.md).
 
-## Built (v0.1.0)
+## Built (v0.1.1)
 
 | Area | Status | Notes |
 |---|---|---|
@@ -16,8 +16,18 @@ What STARCHART v0.1.0 actually does today, what it doesn't, and where it's heade
 | Codegen (TS / Swift / Kotlin), schema.org JSON-LD, time machine (`history`) | ✅ | [Codegen](Codegen) · [JSON-LD and SEO](JSON-LD-and-SEO) · [Time Machine](Time-Machine) |
 | Viewer (canvas star chart), `serve`, Reality X-Ray extension (MV3) | ✅ | Extension isn't in any browser store; load it unpacked. [Viewer and Serve](Viewer-and-Serve) · [Reality X-Ray](Reality-X-Ray) |
 | MCP server, Claude Code hook, GitHub Action | ✅ | [MCP Server](MCP-Server) · [Claude Code Hook](Claude-Code-Hook) · [GitHub Action](GitHub-Action) |
-| npm package | ✅ | `@space-pirate-zero/starchart@0.1.0` published 2026-09-30. `npm i -D @space-pirate-zero/starchart`, then `npx starchart <command>`. [Getting Started](Getting-Started) |
+| npm package | ✅ | `@space-pirate-zero/starchart@0.1.1` is current. 0.1.0 published 2026-09-30, followed the same day by the 0.1.1 security release. `npm i -D @space-pirate-zero/starchart`, then `npx starchart <command>`. [Getting Started](Getting-Started) |
+| Security hardening | ✅ | Loopback-only `serve`, secret redaction, git revision validation, symlink-aware write containment, regex screening. Covered by `test/security.test.ts`. [Security](Security) |
 | CI and docs pipeline | ✅ | `ci.yml` (typecheck, test, build on Ubuntu + macOS, then demo `check`); `wiki.yml` publishes `docs/wiki/`. [Contributing](Contributing) |
+
+### Release history
+
+| Version | Date | What shipped |
+|---|---|---|
+| 0.1.1 | 2026-09-30 | Security release. `serve` grants CORS only to browser extensions, rejects non-loopback `Host` headers and needs `--allow-remote` for a non-loopback bind; secret-looking literals are redacted from the code layer; option-shaped git revisions are rejected; `apply`, `codegen` and `revert` can't write outside the project (symlinks included); unsafe regexes in rules and fs selectors are refused; the version is read from `package.json`. Upgrade if you run `serve` or the MCP server. [Security](Security) |
+| 0.1.0 | 2026-09-30 | First release. |
+
+Every change, release by release: [CHANGELOG.md](https://github.com/space-pirate-zero/starchart/blob/main/CHANGELOG.md).
 
 ### Fixed since the first cut
 
@@ -63,7 +73,7 @@ Also designed in PLAN.md but not in the CLI today: `whatif` pre-flight, task sin
 
 ## Phases
 
-The phase plan from PLAN.md, with where v0.1.0 actually landed:
+The phase plan from PLAN.md, with where v0.1.1 actually landed:
 
 | Phase | Deliverable | Demo moment | Status |
 |---|---|---|---|
@@ -79,7 +89,7 @@ The phase plan from PLAN.md, with where v0.1.0 actually landed:
 
 A suggested order, derived from the gaps above. It's not a committed schedule:
 
-1. Run the Stripe and App Store adapters against real test accounts.
+1. Run the Stripe adapter against a real test account, and exercise the remaining App Store Connect fields live.
 2. Incremental ingest with a content-hash cache, to hit the "under 1 s warm, under 5 s in CI" targets.
 3. SCIP ingest, TypeScript first.
 4. Play Store and RevenueCat adapters.
@@ -91,5 +101,5 @@ Want one of these sooner? [Open an issue](https://github.com/space-pirate-zero/s
 
 - [Architecture](Architecture)
 - [Contributing](Contributing)
-- [FAQ and Troubleshooting](FAQ-and-Troubleshooting)
+- [Security](Security)
 - [Home](Home)

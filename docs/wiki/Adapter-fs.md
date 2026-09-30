@@ -11,7 +11,7 @@ binding: { adapter: fs, path: apps/web/messages/en.json, selector: "json:$.prici
 | Field | Required | Meaning |
 |---|---|---|
 | `adapter` | yes | `fs` |
-| `path` | yes (unless the artifact has a template with `out`) | Root-relative file path. Paths that escape the project root are refused: `path "../x" is outside the project root`. |
+| `path` | yes (unless the artifact has a template with `out`) | Root-relative file path. Must resolve inside the project root, symlinks followed (see [Path containment](#path-containment)). |
 | `selector` | no | Narrows where values are searched and replaced. `json:<path>` or `regex:<pattern>`. |
 
 If `path` is missing but the artifact declares `renders: { template, out }`, the `out` path is used. With neither, you get `<id>: fs binding needs a "path"`.
@@ -22,11 +22,47 @@ If `path` is missing but the artifact declares `renders: { template, out }`, the
 |---|---|---|
 | none | | The whole file |
 | `json:` | `json:$.plans.pro.price`, `json:$.plans[0].price`, `json:$["pro plan"].price` | Only the scalars under that JSON path. The file must parse as JSON. |
-| `regex:` | `regex:price:\s*"([^"]+)"` | Only the regions the regex matches. If the pattern has a capture group, only group 1 counts. Compiled with flags `gmd`. |
+| `regex:` | `regex:price:\s*"([^"]+)"` | Only the regions the regex matches. If the pattern has a capture group, only group 1 counts. Compiled with flags `gmd`. Unsafe patterns are refused (see [Regex screening](#regex-screening)). |
 
 JSON paths accept `$`, `.key`, `[0]` and `["quoted key"]`. A leading `$` is optional. Anything else is `invalid JSON path`.
 
+### Regex screening
+
+JavaScript regexes have no timeout, so a selector with a nested quantifier can hang STARCHART on a crafted file. Since 0.1.1 a `regex:` selector is screened before it compiles and refused when it:
+
+- is longer than 500 characters, or
+- quantifies a group that already contains a quantifier: `(a+)+`, `(\d+)+`, `(.*)*`, `(x{2,})+`.
+
+The artifact fails with an adapter error instead of hanging. Real `audit` output for `selector: 'regex:(\d+)+\.99'`:
+
+```text
+error web:pricing-page [fs] unsafe regex selector: nested quantifier (e.g. (a+)+) can backtrack catastrophically
+```
+
+The check is a heuristic that catches the common catastrophic shapes. It is not a proof that a pattern runs in linear time, so keep selectors simple. The same screen applies to rule `value.pattern` ([Rules Engine](Rules-Engine)).
+
 Use a selector when the same number means two things in one file. That is exactly the situation where STARCHART refuses to guess (see [Safety refusals](#safety-refusals)).
+
+### Path containment
+
+Every path the adapter touches must land inside the project root: binding paths, render `out` paths and templates, on audit, apply and revert alike. Since 0.1.1 the check follows symlinks, so a committed link such as `page.tsx -> ../../outside/page.tsx` can't smuggle a write out of the repo. For a path that doesn't exist yet, its nearest existing parent directory is checked instead. The two refusals:
+
+| Case | Message |
+|---|---|
+| The path itself climbs out (`../x`, an absolute path elsewhere) | `path "../x" is outside the project root` |
+| The path looks local but a symlink on the way points outside | `path "apps/web/app/pricing/page.tsx" resolves outside the project root (symlink)` |
+
+Real output with `apps/web/app/pricing/page.tsx` symlinked to a file outside the project (the outside file is left untouched):
+
+```text
+$ starchart audit
+error web:pricing-page [fs] path "apps/web/app/pricing/page.tsx" resolves outside the project root (symlink)
+…
+$ starchart apply --yes
+✗ web:pricing-page [fs] path "apps/web/app/pricing/page.tsx" resolves outside the project root (symlink)
+```
+
+Symlinks that stay inside the project are fine.
 
 ## Which facts an fs artifact carries
 
@@ -171,7 +207,7 @@ Every real write returns an undo record holding the file's previous bytes (base6
 }
 ```
 
-`revert` restores the old bytes exactly, or deletes a file that the apply created (`removed generated apps/web/public/og/pro.png`). Revert restores a snapshot. It does not merge: edits made to the file after the apply are overwritten.
+`revert` restores the old bytes exactly, or deletes a file that the apply created (`removed generated apps/web/public/og/pro.png`). The undo record's `path` goes through the same [path containment](#path-containment) check, so a hand-edited journal can't point a revert outside the project. Revert restores a snapshot. It does not merge: edits made to the file after the apply are overwritten.
 
 ## Examples
 
@@ -206,4 +242,4 @@ Every fs step then plans as `manual` with the reason `adapter "fs" cannot write`
 - [Apply, Revert and Journals](Apply-Revert-and-Journals)
 - [Future Universe Preview](Future-Universe-Preview)
 - [Artifacts and Bindings](Artifacts-and-Bindings)
-- [Adapter url](Adapter-url)
+- [Security](Security)

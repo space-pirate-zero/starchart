@@ -41,7 +41,12 @@ export async function buildProject(start?: string, options: BuildOptions = {}): 
     unresolved = resolveCodeFacts(graph, pendingCodeFacts).unresolved;
   }
   // without the code layer, references into it are expected to dangle
-  if (!options.skipCode) for (const u of unresolved) warnings.push(`fact ${u.factId}: code symbol ${u.symbol} not found`);
+  if (!options.skipCode) {
+    for (const u of unresolved) warnings.push(`fact ${u.factId}: code symbol ${u.symbol} not found`);
+    for (const p of pendingCodeFacts) {
+      if (graph.node(p.symbol)?.meta?.redacted) warnings.push(`fact ${p.factId}: code symbol ${p.symbol} looks like a secret, so its value is redacted and the fact has no value`);
+    }
+  }
   for (const d of danglingTargets) {
     if (graph.hasNode(d.missing) || (options.skipCode && CODE_ID.test(d.missing))) continue;
     warnings.push(`${d.file}: ${d.from} --${d.type}--> ${d.to}: unknown node "${d.missing}"`);

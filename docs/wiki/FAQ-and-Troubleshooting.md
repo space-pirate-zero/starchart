@@ -208,7 +208,32 @@ The only outbound network calls come from adapters you bind, and only when you r
 | `stripe` | `api.stripe.com` | `audit`, `apply`, `revert`, `orphans --external`, `score --audit` |
 | `appstore` | `api.appstoreconnect.apple.com` | `audit`, `apply`, `revert`, `score --audit` |
 
-What they send is API requests about the bound resource (a price id, a listing field), never source code. `starchart serve` binds to `127.0.0.1` unless you pass `--host`. The [GitHub Action](GitHub-Action) posts the markdown blast radius as a PR comment on your own repo.
+What they send is API requests about the bound resource (a price id, a listing field), never source code. `starchart serve` binds to `127.0.0.1`; a non-loopback `--host` also needs `--allow-remote` (see [Viewer and Serve](Viewer-and-Serve)). The [GitHub Action](GitHub-Action) posts the markdown blast radius as a PR comment on your own repo.
+
+### Why is a symbol's value missing / `meta.redacted`?
+
+Secret redaction, added in 0.1.1. When a constant's **name** looks like a secret (`token`, `secret`, `password`, `apiKey`, `dsn`, …) or any string in its **value** looks like a credential (Stripe `sk_live_…`, a GitHub token, a PEM private key, a JWT, a URL with `user:password@`, …), the code layer drops the value and marks the node instead:
+
+```text
+$ starchart node symbol:web/lib/support#SUPPORT_TOKEN
+{
+  "id": "symbol:web/lib/support#SUPPORT_TOKEN",
+  "kind": "symbol",
+  …
+  "hash": "a72bbf51b3cece79",
+  "meta": {
+    "redacted": true,
+    …
+```
+
+That's deliberate: the value would otherwise land in the viewer HTML, `emit graph`, MCP answers and `serve`. The hash is kept, so drift detection still sees edits to the constant.
+
+Two consequences to know:
+
+- The name check is broad. `SUPPORT_TOKEN = "hello-world"` is redacted even though the value is harmless. Rename the constant if its value should be visible.
+- A [code-authority fact](Code-Authority-Facts) pointing at a redacted symbol resolves to **no value**, and STARCHART warns: `fact <id>: code symbol <symbol> looks like a secret, so its value is redacted and the fact has no value`. Don't make a fact out of a secret; that's exactly what redaction is there to stop.
+
+Full rules: [Code Ingestion](Code-Ingestion#secret-redaction).
 
 ### Does it work on Windows?
 
@@ -256,6 +281,19 @@ Those chart **code**. They know `PaywallView.swift` references `Pricing.swift` a
 
 STARCHART charts code **and** the facts it encodes **and** the world artifacts that show those facts: pages, OG images, store listings and screenshots, Stripe prices, emails, reels. It doesn't build, cache or run tasks. It isn't a code search engine or a CMS either. It's complementary: keep your build tool, add STARCHART for everything outside it.
 
+### `npm install` fails with EBADENGINE in the STARCHART repo
+
+Working on STARCHART itself? That's intentional. The repo is a pnpm workspace, and the root `package.json` (`engines.npm: "please-use-pnpm"`) plus `.npmrc` (`engine-strict=true`) make npm refuse to install:
+
+```text
+npm error code EBADENGINE
+npm error engine Unsupported engine
+…
+npm error notsup Required: {"npm":"please-use-pnpm","pnpm":">=10"}
+```
+
+Run `corepack enable && pnpm install` instead. This only affects the STARCHART repo. Installing the package into **your** project with `npm i -D @space-pirate-zero/starchart` works as usual. See [Contributing](Contributing#pnpm-only).
+
 ### Can I `npx` it?
 
 Yes: `npx @space-pirate-zero/starchart <command>`. Or `npm i -D @space-pirate-zero/starchart` and then `npx starchart <command>` runs your local copy. Never bare `npx starchart` without the local install: the unscoped `starchart` package on npm is not this project, so that fetches someone else's code. See [Getting Started](Getting-Started#install).
@@ -269,5 +307,5 @@ Yes: `npx @space-pirate-zero/starchart <command>`. Or `npm i -D @space-pirate-ze
 - [Getting Started](Getting-Started)
 - [Impact Analysis](Impact-Analysis)
 - [Lockfile and Drift](Lockfile-and-Drift)
-- [Annotations](Annotations)
 - [Adapters Overview](Adapters-Overview)
+- [Security](Security)

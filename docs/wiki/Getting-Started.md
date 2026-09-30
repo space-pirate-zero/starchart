@@ -27,6 +27,13 @@ npx @space-pirate-zero/starchart --help
 
 The package installs two CLI names, `starchart` and the short alias `sc`, plus `starchart-mcp` for agents. Once it's in your `devDependencies`, `npx starchart` and `npx sc` run your local copy. Without a local install, always spell it `npx @space-pirate-zero/starchart …`: bare `npx starchart` fetches the unscoped `starchart` package, which belongs to someone else.
 
+Check what you got. The current release is 0.1.1 (a security release; upgrade from 0.1.0 if you run `serve` or the MCP server, see [Security](Security)):
+
+```text
+$ npx --yes @space-pirate-zero/starchart@0.1.1 --version
+0.1.1
+```
+
 Point it at any project with `-C` (short for `--cwd`):
 
 ```bash

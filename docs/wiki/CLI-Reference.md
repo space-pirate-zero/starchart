@@ -27,7 +27,7 @@ Options:
 
 | Option | Effect |
 |---|---|
-| `-V, --version` | prints `0.1.0` |
+| `-V, --version` | prints the installed version (`0.1.1`), read from the package's `package.json` |
 | `-C, --cwd <dir>` | resolve the project from `<dir>` instead of the current directory. The project root is the nearest ancestor containing `.starchart/`. Relative output paths (`--badge`, `graph -o`) resolve against this directory |
 | `--no-color` | plain output. Colors are also off when stdout is not a TTY or `NO_COLOR` is set |
 | `-q, --quiet` | hide `warn …` lines on stderr: code-ingest problems (unknown `@starchart` verb, parse failures, unreadable files), unresolved code facts, edges to unknown nodes |
@@ -156,12 +156,19 @@ Blast radius of nodes, files or a git diff across every layer, classified (`brea
 | Argument / option | Default | Effect |
 |---|---|---|
 | `[refs...]` | | node ids, file paths (a file expands to its file node and every symbol it contains), or a unique id suffix / label. Required unless `--diff` |
-| `--diff <base>` | | seeds from `git diff <base>` plus untracked files, plus facts changed since the lock ([Git Diff Impact](Git-Diff-Impact)). Refs are ignored |
+| `--diff <base>` | | seeds from `git diff <base>` plus untracked files, plus facts changed since the lock ([Git Diff Impact](Git-Diff-Impact)). Refs are ignored. A `base` that starts with `-` (or contains a newline or NUL) is rejected before git runs |
 | `--all-code` | off | report every impacted code node, not just the surface (screens, routes, tests, anchored symbols) |
 | `-v, --verbose` | off | include `info` items and print the why-path and confidence under each row |
 | `-f, --format` | `text` | `text`, `markdown`, `json` |
 
-Errors (exit 2): `give node refs or --diff <base>`; `no node matches "x". Try "starchart query --text x".`
+Errors (exit 2): `give node refs or --diff <base>`; `no node matches "x". Try "starchart query --text x".`; `invalid git revision: "<base>"` for an option-shaped base:
+
+```text
+$ starchart impact --diff=--output=/tmp/pwned
+starchart: invalid git revision: "--output=/tmp/pwned"
+$ echo $?
+2
+```
 
 ```text
 $ starchart impact addon:pro.price.usd
@@ -646,7 +653,7 @@ See [Change Cost](Change-Cost).
 starchart codegen
 ```
 
-Writes every `codegen:` target from the config (TS / Swift / Kotlin fact constants). Files that would not change are left alone. No targets is an error (exit 2).
+Writes every `codegen:` target from the config (TS / Swift / Kotlin fact constants). Files that would not change are left alone. No targets is an error (exit 2), and so is an `out` path outside the project root: `path "../x.ts" is outside the project root`.
 
 ```text
 $ starchart codegen
@@ -858,7 +865,7 @@ The Jolly Roger, the version and the links. Exit code 0.
       //////                         \\\\\\
             ·           ★           ·
 
-  STARCHART 0.1.0 · every dependency. code to cosmos.
+  STARCHART 0.1.1 · every dependency. code to cosmos.
   a Space Pirate Zero joint · Apache-2.0
   repo  https://github.com/space-pirate-zero/starchart
   wiki  https://github.com/space-pirate-zero/starchart/wiki

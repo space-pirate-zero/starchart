@@ -60,7 +60,7 @@ How to use it:
 - starchart_apply writes to external systems and files. It defaults to a dry run. Only call it with dryRun: false and confirm: true after the user has explicitly approved the dry-run output.
 ```
 
-Server name `starchart`, version `0.1.0`.
+Server name `starchart`. The version comes from the package's `package.json`, so it always matches `starchart --version` (`0.1.1` today).
 
 ## Tools
 
@@ -117,7 +117,14 @@ Markdown output (from the demo, `ref: "addon:pro.price.eur"`, trimmed):
 
 ### starchart_plan and starchart_diff_impact
 
-`starchart_plan` seeds from every fact value and code hash that changed since `starchart.lock`. With no changes, the markdown says `No changes detected.` `starchart_diff_impact` seeds from `git diff <base>`, plus fact changes since the lock, exactly like the PR comment from the [GitHub Action](GitHub-Action). A `base` starting with `-` is rejected. After editing `addon:pro.price.usd` from 4.99 to 5.99:
+`starchart_plan` seeds from every fact value and code hash that changed since `starchart.lock`. With no changes, the markdown says `No changes detected.` `starchart_diff_impact` seeds from `git diff <base>`, plus fact changes since the lock, exactly like the PR comment from the [GitHub Action](GitHub-Action). Revisions are validated before git runs (since 0.1.1): a `base` starting with `-` comes back as `Error: invalid base "<base>"`, and one with a NUL, CR or LF as `Error: invalid git revision: "<base>"`, both with `isError: true`. git also receives `--end-of-options`, so no base can be read as a flag ([Git Diff Impact](Git-Diff-Impact#revision-validation)). A real call:
+
+```text
+{"name":"starchart_diff_impact","arguments":{"base":"--output=/tmp/pwned"}}
+→ {"content":[{"type":"text","text":"Error: invalid base \"--output=/tmp/pwned\""}],"isError":true}
+```
+
+After editing `addon:pro.price.usd` from 4.99 to 5.99:
 
 ```text
 ## 🌌 STARCHART plan
@@ -346,4 +353,4 @@ To poke the real stdio server by hand, use `StdioClientTransport` with `command:
 - [Impact Analysis](Impact-Analysis)
 - [Apply, Revert and Journals](Apply-Revert-and-Journals)
 - [CLI Reference](CLI-Reference)
-- [Library API](Library-API)
+- [Security](Security)

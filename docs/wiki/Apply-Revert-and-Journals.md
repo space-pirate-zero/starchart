@@ -181,6 +181,26 @@ Apply is sequential and stops at the first failed step. Every later `auto` step 
 
 Typical fs failures are the [safety refusals](Adapter-fs#safety-refusals): an ambiguous old value, a list item with nowhere to go, an old value that isn't in the file.
 
+## Writes stay inside the project
+
+Since 0.1.1 every file `apply`, `codegen` and `revert` write goes through one check, `resolveInRoot` in [`paths.ts`](https://github.com/space-pirate-zero/starchart/blob/main/packages/starchart/src/paths.ts): the path must resolve inside the project root, **symlinks followed**. A path that doesn't exist yet is judged by its nearest existing parent directory.
+
+| Writer | What's checked | On a path outside the root |
+|---|---|---|
+| fs adapter (apply, revert, renders) | binding `path`, render `out`, template, undo record `path` | the step fails: `path "<p>" is outside the project root` or `path "<p>" resolves outside the project root (symlink)` |
+| Codegen in apply | every `codegen:` target `out` | the codegen step fails and stops the apply (exit 1): `✗ symbol:… [codegen] path "../x.ts" is outside the project root`. `--dry-run` checks the same paths and fails the same way |
+| Binding edits (apply and revert) | the YAML file named in `meta.file` or the journal's `bindingEdits[].file` | the file is skipped, never rewritten; the edit reports `written: false` |
+
+So a committed symlink (`page.tsx -> ../../outside/page.tsx`) or a hand-edited journal can't aim a write outside the repo. Real output from the demo with the pricing page symlinked out:
+
+```text
+$ starchart apply --yes
+…
+✗ web:pricing-page [fs] path "apps/web/app/pricing/page.tsx" resolves outside the project root (symlink)
+```
+
+The journal file you name on the `revert` command line can live anywhere, because you chose it. The paths recorded inside it get no such pass. Details per writer: [Adapter fs](Adapter-fs#path-containment), [Codegen](Codegen).
+
 ## Binding edits
 
 When an adapter returns `bindingUpdate` (Stripe does, after replacing an immutable price), the engine:
@@ -338,7 +358,7 @@ What revert does:
 
 1. Refuses a journal that already has `revertedAt` (`journal … was already reverted at …`).
 2. Runs every entry's `adapter.revert(undo)` in **reverse order**. Every entry is attempted even if one fails: a partial rollback beats none.
-3. Reverses every binding edit (new id → old id in the YAML file), also in reverse.
+3. Reverses every binding edit (new id → old id in the YAML file), also in reverse. A recorded file outside the project root is skipped (`written: false`), not rewritten.
 4. **All or nothing on the lock.** Only if every revert succeeded: restore `lockBefore` as `starchart.lock` and mark the journal with `revertedAt`. If any failed, the lock is left alone and the journal stays revertible, so you can fix the cause and run it again.
 
 `--dry-run` asks each adapter for `would …` descriptions and changes nothing.
@@ -422,4 +442,4 @@ See [Library API](Library-API).
 - [Future Universe Preview](Future-Universe-Preview)
 - [Rollout Ordering](Rollout-Ordering)
 - [Adapter fs](Adapter-fs)
-- [Adapter Stripe](Adapter-Stripe)
+- [Security](Security)

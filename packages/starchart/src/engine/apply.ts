@@ -184,7 +184,15 @@ async function runCodegen(project: Project, dryRun: boolean): Promise<ApplyResul
   if (project.loaded.config.codegen.length === 0) {
     return { artifact: "codegen", ok: false, changes: [], error: "generated constants found but no codegen targets are configured" };
   }
-  if (dryRun) return { artifact: "codegen", ok: true, changes: [`would regenerate ${project.loaded.config.codegen.map((t) => t.out).join(", ")}`] };
+  if (dryRun) {
+    // a dry run must refuse what a real run would refuse
+    try {
+      for (const t of project.loaded.config.codegen) resolveInRoot(project.root, t.out);
+    } catch (error) {
+      return { artifact: "codegen", ok: false, changes: [], error: errorMessage(error) };
+    }
+    return { artifact: "codegen", ok: true, changes: [`would regenerate ${project.loaded.config.codegen.map((t) => t.out).join(", ")}`] };
+  }
   try {
     const { changed } = writeCodegen(project);
     return { artifact: "codegen", ok: true, changes: changed.length ? changed.map((f) => `regenerated ${f}`) : ["generated constants already current"] };

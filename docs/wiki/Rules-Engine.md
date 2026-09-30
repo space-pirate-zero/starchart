@@ -155,12 +155,29 @@ Checks a value. Without `fact`, it checks the selected node's own `value` (leaf 
 |---|---|---|
 | `required: true` | The value is not missing or `null`. If the value is missing and `required` is not set, every other check is skipped silently. | `<subject> has no value` |
 | `maxLength` / `minLength` | The value is text, and its length in Unicode code points (what stores count) is within bounds. | `<subject> "…" is 36 chars (max 30)` or `<subject> is 4.99, expected text` |
-| `pattern` | A JavaScript regex tested against the value. Numbers are stringified (`4.99` → `"4.99"`), objects JSON-encoded. Unanchored unless you add `^…$`. | `<subject> 5.49 does not match /^\d+\.99$/` |
+| `pattern` | A JavaScript regex tested against the value. Numbers are stringified (`4.99` → `"4.99"`), objects JSON-encoded. Unanchored unless you add `^…$`. Unsafe patterns are rejected when the rules load (see [Regex screening](#regex-screening)). | `<subject> 5.49 does not match /^\d+\.99$/` |
 | `equals` | Structural equality (numeric strings equal numbers). | `<subject> is "weekly", expected "monthly"` |
 | `oneOf` | Equal to any entry. | `<subject> is "weekly", expected one of "monthly", "yearly"` |
 | `locales` | `all`, or a list of required locales (see below). | `<subject> is missing locale ja` |
 
 `<subject>` is `<id>` or `<id> <fact>`, with ` [<locale>]` appended for per-locale checks. Long values are cut to 80 characters in messages.
+
+### Regex screening
+
+JavaScript regexes have no timeout, and rules are repo config: a crafted `pattern` could hang `starchart rules`, the GitHub Action or the MCP server. Since 0.1.1, `parseRules` screens every `value.pattern` and rejects one that:
+
+- is longer than 500 characters, or
+- quantifies a group that already contains a quantifier: `(a+)+`, `(\w*b)*`, `(x{2,})+`.
+
+Rejection is a normal [validation error](#validation-errors) (exit 2). A real run:
+
+```text
+$ starchart rules
+starchart: invalid rules:
+  .starchart/rules.yaml: rule "bad-regex": require.value.0.pattern: unsafe regular expression: nested quantifier (e.g. (a+)+) can backtrack catastrophically
+```
+
+Too long reads `unsafe regular expression: pattern is longer than 500 characters`. The screen is a heuristic for the common catastrophic shapes, not a proof of linear time: a pattern that passes can still be slow, so keep them simple. The fs adapter's `regex:` selectors get the same screen ([Adapter fs](Adapter-fs#regex-screening)).
 
 ### Per-locale checks
 
@@ -268,7 +285,7 @@ starchart: invalid rules:
   .starchart/recipes.yaml: rule "artifact-has-owner": duplicate rule id (first declared in .starchart/bad.yaml)
 ```
 
-A rule without an id is labelled by position (`rule #3`). An unknown pack in `packs:` also exits 2: `starchart: unknown rule pack(s): @starchart/pack-gdpr`.
+A pattern that compiles but fails the [regex screen](#regex-screening) reads `<path>: unsafe regular expression: <reason>`. A rule without an id is labelled by position (`rule #3`). An unknown pack in `packs:` also exits 2: `starchart: unknown rule pack(s): @starchart/pack-gdpr`.
 
 Duplicate ids are only detected among your YAML rules. A YAML rule that reuses a pack rule id, such as `owners`, is not rejected, and both run. The same goes for two packs (built-in or from plugins) that share a rule id.
 
@@ -503,4 +520,4 @@ Notes on the recipes:
 - [Privacy Drift](Privacy-Drift)
 - [Edge Types](Edge-Types)
 - [Authoring YAML](Authoring-YAML)
-- [GitHub Action](GitHub-Action)
+- [Security](Security)

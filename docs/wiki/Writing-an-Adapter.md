@@ -384,7 +384,7 @@ $ starchart plan | grep json
 
 ## A complete example: `cms`
 
-A bigger example, in TypeScript. A headless CMS stores one JSON field per entry. The adapter mirrors a single fact into that field. It audits, applies with a dry run, reverts, and lists entries for orphan detection. It compiles with `strict` and `noUncheckedIndexedAccess` against `@space-pirate-zero/starchart` 0.1.0.
+A bigger example, in TypeScript. A headless CMS stores one JSON field per entry. The adapter mirrors a single fact into that field. It audits, applies with a dry run, reverts, and lists entries for orphan detection. It compiles with `strict` and `noUncheckedIndexedAccess` against `@space-pirate-zero/starchart` 0.1.0 and 0.1.1 (the adapter API didn't change in 0.1.1).
 
 ```ts
 import type { Adapter, AdapterContext, ApplyResult, Diff, GraphNode, ListedResource, UndoRecord } from "@space-pirate-zero/starchart";

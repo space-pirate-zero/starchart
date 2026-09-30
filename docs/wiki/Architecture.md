@@ -17,7 +17,7 @@ How STARCHART is built: the package layout, how data flows from YAML and source 
 | `core/` | The graph model (`model.ts`: node kinds, layers, edge types, propagation), the `Graph` class, impact traversal and classification (`impact.ts`), rollout ordering (`order.ts`), the lockfile and drift (`lock.ts`: `buildLock`, `relockArtifacts`, `staleArtifacts`, `changedSince`). No I/O. |
 | `config/` | Zod schemas for config, entities, artifacts and edges (`schema.ts`); finding the root and loading every YAML document under `.starchart/` (`load.ts`). |
 | `compiler/` | YAML documents → fact and world layers plus declared edges; flattening nested facts; resolving code-authority facts once code is ingested. |
-| `code/` | The code layer. File discovery and classification, a TypeScript-compiler-API parser for TS/JS, a shared lexer plus parsers for Swift, Kotlin and Go, Next.js routes, packages from manifests and lockfiles, i18n files, env/flag/event signals, `@starchart` annotations, and `git diff` → changed nodes. |
+| `code/` | The code layer. File discovery and classification, a TypeScript-compiler-API parser for TS/JS, a shared lexer plus parsers for Swift, Kotlin and Go, Next.js routes, packages from manifests and lockfiles, i18n files, env/flag/event signals, `@starchart` annotations, secret redaction of literal values (`redact.ts`), and `git diff` → changed nodes (with revision validation). |
 | `bridge/` | The literal scanner behind `scan` and discovery, and heuristic edge discovery. |
 | `adapters/` | `fs`, `url`, `stripe`, `appstore`, the registry (`registerAdapter`, and the `canWrite(id, settings, node?)` policy that also asks the adapter's `canApply`), and shared text find-and-replace helpers. |
 | `engine/` | `audit` with break detection, `apply` / `revert` / `ack` with journals (apply also runs the codegen pass for generated constants), the Future Universe `preview`, adapter context. |
@@ -33,6 +33,9 @@ How STARCHART is built: the package layout, how data flows from YAML and source 
 | `plugins.ts` | `loadPlugins(root, specifiers)`: imports each module in config `plugins:` once per process and registers its `adapters` and `packs`. Called from `buildProject`, so the CLI, MCP server, `serve` and the hook all see plugins. |
 | `api.ts` | High-level operations shared by CLI, MCP, hook and Action: `planFromLock`, `planFromDiff`, `planFromSeeds`, `check`, `resolveRef`, `why`, `query`. |
 | `tokens.ts`, `history.ts` | DTCG design-token import; the fact time machine over git history. |
+| `paths.ts` | `resolveInRoot(root, path)`: resolves a path against the project root and throws unless it stays inside, following symlinks (a path that doesn't exist yet is judged by its nearest existing parent). Every write goes through it: the fs adapter, codegen, and the binding rewrites in `apply` / `revert`. |
+| `regex-safety.ts` | `unsafeRegexReason(pattern)`: rejects config regexes over 500 characters or with nested quantifiers (`(a+)+`). Used by rule `value.pattern` validation and fs `regex:` selectors. A heuristic, not a proof. |
+| `version.ts` | `VERSION`, read from `package.json` at runtime, so `--version`, `about` and the MCP server version can't drift from the published package. |
 | `index.ts` | The public library surface. See [Library API](Library-API). |
 
 ## Data flow
@@ -72,6 +75,20 @@ Every command starts with `buildProject()`, which rebuilds the whole graph in me
 ### Inside `apply`
 
 `apply` runs only `auto` steps, in rollout order. Each artifact goes to its adapter's `apply()`, which returns an undo record for the journal. Generated fact constants (`// @starchart generated` symbols) aren't applied one by one: the first one triggers a single codegen pass over every `codegen:` target, reported as `[codegen]` steps. Codegen output isn't journaled (it's reproducible from the facts; git undoes it), and with no targets configured those steps fail with "generated constants found but no codegen targets are configured". Finally the journal is written and the applied artifacts are relocked with `relockArtifacts`. See [Apply, Revert and Journals](Apply-Revert-and-Journals).
+
+### Security boundaries
+
+STARCHART trusts your `.starchart/` config like code (plugins run as JavaScript) and treats everything else as data. The 0.1.1 hardening put each boundary in one place:
+
+| Boundary | Where it's enforced |
+|---|---|
+| Writes stay in the project | `paths.ts` (`resolveInRoot`), called by `adapters/fs.ts`, `codegen/index.ts`, `engine/apply.ts` |
+| Secrets stay out of the graph | `code/redact.ts` (`redactLiteral`), called by `code/ingest.ts` |
+| Git revisions can't become flags | `code/diff.ts` (`assertSafeRev` plus `--end-of-options`), and a leading-`-` check in `mcp/server.ts` |
+| Config regexes can't hang the process | `regex-safety.ts`, called by `rules/engine.ts` and `adapters/fs.ts` |
+| `serve` talks only to loopback and the extension | `viewer/serve.ts` (Host check, extension-only CORS, `--allow-remote`) |
+
+The full trust model and how to report a vulnerability: [Security](Security).
 
 ## Key design decisions
 
@@ -136,12 +153,12 @@ What we can state from measurements:
 
 ## Testing strategy
 
-- **Vitest**, configured in `packages/starchart/vitest.config.ts` to run `src/**/*.test.ts` and `test/**/*.test.ts` with a 20 s timeout. Tests are colocated with the code they cover: 30 test files under `src/` plus 2 under `test/`.
+- **Vitest**, configured in `packages/starchart/vitest.config.ts` to run `src/**/*.test.ts` and `test/**/*.test.ts` with a 20 s timeout. Tests are colocated with the code they cover: 31 test files under `src/` plus 3 under `test/`.
 - **Fixtures.** `src/code/__fixtures__/universe/` is a multi-language mini-repo (Next.js, SwiftUI, Compose/Gradle, Go, `.xcstrings`, `strings.xml`, `Package.resolved`, `libs.versions.toml`) used by the ingest, parser and diff tests. `src/rules/fixtures/` holds a privacy-manifest app and a rules file.
-- **End-to-end.** `test/e2e.test.ts` copies `examples/pro-universe` to a temp dir and runs the real CLI in-process (`run([... "-C", dir, "-q", ...])`), capturing stdout. It covers: in sync as committed; a price change planned across code, facts and world (asserting the class of each item); apply → check → revert from the journal (file contents and the PNG header); privacy drift and the unbound EUR price; `why` from a Swift file to a screenshot; JSON-LD and the Reality Score; and `init --discover` on a stripped copy. `test/regressions.test.ts` pins fixes that came out of documenting the tool (plan/check agreement after apply, per-binding writes, codegen in apply, plugins, CLI polish).
+- **End-to-end.** `test/e2e.test.ts` copies `examples/pro-universe` to a temp dir and runs the real CLI in-process (`run([... "-C", dir, "-q", ...])`), capturing stdout. It covers: in sync as committed; a price change planned across code, facts and world (asserting the class of each item); apply → check → revert from the journal (file contents and the PNG header); privacy drift and the unbound EUR price; `why` from a Swift file to a screenshot; JSON-LD and the Reality Score; and `init --discover` on a stripped copy. `test/regressions.test.ts` pins fixes that came out of documenting the tool (plan/check agreement after apply, per-binding writes, codegen in apply, plugins, CLI polish). `test/security.test.ts` pins the 0.1.1 security fixes: redaction, `serve` CORS and Host checks, option-shaped git revisions, symlink escapes in apply and codegen, and unsafe regexes.
 - **Adapters without the network.** Stripe, App Store and url tests inject `fetch` through the adapter context, so the suite never touches external APIs.
 - **CI** (`.github/workflows/ci.yml`) runs on Ubuntu and macOS with Node 22: `pnpm install --frozen-lockfile`, `pnpm typecheck`, `pnpm test`, `pnpm build`, then `starchart -C examples/pro-universe check` to prove the committed demo is in sync.
-- PLAN.md reports 278 tests at v0.1.0.
+- PLAN.md reports 278 tests at v0.1.0. At v0.1.1 the suite is 301 tests in 34 files.
 
 ## See also
 
@@ -149,4 +166,4 @@ What we can state from measurements:
 - [Impact Analysis](Impact-Analysis)
 - [Library API](Library-API)
 - [Contributing](Contributing)
-- [Roadmap](Roadmap)
+- [Security](Security)

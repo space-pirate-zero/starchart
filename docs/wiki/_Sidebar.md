@@ -71,4 +71,5 @@
 **Project**
 - [Architecture](Architecture)
 - [Contributing](Contributing)
+- [Security](Security)
 - [Roadmap](Roadmap)

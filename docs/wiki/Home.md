@@ -150,7 +150,7 @@ npx starchart lock
 | **Adapters & engine** | [Adapters Overview](Adapters-Overview) · [Adapter: fs](Adapter-fs) · [Adapter: url](Adapter-url) · [Adapter: Stripe](Adapter-Stripe) · [Adapter: App Store Connect](Adapter-App-Store-Connect) · [Writing an Adapter](Writing-an-Adapter) · [Audit and Break Detection](Audit-and-Break-Detection) · [Apply, Revert and Journals](Apply-Revert-and-Journals) · [Future Universe Preview](Future-Universe-Preview) · [Viewer and Serve](Viewer-and-Serve) · [Reality X-Ray](Reality-X-Ray) |
 | **Rules & analysis** | [Rules Engine](Rules-Engine) · [Rule Packs](Rule-Packs) · [Privacy Drift](Privacy-Drift) · [Orphans](Orphans) · [Reality Score](Reality-Score) · [Change Cost](Change-Cost) |
 | **Integrations** | [MCP Server](MCP-Server) · [Claude Code Hook](Claude-Code-Hook) · [GitHub Action](GitHub-Action) |
-| **Project** | [Architecture](Architecture) · [Contributing](Contributing) · [Roadmap](Roadmap) |
+| **Project** | [Architecture](Architecture) · [Contributing](Contributing) · [Security](Security) · [Roadmap](Roadmap) |
 
 STARCHART is a Space Pirate Zero project, licensed Apache-2.0. Source: [space-pirate-zero/starchart](https://github.com/space-pirate-zero/starchart).
 

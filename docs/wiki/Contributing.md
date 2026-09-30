@@ -9,6 +9,24 @@ git clone https://github.com/space-pirate-zero/starchart.git && cd starchart
 pnpm install && pnpm build
 ```
 
+### pnpm only
+
+The repo is a pnpm workspace (`pnpm-workspace.yaml`, one `pnpm-lock.yaml`). npm is blocked on purpose: the root `package.json` sets `engines.npm` to `please-use-pnpm`, and `.npmrc` sets `engine-strict=true`, so `npm install` at the root refuses to run:
+
+```text
+$ npm install
+npm error code EBADENGINE
+npm error engine Unsupported engine
+npm error engine Not compatible with your version of node/npm: undefined
+npm error notsup Not compatible with your version of node/npm: undefined
+npm error notsup Required: {"npm":"please-use-pnpm","pnpm":">=10"}
+npm error notsup Actual:   {"npm":"10.9.8","node":"v22.22.3"}
+```
+
+That's the guard working, not a bug. Use `pnpm install`. pnpm is unaffected, and `package-lock.json` and `yarn.lock` are gitignored.
+
+Why the guard exists: an `npm install` at the root once added the published `@space-pirate-zero/starchart` as a root devDependency plus a `package-lock.json`, which broke `pnpm install --frozen-lockfile` in CI. **Never add a root dependency on the published package.** The workspace builds STARCHART from `packages/starchart`; depending on the npm copy of itself only shadows your local changes.
+
 Users install the published package (`npm i -D @space-pirate-zero/starchart`); this from-source build is for working on STARCHART itself. To try your build on another repo, alias it:
 
 ```bash
@@ -30,6 +48,8 @@ pnpm --filter @space-pirate-zero/starchart dev --cwd ../../examples/pro-universe
 ```
 
 The script runs from `packages/starchart`, so paths are relative to it. Prefer the long `--cwd` form here, since `-C` is also a pnpm flag.
+
+The security regression tests live in [`packages/starchart/test/security.test.ts`](https://github.com/space-pirate-zero/starchart/blob/main/packages/starchart/test/security.test.ts): redaction, `serve` CORS and Host checks, git revision validation, symlink escapes, unsafe regexes. Touch any of those areas and that file must stay green. See [Security](Security).
 
 Run one test file while you work:
 
@@ -72,6 +92,7 @@ The wiki source lives in the repo under `docs/wiki/`, one Markdown file per page
 - **Tests are colocated**: `foo.ts` sits next to `foo.test.ts`. End-to-end tests go in `packages/starchart/test/`. Fixtures live in `__fixtures__/` or `fixtures/` next to the tests that use them; they're excluded from the build.
 - **No placeholders.** No `TODO` stubs, mock implementations or fake data in shipped code. If a feature isn't done, it isn't merged; if a limitation exists, say so in the code comment and the wiki.
 - **No network in tests.** Adapters receive `fetch` through `AdapterContext`; tests pass a fake.
+- **Assemble fake credentials at runtime.** GitHub push protection blocks commits containing credential-shaped literals, even obviously fake ones. Build them from parts in the test: `const FAKE_STRIPE_KEY = ["sk", "live", "FAKE0000000000000000000000"].join("_");`.
 - **No shell.** Git and other processes are spawned with `execFile`, never through a shell string.
 - **Deterministic output.** Sort anything you print or write (nodes, edges, files, findings). Diffs of the lock and of generated code must be stable across runs and machines.
 - **Dependencies are few on purpose.** Current runtime deps: commander, fast-glob, picocolors, yaml, zod, typescript (for the TS parser), resvg (OG images), pngjs and pixelmatch, and the MCP SDK. Adding one needs a reason in the PR.
@@ -156,5 +177,5 @@ Apache-2.0. By contributing you agree your contribution is licensed under the sa
 - [Architecture](Architecture)
 - [Writing an Adapter](Writing-an-Adapter)
 - [Rule Packs](Rule-Packs)
-- [Privacy Drift](Privacy-Drift)
+- [Security](Security)
 - [Roadmap](Roadmap)

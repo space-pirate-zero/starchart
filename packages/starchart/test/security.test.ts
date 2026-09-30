@@ -157,6 +157,34 @@ describe("SEC-3/4/7: writes stay inside the project, even through symlinks", () 
   });
 });
 
+describe("follow-ups", () => {
+  it("apply --dry-run refuses a codegen out path outside the root", async () => {
+    const root = project({
+      ".starchart/config.yaml": "name: c\ncode:\n  scopes: { app: . }\ncodegen:\n  - lang: ts\n    out: ../escaped.ts\n",
+      ".starchart/x.yaml": "id: a:x\nfacts: { price: 4.99 }\n",
+      "gen.ts": "// @starchart generated\n// @starchart anchors a:x.price\nexport const A_X_PRICE = 4.99;\n",
+    });
+    const first = await buildProject(root);
+    writeLock(root, buildLock(first.graph));
+    writeFileSync(join(root, ".starchart/x.yaml"), "id: a:x\nfacts: { price: 5.99 }\n");
+    const p = await buildProject(root);
+    const report = await applyPlan(p, planFromLock(p), { dryRun: true });
+    expect(report.failed?.error).toMatch(/outside the project root/);
+  });
+
+  it("warns when a code-authority fact points at a redacted symbol", async () => {
+    const p = await buildProject(
+      project({
+        ".starchart/config.yaml": "name: r\ncode:\n  scopes: { app: . }\n",
+        ".starchart/x.yaml": "id: a:x\nfacts:\n  key: { authority: code, source: { symbol: app/src/k#API_KEY } }\n",
+        "src/k.ts": 'export const API_KEY = "not-really-secret";\n',
+      }),
+    );
+    expect(p.warnings.join("\n")).toMatch(/looks like a secret, so its value is redacted/);
+    expect(p.graph.node("a:x.key")?.value).toBeUndefined();
+  });
+});
+
 describe("SEC-9: catastrophic regexes from config are rejected", () => {
   it("flags nested quantifiers and oversized patterns", () => {
     expect(unsafeRegexReason("(a+)+$")).toMatch(/nested quantifier/);

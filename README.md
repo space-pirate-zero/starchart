@@ -225,6 +225,14 @@ claude mcp add starchart -- npx @space-pirate-zero/starchart mcp
 
 ---
 
+## Security
+
+STARCHART is a local tool with a small, deliberate attack surface: `starchart serve` only answers loopback hosts and the X-Ray extension, secret-looking constants never enter the graph, every write stays inside your project (symlinks included), and external writes are opt-in. Your `.starchart/` config is trusted like code, because `plugins:` run JavaScript. The full trust model is in [SECURITY.md](SECURITY.md) and the [Security wiki page](https://github.com/space-pirate-zero/starchart/wiki/Security).
+
+Found a vulnerability? Report it privately: **[Security → Report a vulnerability](https://github.com/space-pirate-zero/starchart/security/advisories/new)**. Release history is in [CHANGELOG.md](CHANGELOG.md).
+
+---
+
 ## Repository layout
 
 ```
@@ -240,8 +248,9 @@ packages/starchart/   the library, CLI (starchart / sc) and MCP server (starchar
   src/analysis/       orphans, Reality Score, change cost
   src/render/         templates, OG images, JSON-LD
   src/codegen/        facts → TS / Swift / Kotlin
-  src/viewer/         star chart viewer + local server
+  src/viewer/         star chart viewer + local server (loopback + extension-only CORS)
   src/mcp/ src/hooks/ agent integrations
+  src/paths.ts        write containment (project root, symlink-aware)
 packages/xray/        Reality X-Ray browser extension (MV3)
 action/               GitHub Action
 examples/pro-universe demo universe (SwiftUI + Next.js + Stripe + App Store)

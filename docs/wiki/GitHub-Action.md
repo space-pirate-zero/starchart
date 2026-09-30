@@ -2,7 +2,7 @@ The STARCHART GitHub Action posts the cross-layer blast radius of every pull req
 
 Add it with `uses: space-pirate-zero/starchart/action@main`. It installs the published npm package on the fly with `npx --yes @space-pirate-zero/starchart@<starchart-version>`, so there's nothing to build and nothing to add to your `package.json`.
 
-> **Status:** GitHub Actions is currently blocked on the space-pirate-zero account by a billing lock, so the action hasn't been exercised in a real Actions run yet. Every command it calls works against the published `@space-pirate-zero/starchart@0.1.0`; if you hit a snag in the composite wiring itself, [open an issue](https://github.com/space-pirate-zero/starchart/issues).
+> **Status:** GitHub Actions is currently blocked on the space-pirate-zero account by a billing lock, so the action hasn't been exercised in a real Actions run yet. Every command it calls works against the published `@space-pirate-zero/starchart@0.1.1`; if you hit a snag in the composite wiring itself, [open an issue](https://github.com/space-pirate-zero/starchart/issues).
 
 ## Inputs
 
@@ -75,7 +75,7 @@ jobs:
         id: starchart
         with:
           fail-on-stale: true
-          # starchart-version: 0.1.0   # pin for reproducible CI (default: latest)
+          # starchart-version: 0.1.1   # pin for reproducible CI (default: latest)
           # working-directory: apps     # if .starchart/ isn't at the repo root
 ```
 

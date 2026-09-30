@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+- `apply --dry-run` now refuses codegen `out` paths outside the project, like a real apply.
+- Warn when a code-authority fact points at a redacted (secret-looking) symbol.
+- The repo is pnpm-only: `npm install` at the workspace root fails with EBADENGINE.
+
 ## 0.1.1 — 2026-09-30
 
 Security release. Upgrading is recommended for anyone who runs `starchart serve` or the MCP server.

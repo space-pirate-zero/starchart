@@ -19,7 +19,7 @@ flowchart LR
 `changedNodesFromDiff(root, codeConfig, graph, base)` runs two commands in the project root (via `execFile`, no shell):
 
 ```bash
-git -c core.quotePath=false diff --unified=0 --no-color --no-ext-diff --no-renames --relative <base> --
+git -c core.quotePath=false diff --unified=0 --no-color --no-ext-diff --no-renames --relative --end-of-options <base> --
 git -c core.quotePath=false ls-files --others --exclude-standard
 ```
 
@@ -29,9 +29,25 @@ git -c core.quotePath=false ls-files --others --exclude-standard
 | `--no-renames` | A rename is a delete plus an add, so both ends are seen |
 | `--relative` | Paths come out relative to the project root even inside a monorepo |
 | `core.quotePath=false` + unquoting | Non-ASCII paths (`café.swift`) survive; C-style quoted paths are decoded too |
+| `--end-of-options` | Everything after it is a revision or path, never a flag (see [Revision validation](#revision-validation)) |
 | `<base> --` | Compares the **working tree** (staged and unstaged) with `base` |
 
 `base` is any revision git accepts: `HEAD`, `main`, `origin/main`, a SHA, or a range such as `main...HEAD` (then git compares commits and working-tree edits are ignored). Untracked files that are not gitignored are always added as whole-file changes.
+
+### Revision validation
+
+`execFile` stops shell injection, but git still parses its own arguments. A base like `--output=/some/file` would be read as a flag and make git write wherever it points. Since 0.1.1, `assertSafeRev` refuses any base that is empty, starts with `-`, or contains a NUL, CR or LF, and git gets `--end-of-options` as a second fence. The CLI exits 2 before git runs:
+
+```text
+$ starchart impact --diff=--output=/tmp/pwned
+starchart: invalid git revision: "--output=/tmp/pwned"
+$ echo $?
+2
+$ ls /tmp/pwned
+ls: /tmp/pwned: No such file or directory
+```
+
+The same check guards the library call (`changedNodesFromDiff` throws) and the MCP tool `starchart_diff_impact` (see [MCP Server](MCP-Server)). Normal revisions (`HEAD`, `origin/main`, `main...HEAD`, SHAs) are unaffected.
 
 ## Step 2: hunks to nodes
 
@@ -196,6 +212,7 @@ Notes:
 - `impact --diff` **never fails the build** on findings; it exits 0 whatever the plan says. Gate with `starchart check` (exit 1 on stale artifacts) or `starchart rules`.
 - Shallow clones break the diff. Fetch the base ref.
 - A bad base is a hard error (exit 2): `starchart: git core.quotePath=false diff … nosuchref -- failed: fatal: bad revision 'nosuchref'`.
+- An option-shaped base is a hard error too (exit 2): `starchart: invalid git revision: "-x"`.
 - Seeds are code nodes, so `--all-code` is often useful in review to see every impacted symbol, not just the surface (screens, routes, tests, anchors).
 
 ## Library use
@@ -222,6 +239,6 @@ The [MCP server](MCP-Server) exposes the same thing as `starchart_diff_impact`.
 
 - [Impact Analysis](Impact-Analysis)
 - [Code Ingestion](Code-Ingestion)
-- [Lockfile and Drift](Lockfile-and-Drift)
 - [GitHub Action](GitHub-Action)
 - [CLI Reference](CLI-Reference)
+- [Security](Security)

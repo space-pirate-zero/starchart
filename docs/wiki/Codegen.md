@@ -23,7 +23,7 @@ codegen:
 | Field | Required | Meaning |
 |---|---|---|
 | `lang` | yes | `ts`, `swift` or `kotlin` |
-| `out` | yes | Output path, relative to the project root. Parent directories are created |
+| `out` | yes | Output path, relative to the project root. Parent directories are created. Must resolve inside the project root, symlinks followed (see [Output stays in the project](#output-stays-in-the-project)) |
 | `entities` | no | Only these entity ids. Default: every entity that has at least one fact with a value |
 | `name` | no | Root `enum` (Swift) / `object` (Kotlin) name. Ignored for TS |
 | `package` | no | Kotlin `package` line. Must be dotted identifiers, or codegen throws `invalid Kotlin package name "…"` |
@@ -37,6 +37,26 @@ unchanged apps/ios/Sources/Core/StarchartFacts.swift
 ```
 
 Each target prints `wrote` or `unchanged`. Output is deterministic (entities and keys are sorted), and a file whose content would not change is not rewritten, so mtimes and diffs stay quiet. No `codegen:` targets is an error: `starchart: no codegen targets in .starchart/config.yaml` (exit 2).
+
+### Output stays in the project
+
+Since 0.1.1 every `out` is resolved with the same symlink-aware check the fs adapter uses. Before, `out: ../x.ts` quietly wrote next to your repo. Now it throws, and nothing is written:
+
+```text
+$ starchart codegen          # out: ../x.ts
+starchart: path "../x.ts" is outside the project root
+$ echo $?
+2
+```
+
+A path that looks local but runs through a symlink pointing out of the repo gets the second message:
+
+```text
+$ starchart codegen          # apps/web/lib -> a directory outside the project
+starchart: path "apps/web/lib/starchart-facts.ts" resolves outside the project root (symlink)
+```
+
+`writeCodegen()` throws the same errors to library callers, and inside `apply` the codegen step fails (see [Apply, Revert and Journals](Apply-Revert-and-Journals#writes-stay-inside-the-project)). `generateCode()` only returns a string, so its `out` is never checked.
 
 ## What gets emitted
 
@@ -335,4 +355,4 @@ const kotlin = generateCode(project.graph, { lang: "kotlin", out: "Facts.kt", pa
 - [Annotations](Annotations)
 - [Impact Analysis](Impact-Analysis)
 - [Change Cost](Change-Cost)
-- [Configuration](Configuration)
+- [Security](Security)
