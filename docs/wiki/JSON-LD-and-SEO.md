@@ -258,7 +258,7 @@ $ starchart emit jsonld --entity addon:pro --script
 
 ## Next.js: inject at build time
 
-Generate the markup as a build step, then render it from a server component. No runtime dependency on STARCHART. (`@space-pirate-zero/starchart` isn't on npm yet; until it is, point the script at a from-source build: `node <starchart checkout>/packages/starchart/dist/cli/bin.js emit jsonld …`. See [Getting Started](Getting-Started).)
+Generate the markup as a build step, then render it from a server component. No runtime dependency on STARCHART: install it as a dev dependency (`npm i -D @space-pirate-zero/starchart`) and it only runs at build time.
 
 ```json
 {

@@ -4,7 +4,7 @@ How STARCHART is built: the package layout, how data flows from YAML and source 
 
 | Path | What lives there |
 |---|---|
-| `packages/starchart/` | The library, the CLI (`starchart` / `sc`) and the MCP server binary (`starchart-mcp`). Package name `@space-pirate-zero/starchart` (not on npm yet). |
+| `packages/starchart/` | The library, the CLI (`starchart` / `sc`) and the MCP server binary (`starchart-mcp`). Published to npm as `@space-pirate-zero/starchart`. |
 | `packages/xray/` | Reality X-Ray, a Manifest V3 browser extension (plain JS, no build step). |
 | `action/` | The GitHub Action (`action.yml`, a composite action). |
 | `examples/pro-universe/` | The demo universe: SwiftUI app + Next.js site + Stripe + App Store, with a full chart. |
@@ -129,7 +129,7 @@ The rules to keep:
 
 What we can state from measurements:
 
-- **Ingest.** A synthetic tree of 2,000 source files (1,200 TS, 800 Swift) ingests into 16,418 nodes and 30,800 edges. On an Apple M3 Max running Node 22 under heavy unrelated load (load average around 50), three runs took 3.1–4.1 s. That's a pessimistic ceiling, not a benchmark; an idle machine is faster. A controlled benchmark isn't published yet.
+- **Ingest.** A synthetic tree of 2,000 source files (1,200 TS, 800 Swift) ingests into 16,418 nodes and 30,800 edges. On an Apple M3 Max running Node 22 under heavy unrelated load (load average around 50), three runs took 3.1–4.1 s. That's a pessimistic ceiling, not a benchmark; an idle machine is faster. There's no controlled benchmark yet.
 - **Concurrency.** File reads during ingest run 32 at a time; `audit` checks 4 artifacts at a time.
 - **Limits.** Code files over 2 MB and text files over 1 MB are skipped.
 - **No incremental cache.** Every command re-ingests. The design target in [PLAN.md](https://github.com/space-pirate-zero/starchart/blob/main/PLAN.md) is under 1 s for `impact` on a warm cache and under 5 s on a PR in CI; content-hash caching is how we intend to get there.

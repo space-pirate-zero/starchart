@@ -177,24 +177,19 @@ The bundled [GitHub Action](GitHub-Action) runs exactly this:
 npx --yes "@space-pirate-zero/starchart@latest" impact --diff "origin/${base}" --format markdown > "$RUNNER_TEMP/starchart.md"
 ```
 
-and posts the result as a sticky comment. That needs `@space-pirate-zero/starchart` on npm, and it isn't published yet, so the Action won't run today. Until it is, build STARCHART from source in the job:
+(with `latest` replaced by the `starchart-version` input) and posts the result as a sticky comment. To run the same thing as plain workflow steps:
 
 ```yaml
 - uses: actions/checkout@v4
   with: { fetch-depth: 0 }          # the base branch must exist locally
-- uses: pnpm/action-setup@v4
-  with: { version: 10 }
 - uses: actions/setup-node@v4
   with: { node-version: 22 }
 - run: git fetch origin main
-- run: |
-    git clone --depth 1 https://github.com/space-pirate-zero/starchart.git "$RUNNER_TEMP/starchart"
-    cd "$RUNNER_TEMP/starchart" && pnpm install && pnpm build
-- run: node "$RUNNER_TEMP/starchart/packages/starchart/dist/cli/bin.js" impact --diff origin/main -f markdown > blast-radius.md
-- run: node "$RUNNER_TEMP/starchart/packages/starchart/dist/cli/bin.js" check   # optional: fail on lockfile drift
+- run: npx --yes @space-pirate-zero/starchart impact --diff origin/main -f markdown > blast-radius.md
+- run: npx --yes @space-pirate-zero/starchart check   # optional: fail on lockfile drift
 ```
 
-Once the package is published, the two `node …/bin.js` lines become `npx @space-pirate-zero/starchart impact …` and `npx @space-pirate-zero/starchart check`. Never bare `npx starchart`: that unscoped npm package is someone else's.
+Never bare `npx starchart` unless the package is in your `devDependencies`: the unscoped npm package is someone else's.
 
 Notes:
 

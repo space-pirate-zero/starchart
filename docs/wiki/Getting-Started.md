@@ -1,4 +1,4 @@
-This page takes you from zero to a working chart: install (or run from source), scaffold `.starchart/` with `init --discover`, review what it found, write your first entity and artifact by hand, lock, and settle into the daily loop of plan, apply, ack and check. It ends with pointers for wiring STARCHART into CI and coding agents.
+This page takes you from zero to a working chart: install from npm, scaffold `.starchart/` with `init --discover`, review what it found, write your first entity and artifact by hand, lock, and settle into the daily loop of plan, apply, ack and check. It ends with pointers for wiring STARCHART into CI and coding agents.
 
 ## Requirements
 
@@ -6,46 +6,48 @@ This page takes you from zero to a working chart: install (or run from source), 
 |---|---|
 | Node.js **20 or newer** | `engines.node` is `>=20` in `packages/starchart/package.json`. |
 | git | `impact --diff` and `history` shell out to `git`. Everything else works without it. |
-| pnpm 10 | Only when running from source (`packageManager: pnpm@10.33.0`). |
+| pnpm 10 | Only when building from source as a contributor (`packageManager: pnpm@10.33.0`). |
 
 No server, no database, no account. Everything lives in your repo.
 
 ## Install
 
-> **Heads up:** `@space-pirate-zero/starchart` is not published to npm yet. Until it is, `npm i` and `npx @space-pirate-zero/starchart` fail. [Run from source](#run-from-source) instead.
-
-Once the package is on npm:
+STARCHART is on npm as [`@space-pirate-zero/starchart`](https://www.npmjs.com/package/@space-pirate-zero/starchart). Add it as a dev dependency:
 
 ```bash
 npm i -D @space-pirate-zero/starchart
+npx starchart --help
+```
+
+Or run it without installing:
+
+```bash
 npx @space-pirate-zero/starchart --help
 ```
 
-The package installs two CLI names, `starchart` and the short alias `sc`, plus `starchart-mcp` for agents. Always spell the npx form `npx @space-pirate-zero/starchart …`. Bare `npx starchart` fetches the unscoped `starchart` package, which belongs to someone else.
+The package installs two CLI names, `starchart` and the short alias `sc`, plus `starchart-mcp` for agents. Once it's in your `devDependencies`, `npx starchart` and `npx sc` run your local copy. Without a local install, always spell it `npx @space-pirate-zero/starchart …`: bare `npx starchart` fetches the unscoped `starchart` package, which belongs to someone else.
 
-### Run from source
+Point it at any project with `-C` (short for `--cwd`):
+
+```bash
+npx @space-pirate-zero/starchart -C ~/code/my-app check
+```
+
+Every example in this wiki writes `starchart …`. Run it as `npx starchart …` in a project that has the package installed, or `npx @space-pirate-zero/starchart …` anywhere else.
+
+### Alternative: run from source (contributors)
+
+Hacking on STARCHART itself? Build the checkout and call the CLI directly:
 
 ```bash
 git clone https://github.com/space-pirate-zero/starchart.git
 cd starchart
 pnpm install
 pnpm build
-node packages/starchart/dist/cli/bin.js --help
+alias starchart="node $PWD/packages/starchart/dist/cli/bin.js"
 ```
 
-Point it at any project with `-C` (short for `--cwd`):
-
-```bash
-node /path/to/starchart/packages/starchart/dist/cli/bin.js -C ~/code/my-app check
-```
-
-A shell alias saves typing:
-
-```bash
-alias starchart="node /path/to/starchart/packages/starchart/dist/cli/bin.js"
-```
-
-Every example in this wiki writes `starchart …`; with the alias above they work as shown.
+See [Contributing](Contributing) for the dev loop.
 
 ## `starchart init`
 
@@ -232,9 +234,9 @@ For the full tour on a realistic project, do the [Pro Universe tutorial](Tutoria
 
 ## Wire it into CI and agents
 
-- **CI:** run `starchart check` as a required step. Until the package is on npm, build STARCHART from source in the job (clone, `pnpm install`, `pnpm build`) and run `node <starchart>/packages/starchart/dist/cli/bin.js -C <your-project> check`. The [GitHub Action](GitHub-Action) (sticky PR comment with the cross-layer blast radius) needs the published package, so it won't run yet.
+- **CI:** run `npx --yes @space-pirate-zero/starchart check` as a required step (or `npx starchart check` if the package is in your `devDependencies`). The [GitHub Action](GitHub-Action) adds a sticky PR comment with the cross-layer blast radius.
 - **Claude Code:** the [Claude Code Hook](Claude-Code-Hook) injects the world impact of every file an agent edits back into its context.
-- **Any MCP client:** `starchart mcp` exposes impact, plan and friends as tools (`claude mcp add starchart -- npx @space-pirate-zero/starchart mcp` once published). See [MCP Server](MCP-Server).
+- **Any MCP client:** `starchart mcp` exposes impact, plan and friends as tools (`claude mcp add starchart -- npx @space-pirate-zero/starchart mcp`). See [MCP Server](MCP-Server).
 
 ## See also
 

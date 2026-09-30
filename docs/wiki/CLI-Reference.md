@@ -8,16 +8,9 @@ Every `starchart` command, subcommand and option, checked against [`cli/main.ts`
 | `sc` | the same CLI, shorter (`sc plan`, `sc impact --diff main`) |
 | `starchart-mcp` | the MCP server on stdio, same as `starchart mcp` (project root from `$STARCHART_ROOT`, else the cwd) |
 
-The package is `@space-pirate-zero/starchart`, so the npx form is `npx @space-pirate-zero/starchart <command>`. Never bare `npx starchart`: the unscoped npm name belongs to someone else. Node 20+.
+Install with `npm i -D @space-pirate-zero/starchart`; after that, `npx starchart <command>` (or `npx sc <command>`) runs your local copy. Without a local install, the npx form is `npx @space-pirate-zero/starchart <command>`. Never bare `npx starchart` in a project that doesn't have the package installed: the unscoped npm name belongs to someone else. Node 20+.
 
-> **Not on npm yet.** `@space-pirate-zero/starchart` is not published. Until it is, build from source:
->
-> ```bash
-> git clone https://github.com/space-pirate-zero/starchart.git && cd starchart && pnpm install && pnpm build
-> alias starchart="node $PWD/packages/starchart/dist/cli/bin.js"
-> ```
->
-> Or call `node /path/to/starchart/packages/starchart/dist/cli/bin.js <command>` directly. Every example below writes `starchart <command>`; substitute whichever form you use.
+Every example below writes `starchart <command>`; substitute whichever form you use.
 
 ## Global options
 
@@ -828,8 +821,6 @@ Starts the MCP server on stdio. Project root: `-C` if given, else `$STARCHART_RO
 
 ```bash
 claude mcp add starchart -- npx @space-pirate-zero/starchart mcp
-# from source, until the package is published:
-claude mcp add starchart -- node /path/to/starchart/packages/starchart/dist/cli/bin.js mcp
 ```
 
 See [MCP Server](MCP-Server).

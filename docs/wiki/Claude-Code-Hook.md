@@ -19,15 +19,7 @@ Add this to `.claude/settings.json` in your project (it's also returned by `clau
 
 Use the scoped name. The unscoped `starchart` package on npm is unrelated, so bare `npx starchart` runs the wrong thing.
 
-> **Heads-up:** `@space-pirate-zero/starchart` isn't on npm yet. Until it's published, build from source and point the hook at the CLI by absolute path:
->
-> ```bash
-> git clone https://github.com/space-pirate-zero/starchart.git && cd starchart && pnpm install && pnpm build
-> ```
->
-> ```json
-> { "type": "command", "command": "node /abs/path/to/starchart/packages/starchart/dist/cli/bin.js hook claude" }
-> ```
+Install the package as a dev dependency (`npm i -D @space-pirate-zero/starchart`) so `npx` resolves your local copy instead of fetching it on every edit. The hook runs after every edit, so a cold download adds up fast.
 
 The matcher covers all four edit tools. For `NotebookEdit` the hook reads `tool_input.notebook_path` instead of `tool_input.file_path`.
 
@@ -88,7 +80,7 @@ All from a temp copy of `examples/pro-universe`, run as:
 
 ```bash
 echo '{"hook_event_name":"PostToolUse","tool_name":"Edit","tool_input":{"file_path":"'"$PWD"'/apps/ios/Sources/Core/Pricing.swift"},"cwd":"'"$PWD"'"}' \
-  | node /abs/path/to/starchart/packages/starchart/dist/cli/bin.js hook claude
+  | npx @space-pirate-zero/starchart hook claude
 ```
 
 **Editing a Swift file with a hardcoded price:**
@@ -143,7 +135,7 @@ A hook must never break the agent, so every failure is silent. Malformed JSON, a
 To see what went wrong, set `STARCHART_HOOK_DEBUG=1`. The error and its stack are then returned as the context itself, truncated to 1500 characters:
 
 ```bash
-echo '{bad' | STARCHART_HOOK_DEBUG=1 node …/dist/cli/bin.js hook claude
+echo '{bad' | STARCHART_HOOK_DEBUG=1 npx @space-pirate-zero/starchart hook claude
 ```
 
 ```text

@@ -13,26 +13,19 @@ Either way, the root can be any directory inside the project. STARCHART walks up
 
 ### Claude Code
 
-Once `@space-pirate-zero/starchart` is published:
+From your project directory:
 
 ```bash
-claude mcp add starchart -- npx @space-pirate-zero/starchart mcp
+claude mcp add starchart -- npx --yes @space-pirate-zero/starchart mcp
 ```
 
-Always use the scoped name. The unscoped npm package `starchart` belongs to someone else, so bare `npx starchart` runs the wrong thing.
+Always use the scoped name. The unscoped npm package `starchart` belongs to someone else, so bare `npx starchart` runs the wrong thing unless the package is already in your `devDependencies`.
 
-> **Heads-up:** `@space-pirate-zero/starchart` is not on npm yet. Until it is, point Claude Code at a source build:
+To pin the project instead of relying on the cwd, pass `-C` or set `STARCHART_ROOT` (works with either bin):
 
 ```bash
-git clone https://github.com/space-pirate-zero/starchart.git && cd starchart
-pnpm install && pnpm build
-
-# from your project directory:
-claude mcp add starchart -- node /abs/path/to/starchart/packages/starchart/dist/cli/bin.js -C /abs/path/to/your-project mcp
-
-# or let STARCHART_ROOT pick the project (works with either bin):
-claude mcp add starchart -e STARCHART_ROOT=/abs/path/to/your-project -- node /abs/path/to/starchart/packages/starchart/dist/cli/bin.js mcp
-claude mcp add starchart -e STARCHART_ROOT=/abs/path/to/your-project -- node /abs/path/to/starchart/packages/starchart/dist/mcp/bin.js
+claude mcp add starchart -- npx --yes @space-pirate-zero/starchart -C /abs/path/to/your-project mcp
+claude mcp add starchart -e STARCHART_ROOT=/abs/path/to/your-project -- npx --yes -p @space-pirate-zero/starchart starchart-mcp
 ```
 
 To share the setup with your team, check in a project-scoped `.mcp.json`:
@@ -41,8 +34,8 @@ To share the setup with your team, check in a project-scoped `.mcp.json`:
 {
   "mcpServers": {
     "starchart": {
-      "command": "node",
-      "args": ["/abs/path/to/starchart/packages/starchart/dist/mcp/bin.js"],
+      "command": "npx",
+      "args": ["--yes", "-p", "@space-pirate-zero/starchart", "starchart-mcp"],
       "env": { "STARCHART_ROOT": "." }
     }
   }
@@ -345,7 +338,7 @@ await client.close();
 
 The repo's own test builds a throwaway project in a temp dir, writes a lock with `buildLock`, and asserts on tool names, markdown fragments and dry-run behavior. `INSTRUCTIONS` is only exported from `mcp/server.ts`, not the package root.
 
-To poke the real stdio server by hand, use `StdioClientTransport` with `command: "node", args: [".../dist/mcp/bin.js"]` (or `[".../dist/cli/bin.js", "mcp"]`) and `env: { STARCHART_ROOT }`. The outputs on this page were produced that way.
+To poke the real stdio server by hand, use `StdioClientTransport` with `command: "npx", args: ["--yes", "-p", "@space-pirate-zero/starchart", "starchart-mcp"]` (or `command: "node", args: [".../dist/mcp/bin.js"]` against a local build) and `env: { STARCHART_ROOT }`. The outputs on this page were produced that way.
 
 ## See also
 

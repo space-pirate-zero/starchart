@@ -13,7 +13,7 @@ npx @space-pirate-zero/starchart serve            # http://127.0.0.1:4477
 npx @space-pirate-zero/starchart serve --watch    # rebuild when .starchart/, the lock or code change
 ```
 
-`@space-pirate-zero/starchart` isn't on npm yet. Until it is, build from source (`git clone https://github.com/space-pirate-zero/starchart.git && cd starchart && pnpm install && pnpm build`) and run `node /path/to/starchart/packages/starchart/dist/cli/bin.js serve` from your project. That checkout also holds the `packages/xray` folder you load below.
+The extension itself doesn't ship in the npm package (it only contains `dist/`). Grab it from the repo: `git clone https://github.com/space-pirate-zero/starchart.git` gives you the `packages/xray` folder you load below. No build needed.
 
 The extension calls `GET /health` and `GET /xray.json`. The viewer is at `/`.
 

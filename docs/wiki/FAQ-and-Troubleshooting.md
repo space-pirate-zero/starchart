@@ -258,7 +258,7 @@ STARCHART charts code **and** the facts it encodes **and** the world artifacts t
 
 ### Can I `npx` it?
 
-Eventually, as `npx @space-pirate-zero/starchart <command>`. Never bare `npx starchart`: the unscoped `starchart` package on npm is not this project, so that fetches someone else's code. And `@space-pirate-zero/starchart` isn't published yet, so for now run from source: [Getting Started](Getting-Started#run-from-source).
+Yes: `npx @space-pirate-zero/starchart <command>`. Or `npm i -D @space-pirate-zero/starchart` and then `npx starchart <command>` runs your local copy. Never bare `npx starchart` without the local install: the unscoped `starchart` package on npm is not this project, so that fetches someone else's code. See [Getting Started](Getting-Started#install).
 
 ### Why exit code 2?
 

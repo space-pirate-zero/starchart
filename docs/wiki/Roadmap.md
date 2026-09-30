@@ -14,8 +14,9 @@ What STARCHART v0.1.0 actually does today, what it doesn't, and where it's heade
 | Rules engine + packs: core, appstore, privacy (SDK catalog vs `PrivacyInfo.xcprivacy` and labels), seo | ✅ | [Rules Engine](Rules-Engine) · [Rule Packs](Rule-Packs) |
 | Orphans, Reality Score + badge, change-cost advisor | ✅ | [Orphans](Orphans) · [Reality Score](Reality-Score) · [Change Cost](Change-Cost) |
 | Codegen (TS / Swift / Kotlin), schema.org JSON-LD, time machine (`history`) | ✅ | [Codegen](Codegen) · [JSON-LD and SEO](JSON-LD-and-SEO) · [Time Machine](Time-Machine) |
-| Viewer (canvas star chart), `serve`, Reality X-Ray extension (MV3) | ✅ | Extension not yet published to any store. [Viewer and Serve](Viewer-and-Serve) · [Reality X-Ray](Reality-X-Ray) |
-| MCP server, Claude Code hook, GitHub Action | ✅ | The Action needs the npm package; use the from-source workflow until then. [MCP Server](MCP-Server) · [Claude Code Hook](Claude-Code-Hook) · [GitHub Action](GitHub-Action) |
+| Viewer (canvas star chart), `serve`, Reality X-Ray extension (MV3) | ✅ | Extension isn't in any browser store; load it unpacked. [Viewer and Serve](Viewer-and-Serve) · [Reality X-Ray](Reality-X-Ray) |
+| MCP server, Claude Code hook, GitHub Action | ✅ | [MCP Server](MCP-Server) · [Claude Code Hook](Claude-Code-Hook) · [GitHub Action](GitHub-Action) |
+| npm package | ✅ | `@space-pirate-zero/starchart@0.1.0` published 2026-09-30. `npm i -D @space-pirate-zero/starchart`, then `npx starchart <command>`. [Getting Started](Getting-Started) |
 | CI and docs pipeline | ✅ | `ci.yml` (typecheck, test, build on Ubuntu + macOS, then demo `check`); `wiki.yml` publishes `docs/wiki/`. [Contributing](Contributing) |
 
 ### Fixed since the first cut
@@ -34,7 +35,6 @@ These used to be listed as gaps. They're done:
 
 Things that exist but have sharp edges today. Each is documented where it bites.
 
-- **Not on npm yet.** `@space-pirate-zero/starchart` isn't published, so `npm i @space-pirate-zero/starchart` and `npx @space-pirate-zero/starchart` don't work yet, and the GitHub Action (which installs `@space-pirate-zero/starchart@latest`) can't run until it is. Run from source for now: [Getting Started](Getting-Started#run-from-source), and use the from-source workflow on [GitHub Action](GitHub-Action#until-the-npm-package-is-published). Never `npx starchart`: the unscoped package belongs to someone else.
 - **Live accounts untested.** The Stripe and App Store adapters are tested against mocked APIs only; they've never run against a live account.
 - **No incremental cache.** Every command re-ingests the repo.
 - **App Store audit over-reports coverage.** Bindings without a `field` (IAPs, screenshots) are counted as "checked" in `audit` even though nothing is compared.
@@ -72,19 +72,18 @@ The phase plan from PLAN.md, with where v0.1.0 actually landed:
 | 2: Bridge + reality | SCIP (TS), `authority: code`, url/stripe/appstore adapters, `audit` + break detection, GitHub Action | PR comment: "invalidates 76 screenshots"; the archived Stripe price gets caught | 🟡 Mostly. Everything except SCIP. TS uses the TypeScript compiler API instead. |
 | 3: Fix | `apply`, codegen (TS/Swift/Kotlin), renderers, lifecycle, task sinks | One command updates code constants, site, OG, JSON-LD, strings | 🟡 Mostly. `apply`, codegen, OG/JSON-LD rendering and `validThrough` retire are in; task sinks aren't. |
 | 4: Magic | Discover, MCP + Claude Code hook, invariants, Reality Score, orphans, viewer | "Point it at the repo and it drew the chart" | ✅ Done. Discovery is heuristic only. |
-| 5: Signature | Reality X-Ray, Future Universe, privacy drift, screenshot drift | The GIF that goes viral | 🟡 Mostly. X-Ray (unpublished), Future Universe and privacy drift are in; screenshot pixel drift isn't. |
+| 5: Signature | Reality X-Ray, Future Universe, privacy drift, screenshot drift | The GIF that goes viral | 🟡 Mostly. X-Ray (load-unpacked only), Future Universe and privacy drift are in; screenshot pixel drift isn't. |
 | 6: Open waters | Rule packs + registry, transactions, time machine, community ingestors/adapters | Apple adds a screenshot size and every chart knows | 🟡 Started. Built-in packs, plugin loading for adapters and packs, journaled apply/revert and `history` exist; the registry and community packs don't. |
 
 ## What's next
 
 A suggested order, derived from the gaps above. It's not a committed schedule:
 
-1. Publish `@space-pirate-zero/starchart` to npm so `npx @space-pirate-zero/starchart` and the GitHub Action work as written.
-2. Run the Stripe and App Store adapters against real test accounts.
-3. Incremental ingest with a content-hash cache, to hit the "under 1 s warm, under 5 s in CI" targets.
-4. SCIP ingest, TypeScript first.
-5. Play Store and RevenueCat adapters.
-6. Screenshot drift.
+1. Run the Stripe and App Store adapters against real test accounts.
+2. Incremental ingest with a content-hash cache, to hit the "under 1 s warm, under 5 s in CI" targets.
+3. SCIP ingest, TypeScript first.
+4. Play Store and RevenueCat adapters.
+5. Screenshot drift.
 
 Want one of these sooner? [Open an issue](https://github.com/space-pirate-zero/starchart/issues) or send a PR: [Contributing](Contributing).
 

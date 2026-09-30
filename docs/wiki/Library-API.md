@@ -8,7 +8,7 @@ Source: [`packages/starchart/src/index.ts`](https://github.com/space-pirate-zero
 import { buildProject, planFromLock, computeImpact, formatPlanMarkdown } from "@space-pirate-zero/starchart";
 ```
 
-- `@space-pirate-zero/starchart` isn't published to npm yet. Until it is, build from source (`git clone https://github.com/space-pirate-zero/starchart.git && cd starchart && pnpm install && pnpm build`) and depend on the local package, for example `"@space-pirate-zero/starchart": "file:/path/to/starchart/packages/starchart"`.
+- Install from npm: `npm i @space-pirate-zero/starchart` (or `-D` if you only use it in scripts and tests).
 - ESM only (`"type": "module"`), Node 20+. Types ship in `dist/index.d.ts`.
 - The package `exports` map exposes only the root entry (`"." → ./dist/index.js`). Deep imports such as `@space-pirate-zero/starchart/dist/core/graph.js` are blocked by Node's exports resolution. If a helper is not listed below (for example `formatValue`, `discoverChart`, `detectScopes`, `jsonLdContext`), it is internal.
 - The MCP server factory is exported as **`createMcpServer`** (it is `createServer` inside `mcp/server.ts`).

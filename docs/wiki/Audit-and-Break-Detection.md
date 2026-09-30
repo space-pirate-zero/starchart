@@ -14,7 +14,7 @@ Source: [`engine/audit.ts`](https://github.com/space-pirate-zero/starchart/blob/
 
 ## Usage
 
-`@space-pirate-zero/starchart` is not on npm yet. Examples assume `starchart` is an alias for the built CLI (`alias starchart="node /path/to/starchart/packages/starchart/dist/cli/bin.js"`, see [Getting Started](Getting-Started)); once published it will be `npx @space-pirate-zero/starchart audit`.
+Examples write `starchart audit`. Run it as `npx starchart audit` with the package in your `devDependencies`, or `npx @space-pirate-zero/starchart audit` without installing (see [Getting Started](Getting-Started)).
 
 ```bash
 starchart audit                                   # everything
@@ -205,7 +205,7 @@ The second line is the one that matters: checkout imports a dead price. `PRO_NAM
 
 Unit tests prove your code does what you think. Audits prove the world does. Run them on a schedule, the way you'd run a smoke test.
 
-A nightly GitHub Actions workflow. Until `@space-pirate-zero/starchart` is on npm, build STARCHART from source in the job (the [GitHub Action](GitHub-Action) handles PR impact comments; audits run the CLI directly):
+A nightly GitHub Actions workflow (the [GitHub Action](GitHub-Action) handles PR impact comments; audits run the CLI directly):
 
 ```yaml
 # .github/workflows/reality.yml
@@ -220,22 +220,14 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with: { node-version: 22 }
-      - uses: pnpm/action-setup@v4
-        with: { version: 10 }        # STARCHART pins pnpm 10 in its packageManager field
-      - name: Build STARCHART from source
-        run: |
-          git clone --depth 1 https://github.com/space-pirate-zero/starchart.git "$RUNNER_TEMP/starchart"
-          cd "$RUNNER_TEMP/starchart" && pnpm install && pnpm build
       - name: Audit                     # exits 1 on any diff or error, failing the job
-        run: node "$RUNNER_TEMP/starchart/packages/starchart/dist/cli/bin.js" audit
+        run: npx --yes @space-pirate-zero/starchart audit
         env:
           STRIPE_SECRET_KEY: ${{ secrets.STRIPE_READONLY_KEY }}   # restricted, read-only
           ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
           ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
           ASC_PRIVATE_KEY: ${{ secrets.ASC_PRIVATE_KEY }}
 ```
-
-Once the package is published, the two middle steps collapse to `npx @space-pirate-zero/starchart audit`.
 
 Notes:
 

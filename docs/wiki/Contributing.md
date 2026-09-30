@@ -9,7 +9,7 @@ git clone https://github.com/space-pirate-zero/starchart.git && cd starchart
 pnpm install && pnpm build
 ```
 
-`@space-pirate-zero/starchart` isn't on npm yet, so this from-source build is also how everyone else runs it today. To use your build on another repo, alias it:
+Users install the published package (`npm i -D @space-pirate-zero/starchart`); this from-source build is for working on STARCHART itself. To try your build on another repo, alias it:
 
 ```bash
 alias starchart="node $PWD/packages/starchart/dist/cli/bin.js"

@@ -1,6 +1,6 @@
 # STARCHART
 
-[![CI](https://github.com/space-pirate-zero/starchart/actions/workflows/ci.yml/badge.svg)](https://github.com/space-pirate-zero/starchart/actions/workflows/ci.yml) [![License](https://img.shields.io/badge/license-Apache--2.0-ff1493)](LICENSE) [![Wiki](https://img.shields.io/badge/docs-wiki-00ff41)](https://github.com/space-pirate-zero/starchart/wiki)
+[![npm](https://img.shields.io/npm/v/@space-pirate-zero/starchart?color=ff1493&label=npm)](https://www.npmjs.com/package/@space-pirate-zero/starchart) [![CI](https://github.com/space-pirate-zero/starchart/actions/workflows/ci.yml/badge.svg)](https://github.com/space-pirate-zero/starchart/actions/workflows/ci.yml) [![License](https://img.shields.io/badge/license-Apache--2.0-ff1493)](LICENSE) [![Wiki](https://img.shields.io/badge/docs-wiki-00ff41)](https://github.com/space-pirate-zero/starchart/wiki)
 
 ```text
   ·      ✦          ·        ★            ·          ✦         ·       ·
@@ -55,28 +55,16 @@ A Space Pirate Zero project. Apache-2.0.
 
 ## Quick start
 
-> **Not on npm yet.** `@space-pirate-zero/starchart` isn't published. Until it is, run it from source (below). Always use the scoped name: the unscoped `starchart` package on npm belongs to someone else.
-
 ```bash
-git clone https://github.com/space-pirate-zero/starchart.git && cd starchart
+npm i -D @space-pirate-zero/starchart
 ```
 
 ```bash
-pnpm install && pnpm build
+npx starchart init --discover
 ```
 
 ```bash
-alias starchart="node $PWD/packages/starchart/dist/cli/bin.js"
-```
-
-Then, in your project:
-
-```bash
-starchart init --discover
-```
-
-```bash
-starchart lock
+npx starchart lock
 ```
 
 `init` writes `.starchart/config.yaml` and detects your code scopes (Next.js, SwiftUI, Compose, Go). `--discover` proposes facts and bridges from your code in `.starchart/proposals/discovered.yaml`; review it and move it into `.starchart/`. `lock` pins every artifact to today's facts and code; commit `starchart.lock`.
@@ -84,20 +72,20 @@ starchart lock
 Whenever something changes:
 
 ```bash
-starchart plan
+npx starchart plan
 ```
 
 ```bash
-starchart apply --dry-run
+npx starchart apply --dry-run
 ```
 
-Try the bundled demo universe (a SwiftUI app plus a Next.js site with a paid Pro add-on):
+Without installing, use the scoped name: `npx @space-pirate-zero/starchart <command>`. (The unscoped `starchart` package on npm is unrelated.)
+
+Try the bundled demo universe (a SwiftUI app plus a Next.js site with a paid Pro add-on) from a clone of this repo:
 
 ```bash
-starchart -C examples/pro-universe impact addon:pro.price.usd
+npx @space-pirate-zero/starchart -C examples/pro-universe impact addon:pro.price.usd
 ```
-
-Once published, `npx @space-pirate-zero/starchart <command>` will work everywhere.
 
 📖 **Full documentation: the [STARCHART wiki](https://github.com/space-pirate-zero/starchart/wiki).**
 
@@ -213,7 +201,7 @@ Use `sc` as a short alias. Global options: `-C <dir>`, `--no-color`, `-q`. See t
 
 ## Integrations
 
-**Claude Code hook.** Every file an agent edits gets its world impact injected back into the conversation. Add this to `.claude/settings.json` (until the package is published, replace `npx @space-pirate-zero/starchart` with `node /path/to/starchart/packages/starchart/dist/cli/bin.js`):
+**Claude Code hook.** Every file an agent edits gets its world impact injected back into the conversation. Add this to `.claude/settings.json`:
 
 ```json
 {

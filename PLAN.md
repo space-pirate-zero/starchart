@@ -12,6 +12,8 @@
 
 ## 0. Build status (v0.1.0, 2026-09-29)
 
+**Published:** [`@space-pirate-zero/starchart@0.1.0`](https://www.npmjs.com/package/@space-pirate-zero/starchart) on npm (2026-09-30).
+
 **Built and tested** (278 tests, including an end-to-end suite that runs the CLI against `examples/pro-universe`):
 
 | Area | Status |

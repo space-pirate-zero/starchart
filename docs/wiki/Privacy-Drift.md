@@ -321,7 +321,7 @@ sentry pkg:swift/sentry-cocoa [ios]
 ✓ every collected data type is disclosed
 ```
 
-Put `starchart rules` in CI and the PR that adds an SDK fails until the disclosures catch up. The [GitHub Action](GitHub-Action) needs `@space-pirate-zero/starchart` on npm, which hasn't happened yet, so for now run the CLI built from source in your CI job.
+Put `npx --yes @space-pirate-zero/starchart rules` in CI and the PR that adds an SDK fails until the disclosures catch up. See [GitHub Action](GitHub-Action#other-commands-in-ci).
 
 ## Caveats
 

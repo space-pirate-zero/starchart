@@ -1,6 +1,6 @@
 Your truth lives somewhere STARCHART doesn't speak yet: a headless CMS, a feature-flag service, a pricing API, a spreadsheet. An adapter teaches it. This page walks through the `Adapter` interface (real types, pasted from the source), loading it into the CLI with `plugins:`, the text helpers the built-in adapters share, what to return from `audit` / `apply` / `revert` / `list` / `canApply`, testing with an injected `fetch`, a small `jsonfile` plugin that was run through `starchart adapters`, `audit`, `plan`, `apply` and `revert` on a copy of the demo, and a complete `cms` adapter in TypeScript.
 
-The examples write `starchart <cmd>`. `@space-pirate-zero/starchart` isn't on npm yet, so build it from source (`git clone https://github.com/space-pirate-zero/starchart.git && cd starchart && pnpm install && pnpm build`) and alias `starchart` to `node /path/to/starchart/packages/starchart/dist/cli/bin.js`. Once it's published, `npx @space-pirate-zero/starchart <cmd>` does the same.
+The examples write `starchart <cmd>`. Install with `npm i -D @space-pirate-zero/starchart` and run `npx starchart <cmd>`, or use `npx @space-pirate-zero/starchart <cmd>` without installing. Adapter types import from the same package.
 
 ## Two ways to ship an adapter
 

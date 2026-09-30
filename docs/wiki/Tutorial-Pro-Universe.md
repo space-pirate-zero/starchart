@@ -9,7 +9,7 @@ D=$(mktemp -d)/u && cp -R examples/pro-universe "$D" && cd "$D"
 git init -q && git add -A && git commit -qm base
 ```
 
-The `git init` is throwaway. You need it for `impact --diff` and `history`; nothing else cares. If you're running from source, alias `starchart` to `node <repo>/packages/starchart/dist/cli/bin.js` first (see [Getting Started](Getting-Started#run-from-source)).
+The `git init` is throwaway. You need it for `impact --diff` and `history`; nothing else cares. Examples write `starchart …`: run them as `npx @space-pirate-zero/starchart …`, or alias `starchart` to that (see [Getting Started](Getting-Started#install)).
 
 ## 1. Tour of the files
 

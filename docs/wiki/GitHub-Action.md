@@ -1,6 +1,8 @@
-The STARCHART GitHub Action posts the cross-layer blast radius of every pull request as one sticky comment: which screens, facts, App Store screenshots, web pages, Stripe prices and promo reels the diff touches, each classified auto / review / manual / break with a why-path. It can also fail the job when artifacts drift from `starchart.lock`. This page covers the action's inputs and outputs, required permissions, a full workflow, how the sticky comment works, running `check`, `rules` and `score --badge` in CI, and how to build STARCHART from source until the npm package is published. Source: [`action/action.yml`](https://github.com/space-pirate-zero/starchart/blob/main/action/action.yml).
+The STARCHART GitHub Action posts the cross-layer blast radius of every pull request as one sticky comment: which screens, facts, App Store screenshots, web pages, Stripe prices and promo reels the diff touches, each classified auto / review / manual / break with a why-path. It can also fail the job when artifacts drift from `starchart.lock`. This page covers the action's inputs and outputs, required permissions, a full workflow, how the sticky comment works, running `check`, `rules` and `score --badge` in CI, and how to replicate the action as plain workflow steps. Source: [`action/action.yml`](https://github.com/space-pirate-zero/starchart/blob/main/action/action.yml).
 
-> **Status:** the action runs `npx --yes @space-pirate-zero/starchart@<version>`, and **`@space-pirate-zero/starchart` is not published to npm yet**. Until it is, the action as-is fails at the "Compute blast radius" step. Use the [build-from-source workflow](#until-the-npm-package-is-published) below: it clones and builds STARCHART in the job and runs `node …/dist/cli/bin.js impact --diff … -f markdown`, which is exactly what the action does.
+Add it with `uses: space-pirate-zero/starchart/action@main`. It installs the published npm package on the fly with `npx --yes @space-pirate-zero/starchart@<starchart-version>`, so there's nothing to build and nothing to add to your `package.json`.
+
+> **Status:** GitHub Actions is currently blocked on the space-pirate-zero account by a billing lock, so the action hasn't been exercised in a real Actions run yet. Every command it calls works against the published `@space-pirate-zero/starchart@0.1.0`; if you hit a snag in the composite wiring itself, [open an issue](https://github.com/space-pirate-zero/starchart/issues).
 
 ## Inputs
 
@@ -73,7 +75,7 @@ jobs:
         id: starchart
         with:
           fail-on-stale: true
-          # starchart-version: 0.1.0   # pin once published, for reproducible CI
+          # starchart-version: 0.1.0   # pin for reproducible CI (default: latest)
           # working-directory: apps     # if .starchart/ isn't at the repo root
 ```
 
@@ -129,7 +131,7 @@ This makes `starchart.lock` part of the PR. Whoever changes a fact or anchored c
 
 ## Other commands in CI
 
-The action only covers impact and `check`. Everything else is one CLI call. Exit codes:
+The action only covers impact and `check`. Everything else is one `npx --yes @space-pirate-zero/starchart <command>` call (written `starchart <command>` below). Exit codes:
 
 | Command | Fails the step when |
 |---|---|
@@ -145,15 +147,15 @@ Rules as a PR check, with the findings in the job summary:
 ```yaml
       - name: Business rules
         run: |
-          starchart rules -f markdown >> "$GITHUB_STEP_SUMMARY" || true
-          starchart rules   # prints text and sets the exit code
+          npx --yes @space-pirate-zero/starchart rules -f markdown >> "$GITHUB_STEP_SUMMARY" || true
+          npx --yes @space-pirate-zero/starchart rules   # prints text and sets the exit code
 ```
 
 Reality badge on `main`: see [Reality Score](Reality-Score#publishing-the-badge-from-ci) for a complete workflow that writes `--badge` / `--badge-json` and publishes them to a `badges` branch.
 
-## Until the npm package is published
+## Without the action
 
-Build STARCHART from source in the workflow and replicate the action's steps. STARCHART's own repo does the build half of this in [`.github/workflows/ci.yml`](https://github.com/space-pirate-zero/starchart/blob/main/.github/workflows/ci.yml): `pnpm install --frozen-lockfile`, typecheck, test and build on `ubuntu-latest` and `macos-latest` with Node 22, then `node packages/starchart/dist/cli/bin.js -C examples/pro-universe check` as a drift gate on the demo. The workflow below adds the blast-radius comment for your own project. The marker is the same, so switching to the action later keeps updating the same comment.
+Prefer not to pull a third-party action, or want extra steps in the same job? Replicate it with plain `run:` steps. The marker is the same, so switching between this and the action keeps updating the same comment.
 
 ```yaml
 # .github/workflows/starchart.yml
@@ -170,29 +172,15 @@ jobs:
   blast-radius:
     runs-on: ubuntu-latest
     env:
-      SC: node ${{ github.workspace }}/.starchart-src/packages/starchart/dist/cli/bin.js
+      SC: npx --yes @space-pirate-zero/starchart@latest   # pin a version for reproducible CI
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Check out STARCHART
-        uses: actions/checkout@v4
-        with:
-          repository: space-pirate-zero/starchart
-          path: .starchart-src
-          # ref: <commit sha>   # pin for reproducible CI
-
-      - uses: pnpm/action-setup@v4
-        with:
-          package_json_file: .starchart-src/package.json
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-
-      - name: Build STARCHART
-        working-directory: .starchart-src
-        run: pnpm install --frozen-lockfile && pnpm build
 
       - name: Blast radius
         env:
@@ -227,7 +215,7 @@ jobs:
         run: $SC rules
 ```
 
-`.starchart-src/` sits inside your checkout, but code ingestion skips hidden directories, so it isn't scanned as part of your project. This version skips the action's 65,000-character truncation. Add it back if your blast radii get huge.
+This version skips the action's 65,000-character truncation. Add it back if your blast radii get huge.
 
 For monorepos where `.starchart/` isn't at the root, run the `$SC` commands with `-C <dir>`, the equivalent of `working-directory`.
 
