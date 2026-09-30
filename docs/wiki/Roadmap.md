@@ -8,7 +8,7 @@ What STARCHART v0.1.0 actually does today, what it doesn't, and where it's heade
 | YAML authoring → graph → JSON-LD; code-authority facts; design tokens (DTCG) | ✅ | [Authoring YAML](Authoring-YAML) · [Code-Authority Facts](Code-Authority-Facts) · [Design Tokens](Design-Tokens) |
 | Code layer: TS/JS (TypeScript AST), Swift, Kotlin, Go; Next.js routes; SwiftUI/Compose screens; npm/SwiftPM/Gradle/Go packages; env, flags, events, i18n, tests; `@starchart` annotations; git diff → nodes | ✅ | Tree-sitter-free. Swift, Kotlin and Go references are resolved by name; no SCIP yet. [Code Ingestion](Code-Ingestion) |
 | Bridges: literal scanner, edge discovery, `init --discover` | ✅ | Heuristic, no LLM. [Bridges and Discovery](Bridges-and-Discovery) |
-| Adapters: fs (read/write/revert), url (audit), Stripe (audit/apply/revert/list), App Store Connect (metadata audit/apply) | ✅ | External writes opt-in via `write: true`, and per binding via `canApply`: App Store screenshots and IAPs stay manual. Stripe and App Store are tested against mocked APIs, never live accounts. [Adapters Overview](Adapters-Overview) |
+| Adapters: fs (read/write/revert), url (audit), Stripe (audit/apply/revert/list), App Store Connect (metadata audit/apply) | ✅ | External writes opt-in via `write: true`, and per binding via `canApply`: App Store screenshots and IAPs stay manual. App Store Connect is verified live (auth, audit, promotional-text apply → revert); Stripe is tested against mocked APIs only. [Adapters Overview](Adapters-Overview) |
 | Plugins: custom adapters and rule packs loaded from config `plugins:` | ✅ | Works from the CLI, MCP server, `serve` and the hook. [Writing an Adapter](Writing-an-Adapter) · [Rule Packs](Rule-Packs) |
 | Engine: audit + break detection, apply with journal (and one codegen pass for generated constants), revert, ack, Future Universe preview | ✅ | [Apply, Revert and Journals](Apply-Revert-and-Journals) |
 | Rules engine + packs: core, appstore, privacy (SDK catalog vs `PrivacyInfo.xcprivacy` and labels), seo | ✅ | [Rules Engine](Rules-Engine) · [Rule Packs](Rule-Packs) |
@@ -35,7 +35,7 @@ These used to be listed as gaps. They're done:
 
 Things that exist but have sharp edges today. Each is documented where it bites.
 
-- **Live accounts untested.** The Stripe and App Store adapters are tested against mocked APIs only; they've never run against a live account.
+- **Stripe untested live.** The Stripe adapter is tested against mocked APIs only. App Store Connect has been verified live for auth, audit and a promotional-text apply → revert; its other writable fields share that code path but haven't been written live.
 - **No incremental cache.** Every command re-ingests the repo.
 - **App Store audit over-reports coverage.** Bindings without a `field` (IAPs, screenshots) are counted as "checked" in `audit` even though nothing is compared.
 - **`orphans --external`** only works for Stripe (the only adapter with `list()`).

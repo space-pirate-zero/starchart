@@ -7,5 +7,8 @@
     "build": "pnpm -r build",
     "test": "pnpm -r test",
     "typecheck": "pnpm -r typecheck"
+  },
+  "devDependencies": {
+    "@space-pirate-zero/starchart": "^0.1.0"
   }
 }

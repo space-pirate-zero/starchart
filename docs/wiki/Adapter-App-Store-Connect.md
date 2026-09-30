@@ -1,6 +1,6 @@
 The `appstore` adapter audits and (when you opt in) edits your App Store Connect listing text: description, promotional text, keywords, What's New, name and subtitle. It signs its own ES256 JWTs, finds the right app version, and knows which fields Apple lets you change on a live app and which need a new version. Screenshots and in-app purchase prices are deliberately out of scope. This page covers credentials, the JWT, bindings, version selection, supported fields, apply rules, revert, and what stays manual.
 
-> **Status: tested against mocked HTTP only.** The test suite ([`adapters/appstore.test.ts`](https://github.com/space-pirate-zero/starchart/blob/main/packages/starchart/src/adapters/appstore.test.ts)) runs against a fake `fetch`. The adapter has **not yet been exercised against a live App Store Connect account**. Audit first, use `--dry-run`, and try writes on an app you can afford to fumble.
+> **Status: verified live (2026-09-30).** Besides the mocked test suite ([`adapters/appstore.test.ts`](https://github.com/space-pirate-zero/starchart/blob/main/packages/starchart/src/adapters/appstore.test.ts)), the adapter has run against a real App Store Connect account: JWT auth, `audit` of `name`, `subtitle`, `description` and `promotionalText`, and a full `apply` → `revert` of `promotionalText` on an unreleased version (see [Live verification](#live-verification)). Other writable fields (`description`, `keywords`, `whatsNew`) share the same PATCH path but haven't been written live yet. Audit first, use `--dry-run`, and try writes on an app you can afford to fumble.
 
 Source: [`adapters/appstore.ts`](https://github.com/space-pirate-zero/starchart/blob/main/packages/starchart/src/adapters/appstore.ts).
 
@@ -160,6 +160,37 @@ $ starchart plan
   ~ auto    appstore:listing/description                        embeds     replace embedded value
 …
 ``` Suggested order: audit with credentials, `apply --dry-run --only appstore:listing/description`, apply one artifact, check App Store Connect, keep the journal id handy. `write: false` also makes `apply` refuse directly: `writes to App Store Connect are disabled (adapters.appstore.write: false)`.
+
+## Live verification
+
+Run on 2026-09-30 against a real App Store Connect team (15 apps), on an app version in `PREPARE_FOR_SUBMISSION`, so customers never saw the test text:
+
+| Step | Result |
+|---|---|
+| JWT (ES256) auth, `GET /v1/apps` | 200 with four of six team keys; the other two returned 401 |
+| `audit` of `name`, `subtitle`, `description` (en-US) | name in sync; subtitle and description correctly reported `missing` for a fact they don't contain |
+| `audit` after a fact change | `! stale … still shows old value "Orbit Alpha"; expected "Orbit Beta"` |
+| `apply --yes` on `promotionalText` | `✓ updated promotionalText (en-US): "Orbit Alpha" → "Orbit Beta"`, confirmed at Apple, journal written, lock updated; `check` and `audit` clean afterwards |
+| `revert <journal>` | text restored at Apple, `lockRestored: true` |
+
+Two things the run surfaced:
+
+- **Key roles matter.** App Store Connect API keys carry a team role. A key with a read-only role (e.g. Developer or Sales) audits fine but gets `403 FORBIDDEN_ERROR: The API key in use does not allow this request` on apply. Use an App Manager or Admin key when you set `write: true`.
+- **STARCHART rewrites, it doesn't author.** `embeds` apply replaces the old fact value inside existing text. An empty field (promotional text is `null` until someone writes it) has nothing to replace, so apply refuses; write the first version by hand or bind the field to a template.
+
+### Keeping credentials in Google Secret Manager
+
+Config values aren't env-interpolated, so pass credentials through the environment. With the key stored as `ASC_ISSUER_ID`, `ASC_KEY_ID` and `ASC_PRIVATE_KEY` secrets:
+
+```bash
+for s in ASC_ISSUER_ID ASC_KEY_ID ASC_PRIVATE_KEY; do export $s="$(gcloud secrets versions access latest --secret=$s)"; done
+```
+
+```bash
+npx @space-pirate-zero/starchart audit
+```
+
+`ASC_PRIVATE_KEY` holds the `.p8` contents, so no key file needs to live on disk.
 
 ## See also
 
