@@ -1,9 +1,11 @@
 import { existsSync } from "node:fs";
 import { mkdir, readFile, rm, writeFile } from "node:fs/promises";
-import { dirname, isAbsolute, relative, resolve } from "node:path";
+import { dirname, resolve } from "node:path";
 import pixelmatch from "pixelmatch";
 import { PNG } from "pngjs";
 import type { GraphNode } from "../core/model.js";
+import { resolveInRoot } from "../paths.js";
+import { unsafeRegexReason } from "../regex-safety.js";
 import { renderOgBuffer } from "../render/og.js";
 import { escapeFor, renderTemplate } from "../render/template.js";
 import {
@@ -49,12 +51,7 @@ function bindingPath(node: GraphNode): string {
 }
 
 /** Resolves a root-relative path, refusing anything that escapes the project root. */
-export function resolveInRoot(root: string, path: string): string {
-  const abs = resolve(root, path);
-  const rel = relative(root, abs);
-  if (rel.startsWith("..") || isAbsolute(rel)) throw new Error(`path "${path}" is outside the project root`);
-  return abs;
-}
+export { resolveInRoot };
 
 const templateOf = (node: GraphNode): string | undefined =>
   typeof node.meta?.template === "string" ? node.meta.template : undefined;
@@ -69,6 +66,8 @@ export function parseSelector(selector: unknown): Selector {
   if (selector === undefined || selector === null || selector === "") return { type: "none" };
   if (typeof selector !== "string") throw new Error("fs selector must be a string");
   if (selector.startsWith("regex:")) {
+    const unsafe = unsafeRegexReason(selector.slice("regex:".length));
+    if (unsafe) throw new Error(`unsafe regex selector: ${unsafe}`);
     try {
       return { type: "regex", pattern: new RegExp(selector.slice("regex:".length), "gmd") };
     } catch (e) {

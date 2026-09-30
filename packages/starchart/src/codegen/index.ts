@@ -1,3 +1,4 @@
+import { resolveInRoot } from "../paths.js";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, relative, resolve } from "node:path";
 import type { CodegenTarget } from "../config/schema.js";
@@ -36,7 +37,7 @@ export function writeCodegen(project: Project): CodegenResult {
   const files: string[] = [];
   const changed: string[] = [];
   for (const target of project.loaded.config.codegen) {
-    const path = resolve(project.root, target.out);
+    const path = resolveInRoot(project.root, target.out);
     const rel = relative(project.root, path).split("\\").join("/");
     const source = generateCode(project.graph, target);
     files.push(rel);

@@ -420,6 +420,15 @@ Parsing is per file and single-pass, with no type checker. On an Apple M3 Max, i
 - **Swift `var` / Kotlin `var`** never carry values, so they cannot back a [code-authority fact](Code-Authority-Facts).
 - `@starchart generated`, `@starchart id` and `@starchart ignore` are recognized marker verbs, but `id` and `ignore` currently have no effect.
 
+## Secret redaction
+
+Literal values are what make code-authority facts and drift checks work, but a hardcoded credential must never reach the viewer HTML, `emit graph`, the MCP server or `serve`. Since 0.1.1 the ingestor withholds a symbol's value (and sets `meta.redacted: true`) when:
+
+- its name looks secret: `secret`, `password`/`passwd`/`pwd`, `passphrase`, `token`, `apiKey`/`api_key`, `privateKey`, `credential`, `authKey`, `accessKey`, `signingKey`, `clientSecret`, `webhookSecret`, `dsn`; or
+- any string in the value looks like a credential: Stripe `sk_`/`rk_` keys and `whsec_` secrets, GitHub tokens, AWS access key ids, Google API keys, Slack tokens, Anthropic/OpenAI keys, npm tokens, PEM private keys, JWTs, and URLs with embedded `user:password@`.
+
+Identifiers that aren't secrets keep their values: Stripe `price_…` ids, product ids, prices, feature lists. The symbol's hash is still recorded, so drift detection works on redacted symbols too.
+
 ## See also
 
 - [Annotations](Annotations)

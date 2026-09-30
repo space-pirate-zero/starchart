@@ -10,6 +10,7 @@ import { writeCodegen } from "../codegen/index.js";
 import { STARCHART_DIR } from "../config/load.js";
 import { explainPath, type ImpactItem } from "../core/impact.js";
 import { relockArtifacts, type LockFile } from "../core/lock.js";
+import { resolveInRoot } from "../paths.js";
 import { buildProject, writeLock, type Project } from "../project.js";
 import { adapterContext, type EngineIO } from "./context.js";
 
@@ -201,7 +202,12 @@ const escapeRegex = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
 /** Replaces `from` with `to` as a whole identifier token in a root-relative file. Returns whether it changed. */
 async function replaceIdInFile(root: string, file: string, from: string, to: string, dryRun: boolean): Promise<boolean> {
-  const abs = resolve(root, file);
+  let abs: string;
+  try {
+    abs = resolveInRoot(root, file);
+  } catch {
+    return false; // a journal or binding pointing outside the project is never rewritten
+  }
   if (!existsSync(abs)) return false;
   const text = await readFile(abs, "utf8");
   const re = new RegExp(`(?<![A-Za-z0-9_])${escapeRegex(from)}(?![A-Za-z0-9_])`, "g");

@@ -1,3 +1,4 @@
+import { VERSION } from "../version.js";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import type { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
 import { z } from "zod";
@@ -14,7 +15,7 @@ import { buildProject, type Project } from "../project.js";
  */
 
 export const SERVER_NAME = "starchart";
-export const SERVER_VERSION = "0.1.0";
+export const SERVER_VERSION = VERSION;
 
 export const INSTRUCTIONS = `STARCHART charts how code, canonical facts (prices, names, product ids, feature lists) and real-world artifacts (website pages, App Store listings, Stripe prices, screenshots, reels) depend on each other.
 

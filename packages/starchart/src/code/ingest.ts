@@ -12,6 +12,7 @@ import { parseI18nFile, type I18nEntry } from "./i18n.js";
 import { parseKotlin } from "./kotlin.js";
 import { npmPackageName, PackageIndex } from "./packages.js";
 import { detectRoute, isNextConfig } from "./routes.js";
+import { redactLiteral } from "./redact.js";
 import { parseSwift } from "./swift.js";
 import { loadTsConfig, TsResolver, type TsPathConfig } from "./tsresolve.js";
 import type { AnnotationComment, Diagnostics, NameRef, ParsedFile, SymbolDecl } from "./types.js";
@@ -215,14 +216,16 @@ class GraphBuilder {
         }
         this.symbolById.set(s.id, s);
         this.symbolFile.set(s.id, p.file.path);
+        const literal = redactLiteral(s.qname ?? s.name, s.value);
         this.graph.addNode({
           id: s.id,
           kind: "symbol",
           label: s.name,
           location: { file: p.file.path, line: s.line, endLine: s.endLine },
           hash: s.hash,
-          value: s.value,
+          value: literal.value,
           meta: compact({
+            redacted: literal.redacted || undefined,
             kind: s.kind,
             qname: s.qname,
             scope: p.file.scope,

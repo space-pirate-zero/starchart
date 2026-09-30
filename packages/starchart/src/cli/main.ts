@@ -30,6 +30,7 @@ import { serve } from "../viewer/serve.js";
 import { xrayPayload } from "../viewer/xray.js";
 import { renderBanner, renderJollyRoger } from "./banner.js";
 import { runInit } from "./init.js";
+import { VERSION } from "../version.js";
 
 type Format = "text" | "markdown" | "json";
 
@@ -39,7 +40,6 @@ interface GlobalOpts {
   quiet?: boolean;
 }
 
-const VERSION = "0.1.0";
 
 export async function run(argv: string[]): Promise<number> {
   let exitCode = 0;
@@ -512,8 +512,10 @@ export async function run(argv: string[]): Promise<number> {
     .option("-p, --port <port>", "port", "4477")
     .option("--host <host>", "host", "127.0.0.1")
     .option("-w, --watch", "rebuild on file changes")
-    .action(async (opts: { port: string; host: string; watch?: boolean }) => {
-      const server = await serve({ root: cwd(), port: Number(opts.port), host: opts.host, watch: opts.watch });
+    .option("--allow-remote", "allow binding a non-loopback host (no authentication: anyone who can reach the port sees the chart)")
+    .action(async (opts: { port: string; host: string; watch?: boolean; allowRemote?: boolean }) => {
+      const server = await serve({ root: cwd(), port: Number(opts.port), host: opts.host, watch: opts.watch, allowRemote: opts.allowRemote });
+      if (opts.allowRemote) process.stderr.write(`${pc.yellow("warn")} serving without authentication on ${opts.host}; anyone who can reach this port can read the chart\n`);
       out(`${banner()}\n\n${pc.magenta("★")} STARCHART at ${pc.bold(server.url)}  ${pc.dim("(ctrl+c to stop)")}`);
       await new Promise<void>((done) => {
         const stop = () => void server.close().then(done);

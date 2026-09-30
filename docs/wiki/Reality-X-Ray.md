@@ -144,7 +144,7 @@ What gets scanned: visible text nodes only. Skipped: `script`, `style`, `noscrip
 | `http://127.0.0.1/*`, `http://localhost/*` | Talk to `starchart serve` |
 | optional site access (`https://*/*`, `http://*/*` declared, requested per origin) | Only for auto-scan, and only for the origins your artifacts declare, or for a non-local server URL |
 
-One caveat on the server side: `starchart serve` answers with `Access-Control-Allow-Origin: *`, so while it runs any page in your browser could fetch your chart from localhost. That's a property of the server, not the extension. See [Viewer and Serve](Viewer-and-Serve#cors-and-headers).
+On the server side, `starchart serve` grants CORS only to browser-extension origins and only answers loopback `Host` headers, so the extension can read the chart but ordinary web pages can't. See [Viewer and Serve](Viewer-and-Serve#cors-and-headers).
 
 ## 10. The xray.json payload
 

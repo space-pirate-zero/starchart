@@ -1,3 +1,4 @@
+import { unsafeRegexReason } from "../regex-safety.js";
 import { z } from "zod";
 import type { Graph } from "../core/graph.js";
 import type { LockFile } from "../core/lock.js";
@@ -136,7 +137,10 @@ const regex = z.string().refine(
     }
   },
   { message: "invalid regular expression" },
-);
+).superRefine((p, ctx) => {
+  const unsafe = unsafeRegexReason(p);
+  if (unsafe) ctx.addIssue({ code: "custom", message: `unsafe regular expression: ${unsafe}` });
+});
 
 const SelectorSchema = z.strictObject({
   kind: stringList.optional(),

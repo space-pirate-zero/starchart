@@ -18,6 +18,11 @@ export interface ServeOptions {
   host?: string;
   /** Rebuild on changes to .starchart/, the lock and code scopes, and live-reload open viewers. */
   watch?: boolean;
+  /**
+   * Permit binding a non-loopback interface. The server has no authentication, so this exposes
+   * the whole chart (facts, code layer, bindings) to anyone who can reach the port.
+   */
+  allowRemote?: boolean;
 }
 
 export interface ServeHandle {
@@ -46,16 +51,48 @@ class HttpError extends Error {
   }
 }
 
-const CORS_HEADERS = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Methods": "GET, HEAD, OPTIONS",
-  "Access-Control-Allow-Headers": "Content-Type",
-};
+/** Browser-extension origins (the Reality X-Ray) are the only cross-origin readers allowed. */
+const EXTENSION_ORIGIN = /^(?:chrome|moz|safari-web)-extension:\/\/[A-Za-z0-9._-]+$/;
+
+const LOOPBACK_HOSTS = new Set(["localhost", "127.0.0.1", "::1"]);
+
+export function isLoopbackHost(host: string): boolean {
+  const h = host.replace(/^\[|\]$/g, "").toLowerCase();
+  return LOOPBACK_HOSTS.has(h) || h.endsWith(".localhost") || /^127(?:\.\d{1,3}){3}$/.test(h);
+}
+
+/** Hostname from a Host header ("127.0.0.1:4477", "[::1]:4477", "localhost"). */
+function hostnameOf(header: string | undefined): string {
+  if (!header) return "";
+  const m = /^\[([^\]]+)\](?::\d+)?$/.exec(header) ?? /^([^:]+)(?::\d+)?$/.exec(header);
+  return m ? m[1]! : header;
+}
+
+/**
+ * Per-request access control. Rejects Host headers that are not loopback (DNS rebinding) unless
+ * remote access was explicitly allowed, and grants CORS only to browser-extension origins.
+ */
+function guard(req: IncomingMessage, res: ServerResponse, allowRemote: boolean): void {
+  if (!allowRemote && !isLoopbackHost(hostnameOf(req.headers.host))) {
+    throw new HttpError(403, "forbidden host");
+  }
+  const origin = req.headers.origin;
+  if (origin && EXTENSION_ORIGIN.test(origin)) {
+    res.setHeader("Access-Control-Allow-Origin", origin);
+    res.setHeader("Access-Control-Allow-Methods", "GET, HEAD, OPTIONS");
+    res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+  }
+  res.setHeader("Vary", "Origin");
+}
 
 /** Serves the star chart viewer and the JSON endpoints used by the X-Ray extension. */
 export async function serve(opts: ServeOptions = {}): Promise<ServeHandle> {
   const start = resolve(opts.root ?? process.cwd());
   const host = opts.host ?? DEFAULT_HOST;
+  const allowRemote = opts.allowRemote === true;
+  if (!allowRemote && !isLoopbackHost(host)) {
+    throw new Error(`refusing to bind ${host}: the server has no authentication. Use a loopback host, or pass allowRemote (CLI: --allow-remote) to expose the chart on your network.`);
+  }
   const port = opts.port ?? DEFAULT_PORT;
   const live = opts.watch === true;
 
@@ -137,8 +174,9 @@ export async function serve(opts: ServeOptions = {}): Promise<ServeHandle> {
 
   const handle = async (req: IncomingMessage, res: ServerResponse) => {
     const method = req.method ?? "GET";
+    guard(req, res, allowRemote);
     if (method === "OPTIONS") {
-      res.writeHead(204, { ...CORS_HEADERS, "Access-Control-Max-Age": "600" });
+      res.writeHead(204, { "Access-Control-Max-Age": "600" });
       res.end();
       return;
     }
@@ -183,7 +221,6 @@ export async function serve(opts: ServeOptions = {}): Promise<ServeHandle> {
       case "/events": {
         if (!live) throw new HttpError(404, "live reload is off (start with watch)");
         res.writeHead(200, {
-          ...CORS_HEADERS,
           "Content-Type": "text/event-stream",
           "Cache-Control": "no-store",
           Connection: "keep-alive",
@@ -288,7 +325,6 @@ export function impactResponse(project: Project, ids: string[]): { seeds: string
 
 function send(res: ServerResponse, status: number, type: string, body: string, method: string) {
   const headers: Record<string, string> = {
-    ...CORS_HEADERS,
     "Content-Type": type,
     "Content-Length": String(Buffer.byteLength(body)),
     "Cache-Control": "no-store",

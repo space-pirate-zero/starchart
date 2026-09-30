@@ -52,8 +52,11 @@ afterAll(async () => {
   rmSync(dir, { recursive: true, force: true });
 });
 
+// the X-Ray extension is the only cross-origin client; requests carry its origin
+const EXT = "chrome-extension://starcharttestextension";
+
 async function get(path: string) {
-  const res = await fetch(server.url + path);
+  const res = await fetch(server.url + path, { headers: { origin: EXT } });
   return { res, body: await res.text() };
 }
 
@@ -66,7 +69,7 @@ describe("serve", () => {
   it("GET /health", async () => {
     const { res, body } = await get("/health");
     expect(res.status).toBe(200);
-    expect(res.headers.get("access-control-allow-origin")).toBe("*");
+    expect(res.headers.get("access-control-allow-origin")).toBe(EXT);
     const json = JSON.parse(body) as { ok: boolean; name: string; nodes: number };
     expect(json).toMatchObject({ ok: true, name: "served-demo" });
     expect(json.nodes).toBeGreaterThanOrEqual(6);
@@ -83,7 +86,7 @@ describe("serve", () => {
   it("GET /graph.json", async () => {
     const { res, body } = await get("/graph.json");
     expect(res.status).toBe(200);
-    expect(res.headers.get("access-control-allow-origin")).toBe("*");
+    expect(res.headers.get("access-control-allow-origin")).toBe(EXT);
     const graph = JSON.parse(body) as { nodes: { id: string }[]; edges: unknown[] };
     expect(graph.nodes.map((n) => n.id)).toEqual(expect.arrayContaining(["addon:pro.price.usd", "web:pricing"]));
     expect(graph.edges.length).toBeGreaterThan(0);
@@ -92,7 +95,7 @@ describe("serve", () => {
   it("GET /impact?id= returns classified items with why paths", async () => {
     const { res, body } = await get(`/impact?id=${encodeURIComponent("addon:pro.price.usd")}`);
     expect(res.status).toBe(200);
-    expect(res.headers.get("access-control-allow-origin")).toBe("*");
+    expect(res.headers.get("access-control-allow-origin")).toBe(EXT);
     const json = JSON.parse(body) as { seeds: string[]; items: { id: string; class: string; explain: string; confidence: number }[] };
     expect(json.seeds).toEqual(["addon:pro.price.usd"]);
     const pricing = json.items.find((i) => i.id === "web:pricing");
@@ -111,7 +114,7 @@ describe("serve", () => {
   it("GET /xray.json reports stale values and artifact URLs", async () => {
     const { res, body } = await get("/xray.json");
     expect(res.status).toBe(200);
-    expect(res.headers.get("access-control-allow-origin")).toBe("*");
+    expect(res.headers.get("access-control-allow-origin")).toBe(EXT);
     const payload = JSON.parse(body) as {
       name: string;
       facts: { id: string; value: string; previous?: string }[];
@@ -128,9 +131,9 @@ describe("serve", () => {
   });
 
   it("answers CORS preflight and rejects unknown routes and methods", async () => {
-    const pre = await fetch(`${server.url}/xray.json`, { method: "OPTIONS" });
+    const pre = await fetch(`${server.url}/xray.json`, { method: "OPTIONS", headers: { origin: EXT } });
     expect(pre.status).toBe(204);
-    expect(pre.headers.get("access-control-allow-origin")).toBe("*");
+    expect(pre.headers.get("access-control-allow-origin")).toBe(EXT);
     expect((await get("/nope")).res.status).toBe(404);
     expect((await fetch(`${server.url}/graph.json`, { method: "POST" })).status).toBe(405);
     expect((await get("/events")).res.status).toBe(404);

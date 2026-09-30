@@ -58,6 +58,14 @@ function stripPrefix(p: string): string {
   return u.replace(/^[ab]\//, "");
 }
 
+/**
+ * Rejects revisions git would parse as options. `execFile` stops shell injection, but a base like
+ * `--output=/some/file` would still be read by git as a flag and write wherever it points.
+ */
+export function assertSafeRev(rev: string): void {
+  if (!rev || rev.startsWith("-") || /[\0\n\r]/.test(rev)) throw new Error(`invalid git revision: ${JSON.stringify(rev)}`);
+}
+
 /** Parses `git diff --unified=0` output. */
 export function parseUnifiedDiff(output: string): FileChange[] {
   const out: FileChange[] = [];
@@ -190,7 +198,8 @@ export function changedNodes(changes: FileChange[], config: CodeConfig, graph: G
  * to the file/test node and the symbols and localization keys whose ranges it touches.
  */
 export async function changedNodesFromGit(root: string, config: CodeConfig, graph: Graph, base: string): Promise<string[]> {
-  const diff = await git(root, ["-c", "core.quotePath=false", "diff", "--unified=0", "--no-color", "--no-ext-diff", "--no-renames", "--relative", base, "--"]);
+  assertSafeRev(base);
+  const diff = await git(root, ["-c", "core.quotePath=false", "diff", "--unified=0", "--no-color", "--no-ext-diff", "--no-renames", "--relative", "--end-of-options", base, "--"]);
   const untracked = await git(root, ["-c", "core.quotePath=false", "ls-files", "--others", "--exclude-standard"]);
   const changes = parseUnifiedDiff(diff);
   for (const line of untracked.split("\n")) {

@@ -5,3 +5,18 @@ coverage
 *.log
 .starchart/preview
 .starchart/journal
+
+# local audit notes
+.wolf/
+
+# secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p8
+*.p12
+*.pfx
+credentials*.json
+service-account*.json

@@ -1,6 +1,6 @@
 {
   "name": "@space-pirate-zero/starchart",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Every dependency. Code to cosmos. A dependency graph that bridges your code to everything it touches in the real world: website copy, App Store, Stripe, OG images, promo reels.",
   "license": "Apache-2.0",
   "author": "Space Pirate Zero",
@@ -43,7 +43,8 @@
   "files": [
     "dist",
     "README.md",
-    "LICENSE"
+    "LICENSE",
+    "CHANGELOG.md"
   ],
   "engines": {
     "node": ">=20"

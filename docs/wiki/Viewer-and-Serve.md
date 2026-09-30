@@ -29,14 +29,15 @@ It's a snapshot: it shows the graph, stale set and lock values as of the moment 
 ```bash
 starchart serve                     # http://127.0.0.1:4477
 starchart serve -p 8080 --watch
-starchart serve --host 0.0.0.0      # expose on your network (read below first)
+starchart serve --host 0.0.0.0 --allow-remote   # expose on your network (read below first)
 ```
 
 | Option | Default | Meaning |
 |---|---|---|
 | `-p, --port <port>` | `4477` | Port to listen on |
-| `--host <host>` | `127.0.0.1` | Interface to bind. IPv6 addresses print in brackets. |
+| `--host <host>` | `127.0.0.1` | Interface to bind. IPv6 addresses print in brackets. Non-loopback hosts need `--allow-remote`. |
 | `-w, --watch` | off | Rebuild on changes and live-reload open viewers |
+| `--allow-remote` | off | Permit a non-loopback `--host`. There is no authentication; prints a warning. |
 
 ```text
 $ starchart serve -p 4499 --watch
@@ -84,9 +85,15 @@ Each `/impact` item has `id`, `label?`, `kind`, `layer`, `class`, `reason`, `via
 
 ### CORS and headers
 
-Every response carries `Access-Control-Allow-Origin: *`, `Access-Control-Allow-Methods: GET, HEAD, OPTIONS` and `Access-Control-Allow-Headers: Content-Type`. Preflight answers `204` with `Access-Control-Max-Age: 600`. Everything is `Cache-Control: no-store` and `X-Content-Type-Options: nosniff`. The HTML also gets `X-Frame-Options: DENY` and `Referrer-Policy: no-referrer`.
+The server is built so a web page you happen to have open can't read your chart (hardened in 0.1.1):
 
-The open CORS policy means **any web page open in your browser can read your chart** from `http://127.0.0.1:4477` while `serve` runs. It's read-only, but it includes fact values, file paths and lock values. That's fine for a local dev tool bound to loopback. Think twice before `--host 0.0.0.0`: there is no authentication.
+- **CORS only for browser extensions.** A request whose `Origin` is `chrome-extension://…`, `moz-extension://…` or `safari-web-extension://…` (the [Reality X-Ray](Reality-X-Ray)) gets that origin echoed in `Access-Control-Allow-Origin`, plus `Access-Control-Allow-Methods: GET, HEAD, OPTIONS` and `Access-Control-Allow-Headers: Content-Type`. Web origins get no CORS headers, so browsers block cross-site reads. Every response carries `Vary: Origin`.
+- **Loopback `Host` only.** Requests whose `Host` isn't `localhost`, `127.x.x.x`, `[::1]` or `*.localhost` get `403 {"ok":false,"error":"forbidden host"}`. That blocks DNS-rebinding attacks.
+- **Loopback bind only.** `serve` refuses a non-loopback `--host` unless you pass `--allow-remote`, which also lifts the `Host` check and prints a warning. There is no authentication, so anyone who can reach the port can read the chart.
+
+Preflight answers `204` with `Access-Control-Max-Age: 600`. Everything is `Cache-Control: no-store` and `X-Content-Type-Options: nosniff`. The HTML also gets `X-Frame-Options: DENY` and `Referrer-Policy: no-referrer`.
+
+The chart itself never carries credentials: the code layer [redacts secret-looking literals](Code-Ingestion#secret-redaction).
 
 ## Live reload (`--watch`)
 

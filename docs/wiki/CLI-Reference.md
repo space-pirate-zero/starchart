@@ -774,7 +774,7 @@ $ starchart graph -o out/chart.html
 ### `serve`
 
 ```text
-starchart serve [-p <port>] [--host <host>] [-w]
+starchart serve [-p <port>] [--host <host>] [-w] [--allow-remote]
 ```
 
 Serves the viewer and the X-Ray API locally until Ctrl+C.
@@ -782,8 +782,9 @@ Serves the viewer and the X-Ray API locally until Ctrl+C.
 | Option | Default | Effect |
 |---|---|---|
 | `-p, --port <port>` | `4477` | port (`0` picks a free one) |
-| `--host <host>` | `127.0.0.1` | interface to bind |
+| `--host <host>` | `127.0.0.1` | interface to bind; non-loopback needs `--allow-remote` |
 | `-w, --watch` | off | rebuild on changes to `.starchart/`, the lock and code scopes, and live-reload open viewers |
+| `--allow-remote` | off | permit a non-loopback host (no authentication; prints a warning) |
 
 ```text
 $ starchart serve --port 4499
