@@ -1,7 +1,7 @@
 {
   "name": "@spz/starchart",
   "version": "0.1.0",
-  "description": "Every dependency. Code to cosmos. A graph that bridges your code to everything it touches in the real world.",
+  "description": "Every dependency. Code to cosmos. A dependency graph that bridges your code to everything it touches in the real world: website copy, App Store, Stripe, OG images, promo reels.",
   "license": "Apache-2.0",
   "author": "Space Pirate Zero",
   "homepage": "https://github.com/space-pirate-zero/starchart/wiki",
@@ -29,7 +29,11 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "exports": {
-    ".": "./dist/index.js"
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
   },
   "bin": {
     "starchart": "dist/cli/bin.js",
@@ -38,7 +42,8 @@
   },
   "files": [
     "dist",
-    "assets"
+    "README.md",
+    "LICENSE"
   ],
   "engines": {
     "node": ">=20"
@@ -47,7 +52,8 @@
     "build": "tsc -p tsconfig.build.json && node scripts/copy-assets.mjs",
     "test": "vitest run",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "dev": "tsx src/cli/bin.ts"
+    "dev": "tsx src/cli/bin.ts",
+    "prepublishOnly": "pnpm build && pnpm test"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.31.0",
@@ -66,5 +72,9 @@
     "@types/pngjs": "^6.0.5",
     "tsx": "^4.23.15",
     "vitest": "^5.0.2"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": false
   }
 }
